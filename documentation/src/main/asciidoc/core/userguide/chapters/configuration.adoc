@@ -1,0 +1,13 @@
+=== Configuration
+include::../../../variable.adoc[]
+
+For now Queryman {version} does not provide wide possibilities in configuration.
+Thus the xml configration below is optional. There are several ways provide configuration into Queryman: +
+
+The first is via xml configuration as show below
+[source, xml]
+include::../../{mainResourcesDir}/org/queryman/queryman-configuration-1.0.xml[]
+
+Second way is using `ConfigBuilder`
+[source,java]
+include::{mainJavaDir}/boot/configuration/ConfigBuilder.java[tags=config-builder]

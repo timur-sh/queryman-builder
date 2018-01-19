@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="http://www.queryman.org/xsd">
+    <properties>
+        <property name="queryman.connection.url" value="jdbc:postgresql:/localhost:5432/queryman"/>
+        <property name="queryman.connection.user" value="queryman"/>
+        <property name="queryman.connection.password" value="queryman"/>
+    </properties>
+</configuration>

@@ -1,0 +1,13 @@
+
+:mainDir: ../../
+:mainJavaDir: ../java/org/queryman
+:mainResourcesDir: {mainDir}resources
+
+:testDir: ../../../test
+:testResourceDir: {testDir}/resources
+:testQuerymanDir: {testDir}/java/org/queryman
+
+//domain
+:coreDocs: {domainDocs}/core
+:servicesDocs: {domainDocs}/services
+:builderDocs: {domainDocs}/builder

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Queryman. Java tools for working with queries of PostgreSQL database.
+
+    License: MIT License.
+    To see license follow by http://queryman.org/license.txt
+-->
+<queryman-configuration xmlns="http://www.queryman.org/xsd">
+    <connection>
+        <url>jdbc:postgresql:/localhost:5432/queryman</url>
+        <user>queryman</user>
+        <password>queryman</password>
+    </connection>
+</queryman-configuration>

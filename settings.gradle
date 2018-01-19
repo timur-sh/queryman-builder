@@ -1,0 +1,6 @@
+rootProject.name = 'queryman'
+
+include 'documentation'
+include 'org.queryman.core'
+include 'org.queryman.loader'
+include 'org.queryman.builder'

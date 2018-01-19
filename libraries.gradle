@@ -1,0 +1,21 @@
+ext {
+    junit = '5.0.2'
+    jaxb = '2.3.0'
+    queryman = '1.0.0.beta'
+
+    libraries = [
+            querymanLoader : "org.queryman:loader:${queryman}",
+            querymanCore   : "org.queryman:core:${queryman}",
+            querymanBuilder: "org.queryman:builder:${queryman}",
+
+            postgres       : 'org.postgresql:postgresql:42.1.4',
+            junit          : "org.junit.jupiter:junit-jupiter-api:${junit}",
+            apuGuardian    : "org.apiguardian:apiguardian-api:1.0.0",
+
+            log4j          : 'org.apache.logging.log4j:log4j-core:2.10.0',
+            jaxbApi        : "javax.xml.bind:jaxb-api:${jaxb}",
+            jaxbImpl       : "com.sun.xml.bind:jaxb-impl:${jaxb}",
+            jaxbCore       : "com.sun.xml.bind:jaxb-core:${jaxb}",
+            activation     : "javax.activation:activation:1.1.1",
+    ]
+}

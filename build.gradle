@@ -1,0 +1,69 @@
+apply from: './libraries.gradle'
+
+group 'net.shaidullin'
+version '1.0.0.beta'
+
+description "Queryman PostgreSQL tools"
+
+ext {
+    majorVersion = version.split('-')[0]
+    domain = 'http://queryman.org'
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
+
+    buildDir = "target"
+
+    //common dependencies
+    dependencies {
+        compile(libraries['log4j'])
+
+        testCompile(libraries['junit'])
+        testCompile(libraries['apuGuardian'])
+    }
+}
+
+subprojects { subProject ->
+
+    String moduleName = subProject.name
+    if (moduleName.equals('documentation')) {
+        return
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                pom.withXml {
+                    def root = asNode()
+
+                    root.appendNode('description', rootProject.description)
+                    root.appendNode('url', rootProject.domain)
+                }
+
+                groupId 'org.queryman'
+                artifactId moduleName.split('\\.')[moduleName.split('\\.').length - 1]
+                version rootProject.version
+
+                from components.java
+            }
+        }
+    }
+
+    jar {
+        inputs.property("moduleName", moduleName)
+        manifest {
+            attributes(
+                    'Automatic-module-name': moduleName,
+            )
+
+        }
+    }
+}

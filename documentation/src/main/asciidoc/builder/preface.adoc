@@ -1,0 +1,11 @@
+== Preface
+Queryman Builder provides an object oriented way to query builder for
+PostgreSQL in Java. I had got an idea to create a query builder for full
+supported PostgreSQL syntax, when I worked on the excellent library - jOOQ.
+
+
+
+what is it.
+what problems does it solve
+what benefits does it brings. Examples.
+
