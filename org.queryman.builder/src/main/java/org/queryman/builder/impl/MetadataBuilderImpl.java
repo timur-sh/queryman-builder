@@ -8,35 +8,35 @@ package org.queryman.builder.impl;
 
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
+import org.queryman.builder.boot.JaxbLoader;
+import org.queryman.builder.boot.Loader;
+import org.queryman.builder.boot.PropertiesLoader;
+import org.queryman.builder.boot.impl.LoaderImpl;
 import org.queryman.builder.cfg.Settings;
-import org.queryman.loader.Loader;
-import org.queryman.loader.impl.LoaderImpl;
 
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * @author Timur Shaidullin
  */
 public class MetadataBuilderImpl implements MetadataBuilder {
-    private final Loader loader = new LoaderImpl();
     private Metadata metadata;
 
+    private String xmlCfgFile        = "queryman-builder.xml";
+    private String propertiesCfgFile = "queryman-builder.properties";
+
     public MetadataBuilderImpl() {
-        loader.setPropertiesConfigurationName("queryman-builder.properties")
-           .setXmlConfigurationName("queryman-builder.xml");
     }
 
     @Override
     public MetadataBuilder setXmlCfg(String cfgFile) {
-        loader.setXmlConfigurationName(cfgFile);
-
+        xmlCfgFile = cfgFile;
         return this;
     }
 
     @Override
     public MetadataBuilder setPropertiesCfg(String cfgFile) {
-        loader.setPropertiesConfigurationName(cfgFile);
+        propertiesCfgFile = cfgFile;
         return this;
     }
 
@@ -46,22 +46,58 @@ public class MetadataBuilderImpl implements MetadataBuilder {
     }
 
     @Override
-    public void build() throws IOException, ClassNotFoundException {
-        loader.load();
-        Properties properties = loader.getConfiguration();
-        metadata = new MetadataImpl();
+    public void build() {
+        if (load()) {
+            validate();
+        }
 
+        applyDefaults();
+    }
+
+    /**
+     * Load configuration.
+     */
+    private boolean load() {
+        Loader loader = new LoaderImpl(
+            new JaxbLoader(xmlCfgFile),
+            new PropertiesLoader(propertiesCfgFile)
+        );
+
+        if (loader.load()) {
+            metadata = loader.getConfiguration();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * The {@code metadata} is validated.
+     */
+    private void validate() {
+    }
+
+    /**
+     * Default values of settings is assigned to {@code metadata} if any of them
+     * are not in it.
+     */
+    private void applyDefaults() {
         for (String setting : Settings.settings) {
-            if (properties.containsKey(setting)) {
-                metadata.addProperty(setting, properties.getProperty(setting));
-            }
+            if (metadata.isEmpty(setting))
+                metadata.addProperty(setting, Settings.DEFAULTS.get(setting));
         }
     }
 
     @Override
-    public void build(Metadata metadata) throws IOException, ClassNotFoundException {
-        build();
-        merge(this.metadata, metadata);
+    public void build(Metadata metadata) {
+        if (load()) {
+            validate();
+            merge(this.metadata, metadata);
+        } else {
+            this.metadata = metadata;
+        }
+
+        applyDefaults();
     }
 
     /**
@@ -69,8 +105,8 @@ public class MetadataBuilderImpl implements MetadataBuilder {
      * {@link Loader} takes precedence. If any key/value pair of {@code fromUser}
      * is missed by the {@code fromCfg}, it is copied.
      *
-     * @param fromCfg {@link Metadata} object represents configuration loaded
-     *                                by {@link Loader}
+     * @param fromCfg  {@link Metadata} object represents configuration loaded
+     *                 by {@link Loader}
      * @param fromUser {@link Metadata} objects represents metadata provides by user
      */
     private void merge(Metadata fromCfg, Metadata fromUser) {

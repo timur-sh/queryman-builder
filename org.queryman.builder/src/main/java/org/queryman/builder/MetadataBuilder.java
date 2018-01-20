@@ -35,12 +35,12 @@ public interface MetadataBuilder {
     /**
      * The configuration loads, then the {@link Metadata} is populated by it.
      */
-    void build() throws IOException, ClassNotFoundException;
+    void build();
 
     /**
      * The configuration loads, then the {@link Metadata} is populated by it.
      * After that the loaded metadata and {@code metadata} are merged.
      * The loaded metadata take precedence.
      */
-    void build(Metadata metadata) throws IOException, ClassNotFoundException;
+    void build(Metadata metadata);
 }

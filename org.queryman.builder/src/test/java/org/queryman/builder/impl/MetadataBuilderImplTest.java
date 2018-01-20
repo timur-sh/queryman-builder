@@ -3,6 +3,7 @@ package org.queryman.builder.impl;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
+import org.queryman.builder.cfg.Settings;
 
 import java.io.IOException;
 
@@ -17,7 +18,7 @@ class MetadataBuilderImplTest {
         Metadata metadata = builder.getMetadata();
         assertNotNull(metadata);
 
-        assertEquals(metadata.getProperties().size(), 2);
+        assertEquals(metadata.getProperties().size(), 1);
     }
 
     @Test
@@ -42,6 +43,18 @@ class MetadataBuilderImplTest {
     }
 
     @Test
+    void emptyValues() throws IOException, ClassNotFoundException {
+        MetadataBuilder builder = new MetadataBuilderImpl();
+        builder
+           .setXmlCfg("queryman-builder-empty.xml")
+           .build();
+
+        Metadata metadata = builder.getMetadata();
+        assertEquals(metadata.getProperty(Settings.USE_UPPERCASE), "true");
+        assertEquals(metadata.getProperties().size(), 1);
+    }
+
+    @Test
     void merge() throws IOException, ClassNotFoundException {
         MetadataBuilder builder = new MetadataBuilderImpl();
 
@@ -51,6 +64,6 @@ class MetadataBuilderImplTest {
         builder.build(metadata);
 
         Metadata newMetadata = builder.getMetadata();
-        assertEquals(newMetadata.getProperties().size(), 3);
+        assertEquals(newMetadata.getProperties().size(), 2);
     }
 }

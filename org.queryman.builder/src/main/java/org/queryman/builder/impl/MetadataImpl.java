@@ -7,6 +7,7 @@
 package org.queryman.builder.impl;
 
 import org.queryman.builder.Metadata;
+import org.queryman.builder.utils.StringUtils;
 
 import java.util.Properties;
 
@@ -25,6 +26,14 @@ public class MetadataImpl implements Metadata {
     @Override
     public boolean contains(String key) {
         return properties.containsKey(key);
+    }
+
+    @Override
+    public boolean isEmpty(String key) {
+        if (!contains(key))
+            return false;
+
+        return StringUtils.isEmpty(getProperty(key));
     }
 
     @Override

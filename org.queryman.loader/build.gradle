@@ -1,6 +1,0 @@
-dependencies {
-    compile(libraries['jaxbApi'])
-    compile(libraries['jaxbImpl'])
-    compile(libraries['jaxbCore'])
-    compile(libraries['activation'])
-}

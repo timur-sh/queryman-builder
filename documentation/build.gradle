@@ -10,8 +10,6 @@ buildscript {
 
 
 dependencies {
-    compile(libraries['querymanLoader'])
-    compile(libraries['querymanCore'])
     compile(libraries['querymanBuilder'])
 }
 

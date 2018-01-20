@@ -1,4 +1,0 @@
-dependencies {
-    compile(libraries['postgres'])
-    compile(libraries['querymanLoader'])
-}

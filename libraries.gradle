@@ -4,8 +4,6 @@ ext {
     queryman = '1.0.0.beta'
 
     libraries = [
-            querymanLoader : "org.queryman:loader:${queryman}",
-            querymanCore   : "org.queryman:core:${queryman}",
             querymanBuilder: "org.queryman:builder:${queryman}",
 
             postgres       : 'org.postgresql:postgresql:42.1.4',

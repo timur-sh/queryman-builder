@@ -27,6 +27,11 @@ public interface Metadata {
     boolean contains(String key);
 
     /**
+     * Return true if value of key is null or empty string.
+     */
+    boolean isEmpty(String key);
+
+    /**
      * Get property by key. If key does not exist, {@code null} is returned.
      *
      * Note. The allowable keys stores in {@link org.queryman.builder.cfg.Settings}

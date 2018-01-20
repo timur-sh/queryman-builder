@@ -10,15 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CMDImplTest {
     @Test
-    void initSQLManager() throws IOException, ClassNotFoundException {
-        CMD CMD = new ServiceRegister().make().getCmd();
+    void initSQLManager() {
+        CMD CMD = Bootstrap.register();
         assertNotNull(CMD);
-
-//        assertTrue(CMD.selectCmd() instanceof Select);
     }
 
-    void selectAllOfClauses() throws IOException, ClassNotFoundException {
-        CMD CMD = new ServiceRegister().make().getCmd();
+    void selectAllOfClauses() {
+        CMD CMD = Bootstrap.register();
 
         CMD.select().getSQL();
     }
