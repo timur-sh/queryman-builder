@@ -33,7 +33,7 @@ class JaxbLoaderTest {
     @Test
     public void loadFileNotSpecified() {
         JaxbLoader loader = new JaxbLoader("");
-        Throwable throwable = assertThrows(FileNotFoundException.class, loader::load);
+        Throwable throwable = assertThrows(IllegalStateException.class, loader::load);
         assertEquals(throwable.getMessage(), "Xml file is not specified");
     }
 

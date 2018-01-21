@@ -22,7 +22,7 @@ import java.util.Properties;
  */
 public final class PropertiesLoader extends AbstractConfigLoader {
 
-    private final Properties properties = new Properties();
+    protected final Properties properties = new Properties();
 
     public PropertiesLoader(String cfgFile) {
         super(cfgFile);
@@ -31,7 +31,7 @@ public final class PropertiesLoader extends AbstractConfigLoader {
     @Override
     public boolean load() throws IOException, ClassNotFoundException {
         if (StringUtils.isEmpty(cfgFile)) {
-            throw new FileNotFoundException("Properties file is not specified");
+            throw new IllegalStateException("Properties file is not specified");
         }
         InputStream stream = getResource(cfgFile);
 
@@ -46,6 +46,6 @@ public final class PropertiesLoader extends AbstractConfigLoader {
 
     @Override
     public Metadata getConfiguration() {
-        return new PropertiesMetadataAdapter(properties).convert();
+        return PropertiesMetadataAdapter.convert(properties);
     }
 }

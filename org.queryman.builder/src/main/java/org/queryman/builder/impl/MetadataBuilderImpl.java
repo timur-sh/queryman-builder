@@ -9,8 +9,8 @@ package org.queryman.builder.impl;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
 import org.queryman.builder.boot.JaxbLoader;
-import org.queryman.builder.boot.ServiceLoader;
 import org.queryman.builder.boot.PropertiesLoader;
+import org.queryman.builder.boot.ServiceLoader;
 import org.queryman.builder.boot.impl.ServiceLoaderImpl;
 import org.queryman.builder.cfg.Settings;
 
@@ -45,10 +45,8 @@ public class MetadataBuilderImpl implements MetadataBuilder {
 
     @Override
     public void build() {
-        if (load()) {
-            validate();
-        }
-
+        load();
+        checker();
         applyDefaults();
     }
 
@@ -61,18 +59,24 @@ public class MetadataBuilderImpl implements MetadataBuilder {
             new PropertiesLoader(propertiesCfgFile)
         );
 
-        if (loader.load()) {
-            metadata = loader.getConfiguration();
-            return true;
+        try {
+            if (loader.load()) {
+                metadata = loader.getConfiguration();
+                return true;
+            }
+        } catch (IllegalStateException e) {
+            //todo log
         }
 
+        metadata = new MetadataImpl();
         return false;
     }
 
     /**
      * The {@code metadata} is validated.
      */
-    private void validate() {
+    private void checker() {
+       //todo Establish integrity each value of metadata by particular key.
     }
 
     /**
@@ -81,19 +85,17 @@ public class MetadataBuilderImpl implements MetadataBuilder {
      */
     private void applyDefaults() {
         for (String setting : Settings.settings) {
-            if (metadata.isEmpty(setting))
+            if (metadata.isEmpty(setting)) {
                 metadata.addProperty(setting, Settings.DEFAULTS.get(setting));
+            }
         }
     }
 
     @Override
     public void build(Metadata metadata) {
-        if (load()) {
-            validate();
-            merge(this.metadata, metadata);
-        } else {
-            this.metadata = metadata;
-        }
+        load();
+        checker();
+        merge(this.metadata, metadata);
 
         applyDefaults();
     }

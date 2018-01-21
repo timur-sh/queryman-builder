@@ -7,11 +7,12 @@ import org.queryman.builder.cfg.Settings;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class MetadataBuilderImplTest {
     @Test
-    void buildSuccess() throws IOException, ClassNotFoundException {
+    void buildOk() throws IOException, ClassNotFoundException {
         MetadataBuilder builder = new MetadataBuilderImpl();
         builder.build();
 
@@ -22,35 +23,36 @@ class MetadataBuilderImplTest {
     }
 
     @Test
-    void fileNotFound() throws IOException, ClassNotFoundException {
-        MetadataBuilder builder = new MetadataBuilderImpl();
-        builder
-           .setXmlCfg("")
-           .setPropertiesCfg("");
+    void applyDefaultSettings() throws IOException, ClassNotFoundException {
+        MetadataBuilder builder = new MetadataBuilderImpl();builder
+            .setXmlCfg("")
+            .setPropertiesCfg("")
+            .build();
 
-        assertThrows(IOException.class, builder::build);
+        Metadata metadata = builder.getMetadata();
+        assertEquals(metadata.getProperty(Settings.USE_UPPERCASE), "false");
     }
 
     @Test
     void loadFromProperties() throws IOException, ClassNotFoundException {
         MetadataBuilder builder = new MetadataBuilderImpl();
         builder
-           .setXmlCfg("")
-           .build();
+            .setXmlCfg("")
+            .build();
 
         Metadata metadata = builder.getMetadata();
         assertEquals(metadata.getProperties().size(), 1);
     }
 
     @Test
-    void emptyValues() throws IOException, ClassNotFoundException {
+    void brokeProperties() throws IOException, ClassNotFoundException {
         MetadataBuilder builder = new MetadataBuilderImpl();
         builder
-           .setXmlCfg("queryman-builder-broke.xml")
-           .build();
+            .setXmlCfg("")
+            .setPropertiesCfg("queryman-builder-broken.properties")
+            .build();
 
         Metadata metadata = builder.getMetadata();
-        assertEquals(metadata.getProperty(Settings.USE_UPPERCASE), "true");
         assertEquals(metadata.getProperties().size(), 1);
     }
 
@@ -59,7 +61,7 @@ class MetadataBuilderImplTest {
         MetadataBuilder builder = new MetadataBuilderImpl();
 
         Metadata metadata = new MetadataImpl()
-           .addProperty("queryman.builder.quotes", "none");
+            .addProperty("queryman.builder.quotes", "none");
 
         builder.build(metadata);
 

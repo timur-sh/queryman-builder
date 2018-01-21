@@ -14,17 +14,10 @@ import org.queryman.builder.impl.MetadataImpl;
 /**
  * @author Timur Shaidullin
  */
-public class JaxbMetadataAdapter implements MetadataAdapter {
-    private final JaxbCfg cfg;
-
-    public JaxbMetadataAdapter(JaxbCfg cfg) {
-        this.cfg = cfg;
-    }
-
-    @Override
-    public Metadata convert() {
+public final class JaxbMetadataAdapter {
+    public static Metadata convert(JaxbCfg jaxbCfg) {
         Metadata metadata = new MetadataImpl();
-        metadata.addProperty(Settings.USE_UPPERCASE, String.valueOf(cfg.useUppercase));
+        metadata.addProperty(Settings.USE_UPPERCASE, String.valueOf(jaxbCfg.useUppercase));
 
         return metadata;
     }

@@ -40,7 +40,7 @@ public class PropertiesLoaderTest {
     @Test
     public void loadFileNotSpecified() {
         PropertiesLoader loader = new PropertiesLoader("");
-        Throwable throwable = assertThrows(FileNotFoundException.class, loader::load);
+        Throwable throwable = assertThrows(IllegalStateException.class, loader::load);
         assertEquals(throwable.getMessage(), "Properties file is not specified");
     }
 }

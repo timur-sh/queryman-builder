@@ -31,7 +31,7 @@ public class MetadataImpl implements Metadata {
     @Override
     public boolean isEmpty(String key) {
         if (!contains(key))
-            return false;
+            return true;
 
         return StringUtils.isEmpty(getProperty(key));
     }

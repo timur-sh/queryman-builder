@@ -6,8 +6,6 @@
  */
 package org.queryman.builder;
 
-import java.io.IOException;
-
 /**
  * MetadataBuilder populate {@link Metadata} from either xml or <b>properties</b> file.
  * Actually the xml config is loaded first, if it does, the {@link Metadata}

@@ -36,12 +36,12 @@ public class ServiceRegister {
         return metadataBuilder;
     }
 
-    public ServiceRegister make() throws IOException, ClassNotFoundException {
+    public ServiceRegister make() {
         metadataBuilder.build();
         return this;
     }
 
-    public ServiceRegister make(Metadata metadata) throws IOException, ClassNotFoundException {
+    public ServiceRegister make(Metadata metadata) {
         metadataBuilder.build(metadata);
         return this;
     }

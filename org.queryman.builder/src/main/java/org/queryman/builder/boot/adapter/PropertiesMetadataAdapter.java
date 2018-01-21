@@ -14,15 +14,8 @@ import java.util.Properties;
 /**
  * @author Timur Shaidullin
  */
-public class PropertiesMetadataAdapter implements MetadataAdapter {
-    private final Properties properties;
-
-    public PropertiesMetadataAdapter(Properties properties) {
-        this.properties = properties;
-    }
-
-    @Override
-    public Metadata convert() {
+public final class PropertiesMetadataAdapter {
+    public static Metadata convert(Properties properties) {
         return new MetadataImpl().addProperties(properties);
     }
 }

@@ -33,7 +33,7 @@ public class ServiceLoaderImpl implements ServiceLoader {
                 loader.load();
                 metadata = loader.getConfiguration();
                 return true;
-            } catch (ClassNotFoundException | IOException e) {
+            } catch (IllegalStateException | ClassNotFoundException | IOException e) {
                 //todo log an error
                 e.printStackTrace();
             }

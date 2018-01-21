@@ -2,6 +2,8 @@ package org.queryman.builder.boot;
 
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.CMD;
+import org.queryman.builder.Metadata;
+import org.queryman.builder.cfg.Settings;
 import org.queryman.builder.impl.MetadataBuilderImpl;
 
 import java.io.FileNotFoundException;
@@ -11,26 +13,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceRegisterTest {
     @Test
-    void makeSuccess() throws IOException, ClassNotFoundException {
+    void makeOk() {
         ServiceRegister serviceRegister = new ServiceRegister();
         serviceRegister.make();
     }
 
     @Test
-    void initSQLManager() throws IOException, ClassNotFoundException {
-        ServiceRegister serviceRegister = new ServiceRegister();
-        serviceRegister.make();
-
-        CMD cmd = serviceRegister.getCmd();
-        assertNotNull(cmd);
-    }
-
-    @Test
-    void makeFail() {
+    void makeDefaultMetadata() {
         ServiceRegister serviceRegister = new ServiceRegister();
         serviceRegister.getMetadataBuilder().setPropertiesCfg("").setXmlCfg("");
 
-        assertThrows(FileNotFoundException.class, serviceRegister::make);
+        serviceRegister.make();
+        Metadata metadata = serviceRegister.getMetadataBuilder().getMetadata();
+        assertEquals(metadata.getProperties().size(), 1);
+        assertEquals(metadata.getProperty(Settings.USE_UPPERCASE), Settings.DEFAULTS.get(Settings.USE_UPPERCASE));
     }
 
     @Test
