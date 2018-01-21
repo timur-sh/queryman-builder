@@ -8,17 +8,24 @@ package org.queryman.builder.boot.adapter;
 
 import org.queryman.builder.Metadata;
 import org.queryman.builder.boot.jaxb.JaxbCfg;
+import org.queryman.builder.cfg.Settings;
+import org.queryman.builder.impl.MetadataImpl;
 
 /**
  * @author Timur Shaidullin
  */
 public class JaxbMetadataAdapter implements MetadataAdapter {
-    public JaxbMetadataAdapter(JaxbCfg cfg) {
+    private final JaxbCfg cfg;
 
+    public JaxbMetadataAdapter(JaxbCfg cfg) {
+        this.cfg = cfg;
     }
 
     @Override
     public Metadata convert() {
-        return null;
+        Metadata metadata = new MetadataImpl();
+        metadata.addProperty(Settings.USE_UPPERCASE, String.valueOf(cfg.useUppercase));
+
+        return metadata;
     }
 }

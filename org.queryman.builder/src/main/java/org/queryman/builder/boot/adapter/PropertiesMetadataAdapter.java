@@ -7,6 +7,7 @@
 package org.queryman.builder.boot.adapter;
 
 import org.queryman.builder.Metadata;
+import org.queryman.builder.impl.MetadataImpl;
 
 import java.util.Properties;
 
@@ -14,12 +15,14 @@ import java.util.Properties;
  * @author Timur Shaidullin
  */
 public class PropertiesMetadataAdapter implements MetadataAdapter {
-    public PropertiesMetadataAdapter(Properties properties) {
+    private final Properties properties;
 
+    public PropertiesMetadataAdapter(Properties properties) {
+        this.properties = properties;
     }
 
     @Override
     public Metadata convert() {
-        return null;
+        return new MetadataImpl().addProperties(properties);
     }
 }

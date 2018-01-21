@@ -11,8 +11,8 @@ import org.queryman.builder.Metadata;
 import java.util.Properties;
 
 /**
- * This {@code class} loads configuration from source. Then a loaded configuration
- * populates {@link Metadata}. The location of configuration
+ * This {@code class} loads configuration from source. Then the loaded configurations
+ * populate the {@link Metadata}. The location of configuration
  * file is <b>resource</b> path. Actually there are two choices to provide
  * configuration file:
  * <ol>
@@ -26,7 +26,7 @@ import java.util.Properties;
  *
  * @author Timur Shaidullin
  */
-public interface Loader {
+public interface ServiceLoader {
     /**
      * The attempt loading a configuration xml file. It if fell, next attempt
      * loading a configuration properties file occurs.

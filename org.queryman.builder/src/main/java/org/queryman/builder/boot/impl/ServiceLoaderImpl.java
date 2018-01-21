@@ -8,18 +8,18 @@ package org.queryman.builder.boot.impl;
 
 import org.queryman.builder.Metadata;
 import org.queryman.builder.boot.ConfigLoader;
-import org.queryman.builder.boot.Loader;
+import org.queryman.builder.boot.ServiceLoader;
 
 import java.io.IOException;
 
 /**
  * @author Timur Shaidullin
  */
-public class LoaderImpl implements Loader {
+public class ServiceLoaderImpl implements ServiceLoader {
     private final ConfigLoader[] loaders;
     private Metadata metadata;
 
-    public LoaderImpl(ConfigLoader... loaders) {
+    public ServiceLoaderImpl(ConfigLoader... loaders) {
         this.loaders = loaders;
     }
 

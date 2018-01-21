@@ -30,7 +30,7 @@ public class JaxbLoader extends AbstractConfigLoader {
     @Override
     public boolean load() throws IOException, ClassNotFoundException {
         if (StringUtils.isEmpty(cfgFile)) {
-            throw new FileNotFoundException("jaxb file not specified");
+            throw new FileNotFoundException("Xml file is not specified");
         }
         InputStream stream = getResource(cfgFile);
 
@@ -40,7 +40,8 @@ public class JaxbLoader extends AbstractConfigLoader {
                 .unmarshal(stream);
             return true;
         } catch (JAXBException e) {
-            e.printStackTrace();  //todo log stacktrace
+            e.printStackTrace();
+            //todo log stacktrace
             return false;
         }
     }

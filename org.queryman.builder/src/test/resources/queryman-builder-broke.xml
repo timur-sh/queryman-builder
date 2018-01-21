@@ -6,9 +6,7 @@
     To see license follow by http://queryman.org/license.txt
 -->
 
-<!--<configuration xmlns="http://www.queryman.org/xsd">-->
+<!--<configuration xmlns="http://www.queryman.org/builder/xsd">-->
 <configuration>
-    <properties>
-        <property name="queryman.builder.use_uppercase" value="1"/>
-    </properties>
+    <use-uppercase>true</use-uppercase>
 </configuration>

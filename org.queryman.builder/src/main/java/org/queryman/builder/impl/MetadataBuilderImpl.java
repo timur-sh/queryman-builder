@@ -9,12 +9,10 @@ package org.queryman.builder.impl;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
 import org.queryman.builder.boot.JaxbLoader;
-import org.queryman.builder.boot.Loader;
+import org.queryman.builder.boot.ServiceLoader;
 import org.queryman.builder.boot.PropertiesLoader;
-import org.queryman.builder.boot.impl.LoaderImpl;
+import org.queryman.builder.boot.impl.ServiceLoaderImpl;
 import org.queryman.builder.cfg.Settings;
-
-import java.io.IOException;
 
 /**
  * @author Timur Shaidullin
@@ -58,7 +56,7 @@ public class MetadataBuilderImpl implements MetadataBuilder {
      * Load configuration.
      */
     private boolean load() {
-        Loader loader = new LoaderImpl(
+        ServiceLoader loader = new ServiceLoaderImpl(
             new JaxbLoader(xmlCfgFile),
             new PropertiesLoader(propertiesCfgFile)
         );
@@ -102,11 +100,11 @@ public class MetadataBuilderImpl implements MetadataBuilder {
 
     /**
      * The both metadata objects are merged. The metadata provides by
-     * {@link Loader} takes precedence. If any key/value pair of {@code fromUser}
+     * {@link ServiceLoader} takes precedence. If any key/value pair of {@code fromUser}
      * is missed by the {@code fromCfg}, it is copied.
      *
      * @param fromCfg  {@link Metadata} object represents configuration loaded
-     *                 by {@link Loader}
+     *                 by {@link ServiceLoader}
      * @param fromUser {@link Metadata} objects represents metadata provides by user
      */
     private void merge(Metadata fromCfg, Metadata fromUser) {

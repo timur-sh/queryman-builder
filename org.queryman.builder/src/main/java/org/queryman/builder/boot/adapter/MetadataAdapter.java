@@ -9,8 +9,10 @@ package org.queryman.builder.boot.adapter;
 import org.queryman.builder.Metadata;
 
 /**
+ * Adapt any of configuration sources to {@link Metadata}.
+ *
  * @author Timur Shaidullin
  */
 public interface MetadataAdapter {
-    public Metadata convert();
+    Metadata convert();
 }

@@ -31,7 +31,7 @@ public final class PropertiesLoader extends AbstractConfigLoader {
     @Override
     public boolean load() throws IOException, ClassNotFoundException {
         if (StringUtils.isEmpty(cfgFile)) {
-            throw new FileNotFoundException("Configuration file not specified");
+            throw new FileNotFoundException("Properties file is not specified");
         }
         InputStream stream = getResource(cfgFile);
 

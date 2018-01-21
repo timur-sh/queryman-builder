@@ -31,7 +31,7 @@ public abstract class AbstractConfigLoader implements ConfigLoader {
 
         URL resource = classLoader.getResource(resourceName);
         if (resource == null) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("Configuration file is  not found");
         }
 
         return resource.openStream();

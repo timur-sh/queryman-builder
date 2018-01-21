@@ -1,58 +1,47 @@
 package org.queryman.builder.boot;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.loader.JaxbLoader;
+import org.queryman.builder.Metadata;
+import org.queryman.builder.cfg.Settings;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JaxbLoaderTest {
-    private final String QUERYMAN_CONNECTION_URL      = "queryman.connection.url";
-    private final String QUERYMAN_CONNECTION_USER     = "queryman.connection.user";
-    private final String QUERYMAN_CONNECTION_PASSWORD = "queryman.connection.password";
-
     @Test
-    public void loadQuerymanProperties() throws IOException, ClassNotFoundException {
-        JaxbLoader loader = new JaxbLoader("queryman-configuration.xml");
-
+    public void loadOk() throws IOException, ClassNotFoundException {
+        JaxbLoader loader = new JaxbLoader("queryman-builder.xml");
         loader.load();
+        Metadata metadata = loader.getConfiguration();
 
-        assertEquals(loader.getConfiguration().size(), 3);
-        Properties  properties = loader.getConfiguration();
-        Set<String> names      = properties.stringPropertyNames();
-
-        assertTrue(names.contains(QUERYMAN_CONNECTION_PASSWORD));
-        assertTrue(names.contains(QUERYMAN_CONNECTION_URL));
-        assertTrue(names.contains(QUERYMAN_CONNECTION_USER));
+        assertEquals(metadata.getProperties().size(), 1);
+        assertTrue(metadata.contains(Settings.USE_UPPERCASE));
+        assertEquals(Boolean.valueOf(metadata.getProperty(Settings.USE_UPPERCASE)), false);
     }
 
     @Test
-    public void fileNotPassed() {
-        JaxbLoader loader = new JaxbLoader();
-        assertThrows(FileNotFoundException.class, loader::load);
-    }
-
-
-    @Test
-    public void loaderException() {
-        JaxbLoader loader = new JaxbLoader("not.exists.properties");
-        assertThrows(FileNotFoundException.class, loader::load);
+    public void loadFileNotFound() {
+        JaxbLoader loader = new JaxbLoader("deleted-file.xml");
+        Throwable throwable = assertThrows(FileNotFoundException.class, loader::load);
+        assertEquals(throwable.getMessage(), "Configuration file is  not found");
     }
 
     @Test
-    public void filePassedToMethod() throws IOException, ClassNotFoundException {
-        JaxbLoader loader = new JaxbLoader();
-        assertThrows(FileNotFoundException.class, loader::load);
-        assertEquals(loader.getConfiguration(), null);
+    public void loadFileNotSpecified() {
+        JaxbLoader loader = new JaxbLoader("");
+        Throwable throwable = assertThrows(FileNotFoundException.class, loader::load);
+        assertEquals(throwable.getMessage(), "Xml file is not specified");
+    }
 
-        loader.setFile("queryman-configuration.xml");
-        loader.load();
-        assertEquals(loader.getConfiguration().size(), 3);
+    @Test
+    public void loadEmpty() throws IOException, ClassNotFoundException {
+        JaxbLoader loader = new JaxbLoader("queryman-builder-broke.xml");
+        Metadata metadata = loader.getConfiguration();
+
+        assertEquals(Boolean.valueOf(metadata.getProperty(Settings.USE_UPPERCASE)), false);
     }
 }

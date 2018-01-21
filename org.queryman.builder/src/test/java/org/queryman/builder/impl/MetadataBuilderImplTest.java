@@ -46,7 +46,7 @@ class MetadataBuilderImplTest {
     void emptyValues() throws IOException, ClassNotFoundException {
         MetadataBuilder builder = new MetadataBuilderImpl();
         builder
-           .setXmlCfg("queryman-builder-empty.xml")
+           .setXmlCfg("queryman-builder-broke.xml")
            .build();
 
         Metadata metadata = builder.getMetadata();

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Settings for this module enumerate here.
+ * Settings for this module are here.
  *
  * @author Timur Shaidullin
  */
@@ -22,12 +22,12 @@ public final class Settings {
     public static final Map<String, String> DEFAULTS = new HashMap<String, String>();
 
     static {
-        DEFAULTS.put(Settings.USE_UPPERCASE, "true");
+        DEFAULTS.put(Settings.USE_UPPERCASE, "false");
     }
 
     /**
-     * If it is {@code true}, the keywords of SQL case are to be uppercase,
-     * otherwise them are to be lowercase
+     * If value equal {@code true}, then the keywords of SQL are converted
+     * to uppercase otherwise them are converted to lowercase.
      */
     public static final String USE_UPPERCASE = "queryman.builder.use_uppercase";
 }
