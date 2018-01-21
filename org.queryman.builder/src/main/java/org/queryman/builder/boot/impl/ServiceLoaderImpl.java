@@ -20,6 +20,9 @@ public class ServiceLoaderImpl implements ServiceLoader {
     private Metadata metadata;
 
     public ServiceLoaderImpl(ConfigLoader... loaders) {
+        if (loaders.length == 0) {
+            throw new IllegalArgumentException("ConfigLoader is not passed");
+        }
         this.loaders = loaders;
     }
 
