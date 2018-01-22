@@ -1,12 +1,10 @@
 package org.queryman.builder.boot;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.CMD;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.cfg.Settings;
 import org.queryman.builder.impl.MetadataBuilderImpl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;

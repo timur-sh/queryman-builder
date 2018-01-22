@@ -4,16 +4,19 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.impl;
-
-import org.queryman.builder.Query;
+package org.queryman.builder.token;
 
 /**
  * @author Timur Shaidullin
  */
-public abstract class AbstractQuery implements Query {
+public class Keyword extends AbstractToken {
+
+    public Keyword(String name) {
+        super(name);
+    }
+
     @Override
-    public String getSQL() {
-        return null;
+    public String getName() {
+        return name;
     }
 }

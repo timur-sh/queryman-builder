@@ -6,13 +6,26 @@
  */
 package org.queryman.builder.command.impl;
 
+import org.queryman.builder.ast.AST;
 import org.queryman.builder.command.select.Select;
+import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectInitialStep;
+import org.queryman.builder.AbstractQuery;
 
 /**
  * @author Timur Shaidullin
  */
-public class SelectImpl implements SelectInitialStep, Select {
+public class SelectImpl extends AbstractQuery implements
+   SelectInitialStep,
+   SelectFinalStep,
+   Select {
+    private final String[] columns;
+
+    public SelectImpl(AST ast, String... columns) {
+        super(ast);
+        this.columns = columns;
+    }
+
     @Override
     public Select select() {
         return null;
@@ -30,11 +43,6 @@ public class SelectImpl implements SelectInitialStep, Select {
 
     @Override
     public Select selectOn() {
-        return null;
-    }
-
-    @Override
-    public String getSQL() {
         return null;
     }
 }

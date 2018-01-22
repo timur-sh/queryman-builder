@@ -10,5 +10,8 @@ package org.queryman.builder;
  * @author Timur Shaidullin
  */
 public interface Query {
-    String getSQL();
+    /**
+     * @return SQL as string
+     */
+    String sql();
 }

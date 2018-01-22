@@ -4,10 +4,15 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.types;
+package org.queryman.builder.token;
 
 /**
  * @author Timur Shaidullin
  */
-public class UnqualifiedIdentifier extends AbstractIdentifier {
+public abstract class AbstractToken implements Token {
+    protected final String name;
+
+    public AbstractToken(String name) {
+        this.name = name;
+    }
 }

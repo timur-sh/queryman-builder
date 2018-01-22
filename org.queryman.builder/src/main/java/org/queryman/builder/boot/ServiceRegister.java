@@ -6,12 +6,10 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.CMD;
+import org.queryman.builder.Command;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
 import org.queryman.builder.impl.MetadataBuilderImpl;
-
-import java.io.IOException;
 
 /**
  * @author Timur Shaidullin
@@ -46,8 +44,8 @@ public class ServiceRegister {
         return this;
     }
 
-    public CMD getCmd() {
-        return new CMD(metadataBuilder.getMetadata());
+    public Command getCommand() {
+        return new Command();
     }
 
 }

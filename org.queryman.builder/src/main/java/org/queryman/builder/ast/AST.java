@@ -4,10 +4,10 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.types;
+package org.queryman.builder.ast;
 
 /**
  * @author Timur Shaidullin
  */
-public class Literal extends AbstractToken {
+public class AST {
 }

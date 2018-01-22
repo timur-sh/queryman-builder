@@ -5,16 +5,17 @@ import org.queryman.builder.boot.ServiceRegister;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CMDImplTest {
+class CommandImplTest {
     @Test
     void initSQLManager() {
-        CMD CMD = new ServiceRegister().make().getCmd();
-        assertNotNull(CMD);
+        Command command = new ServiceRegister().make().getCommand();
+        assertNotNull(command);
     }
 
+    @Test
     void selectAllOfClauses() {
-        CMD CMD = new ServiceRegister().make().getCmd();
+        Command command = new ServiceRegister().make().getCommand();
 
-        CMD.select().getSQL();
+        String sql = command.select().sql();
     }
 }

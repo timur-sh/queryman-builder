@@ -11,6 +11,3 @@ Common gradle tasks
 * `publishToMavenLocal`
 
  
- 
- git remote add origin https://github.com/timur-sh/queryman.git
- git push -u origin master
