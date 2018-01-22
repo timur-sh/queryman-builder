@@ -7,6 +7,7 @@
 package org.queryman.builder;
 
 import org.queryman.builder.token.Identifier;
+import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.QuotedIdentifier;
 
 /**
@@ -22,5 +23,9 @@ public class Tokens {
 
     public static QuotedIdentifier quotedIdentifier(String name) {
         return new QuotedIdentifier(name);
+    }
+
+    public static Keyword keyword(String name) {
+        return new Keyword(name);
     }
 }

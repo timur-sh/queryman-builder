@@ -6,24 +6,40 @@
  */
 package org.queryman.builder.command.impl;
 
+import org.queryman.builder.AbstractQuery;
+import org.queryman.builder.AbstractSyntaxTreeSQL;
+import org.queryman.builder.Keywords;
 import org.queryman.builder.ast.AST;
 import org.queryman.builder.command.select.Select;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectInitialStep;
-import org.queryman.builder.AbstractQuery;
+import org.queryman.builder.token.Identifier;
 
 /**
  * @author Timur Shaidullin
  */
 public class SelectImpl extends AbstractQuery implements
-   SelectInitialStep,
-   SelectFinalStep,
-   Select {
-    private final String[] columns;
+    SelectInitialStep,
+    SelectFinalStep,
+    Select {
 
-    public SelectImpl(AST ast, String... columns) {
+    private final boolean distinct;
+    private final boolean on;
+    private final Identifier[] columnsSelect;
+    private final Identifier[] columnsDistinct;
+
+    public SelectImpl(
+        AST ast,
+        boolean distinct,
+        boolean on,
+        Identifier[] columnsDistinct,
+        Identifier... columnsSelect
+    ) {
         super(ast);
-        this.columns = columns;
+        this.distinct = distinct;
+        this.on = on;
+        this.columnsSelect = columnsSelect;
+        this.columnsDistinct = columnsDistinct;
     }
 
     @Override
@@ -44,5 +60,10 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public Select selectOn() {
         return null;
+    }
+
+    @Override
+    public void buildTree(AbstractSyntaxTreeSQL tree) {
+        tree.addNode(Keywords.SELECT);
     }
 }

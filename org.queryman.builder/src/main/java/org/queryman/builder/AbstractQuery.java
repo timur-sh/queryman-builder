@@ -11,7 +11,7 @@ import org.queryman.builder.ast.AST;
 /**
  * @author Timur Shaidullin
  */
-public abstract class AbstractQuery implements Query {
+public abstract class AbstractQuery implements Query, ASTBuilder {
     private final AST ast;
 
     public AbstractQuery(AST ast) {
@@ -20,6 +20,7 @@ public abstract class AbstractQuery implements Query {
 
     @Override
     public String sql() {
+
         return null;
     }
 

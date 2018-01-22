@@ -9,5 +9,6 @@ package org.queryman.builder;
 /**
  * @author Timur Shaidullin
  */
-public class Context {
+public interface ASTBuilder {
+    void buildTree(AbstractSyntaxTreeSQL tree);
 }
