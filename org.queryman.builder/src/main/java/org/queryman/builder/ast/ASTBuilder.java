@@ -4,7 +4,9 @@
  *  License: MIT License.
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder;
+package org.queryman.builder.ast;
+
+import org.queryman.builder.ast.AbstractSyntaxTreeSQL;
 
 /**
  * @author Timur Shaidullin

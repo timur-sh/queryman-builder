@@ -7,7 +7,7 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.AbstractSyntaxTreeSQL;
+import org.queryman.builder.ast.AbstractSyntaxTreeSQL;
 import org.queryman.builder.Keywords;
 import org.queryman.builder.ast.AST;
 import org.queryman.builder.command.select.Select;

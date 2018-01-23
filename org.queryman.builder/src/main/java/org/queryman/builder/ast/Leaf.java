@@ -7,14 +7,13 @@
 package org.queryman.builder.ast;
 
 /**
- * Represents node of tree.
+ * This interface must be implemented each SQL part.
  *
  * @author Timur Shaidullin
  */
-final class Node {
-    private final String name;
-
-    Node(String name) {
-        this.name = name;
-    }
+public interface Leaf {
+    /**
+     * N
+     */
+    void lookup(AbstractSyntaxTreeSQL tree);
 }

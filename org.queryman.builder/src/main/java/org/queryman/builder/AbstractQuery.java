@@ -7,6 +7,7 @@
 package org.queryman.builder;
 
 import org.queryman.builder.ast.AST;
+import org.queryman.builder.ast.ASTBuilder;
 
 /**
  * @author Timur Shaidullin
