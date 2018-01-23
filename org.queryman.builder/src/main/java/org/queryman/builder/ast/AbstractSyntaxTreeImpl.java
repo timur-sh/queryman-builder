@@ -19,37 +19,37 @@ import java.util.Map;
  * @author Timur Shaidullin
  */
 public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
-    private final Map<String, List<String>> tree  = new HashMap<>();
-    private final Deque<Node>               nodes = new ArrayDeque<>();
+    private Node root = ;
 
+    private final Deque<Node> nodes = new ArrayDeque<>();
 
     @Override
-    public AbstractSyntaxTree startNode(Node node) {
-//        nodes.add(node);
-//        tree.put(node.getName(), new ArrayList<>());
+    public AbstractSyntaxTree startNode(String node) {
+        if (root == null) {
+            root = new NodeImpl(node);
+        }
+        root.addNode(node);
+        nodes.add(node);
+
         return this;
     }
 
     @Override
     public AbstractSyntaxTree endNode(Node node) {
-        nodes.peekLast();
+        nodes.removeLast();
         return this;
     }
 
     @Override
-    public AbstractSyntaxTree addLeaf(Leaf leaf) {
-//        tree.get(nodes.getLast().getName()).add(leaf.toString());
+    public AbstractSyntaxTree addLeaf(String node) {
+        nodes.getLast().addNode(node);
+
         return this;
     }
 
     @Override
-    public AbstractSyntaxTree addLeaf(String leaf) {
-//        tree.get(nodes.getLast().getName()).add(leaf);
-        return this;
-    }
-
-    @Override
-    public AbstractSyntaxTree addChildNode(Leaf leaf) {
+    public AbstractSyntaxTree addChildNode(Node node) {
+        nodes.getLast().addNode(node);
         return this;
     }
 

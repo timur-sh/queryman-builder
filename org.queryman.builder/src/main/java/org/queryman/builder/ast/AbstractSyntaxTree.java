@@ -8,7 +8,7 @@ package org.queryman.builder.ast;
 
 /**
  * This class provides API to manipulate abstract syntax tree of SQL. Each node must
- * start with {@link #startNode(Node)} and end with {@link #endNode(Node)}
+ * start with {@link #startNode(String)} and end with {@link #endNode(String)}
  *
  * Each leaf added at the end of parent node.
  *
@@ -18,27 +18,21 @@ public interface AbstractSyntaxTree {
     /**
      * Each node must have a {@code node object}, that contains metadata.
      */
-    AbstractSyntaxTree startNode(Node node);
+    AbstractSyntaxTree startNode(String node);
 
     /**
      * Each node must closed.
      */
-    AbstractSyntaxTree endNode(Node node);
+    AbstractSyntaxTree endNode(String node);
 
     /**
-     * Add leaf into current node. Kinds of {@link Leaf} are SQL key words,
+     * Add leaf into current node. Kinds of {@link Node} are SQL key words,
      * identifiers, constants, expressions etc.
      */
-    AbstractSyntaxTree addLeaf(Leaf leaf);
-
-    /**
-     * Add leaf into current node. Kinds of {@link Leaf} are SQL key words,
-     * identifiers, constants, expressions etc.
-     */
-    AbstractSyntaxTree addLeaf(String leaf);
+    AbstractSyntaxTree addLeaf(String node);
 
     /**
      * Insert child node into the parent node.
      */
-    AbstractSyntaxTree addChildNode(Leaf leaf);
+    AbstractSyntaxTree addChildNode(Node node);
 }

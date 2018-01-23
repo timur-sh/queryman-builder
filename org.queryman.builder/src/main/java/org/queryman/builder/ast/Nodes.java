@@ -6,11 +6,13 @@
  */
 package org.queryman.builder.ast;
 
+import static org.queryman.builder.ast.NodeUtil.node;
+
 /**
  * @author Timur Shaidullin
  */
 public final class Nodes {
-//    public static final Node SELECT             = new Node("select");
-//    public static final Node SELECT_DISTINCT    = new Node("select distinct");
-//    public static final Node SELECT_DISTINCT_ON = new Node("select distinct on");
+    public static final String SELECT             = "select";
+    public static final String SELECT_DISTINCT    = "select distinct";
+    public static final String SELECT_DISTINCT_ON = "select distinct on";
 }

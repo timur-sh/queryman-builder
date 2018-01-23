@@ -29,28 +29,14 @@ public final class NodeImpl implements Node {
     }
 
     @Override
-    public Node createNode(String value) {
-        return new NodeImpl(value);
+    public Node addNode(String name) {
+        this.node.add(new NodeImpl(name));
+        return this;
     }
 
     @Override
     public String getValue() {
-        return value + " ";
+        return value;
     }
 
-    private static String build(Deque<Node> node) {
-        String val = "";
-
-        if (node.isEmpty()) {
-            return val;
-        } else {
-            val += node.pollFirst().getValue();
-            return val + build(node);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return getValue() + build(this.node);
-    }
 }
