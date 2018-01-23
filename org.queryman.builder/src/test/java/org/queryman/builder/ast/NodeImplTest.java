@@ -2,26 +2,50 @@ package org.queryman.builder.ast;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.queryman.builder.ast.NodeUtil.node;
 
 class NodeImplTest {
     @Test
-    void test() {
-        Node node = node("select");
+    void simpleTree() {
+        Node node = node("select").setSeparator(',');
 
-        node.addNode("id")
-           .addNode("name")
-           .addNode(
+        node.addLeaf("id")
+           .addLeaf("name")
+           .addChildNode(
               node("from")
-                 .addNode("table1")
-                 .addNode(
+                 .addLeaf("table1")
+                 .addChildNode(
                     node("left join on")
-                       .addNode("id=id")
+                       .addLeaf("id=id")
                  )
            )
-           .addNode(node("where").addNode("asd"));
+           .addChildNode(node("where").addLeaf("asd"));
 
-        System.out.println(node.toString());
+        System.out.println(printNode(node));
+    }
+
+    private static String printNode(Node node) {
+        StringBuilder str = new StringBuilder(node.getNodeName());
+        str.append(' ');
+//        String result = node.getNodeName();
+
+//        List<String> str = new ArrayList<>();
+
+        for (String leaf : node.getLeaves()) {
+            str.append(leaf).append(node.getSeparator());
+        }
+
+//        result += String.join(node.getSeparator() + "", str);
+
+        if (!node.isEmpty()) {
+            for (Node n : node.getNodes()) {
+                 str.append(printNode(n));
+            }
+        }
+
+        return str.toString();
     }
 }

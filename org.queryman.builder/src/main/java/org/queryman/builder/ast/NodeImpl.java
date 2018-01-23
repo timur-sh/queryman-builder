@@ -6,8 +6,8 @@
  */
 package org.queryman.builder.ast;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Standard implementation of {@link Node}.
@@ -15,28 +15,56 @@ import java.util.Deque;
  * @author Timur Shaidullin
  */
 public final class NodeImpl implements Node {
-    private final String value;
-    private Deque<Node> node = new ArrayDeque<>();
+    private final String nodeName;
+    private final List<String> leaves = new ArrayList<>();
+    private       List<Node>   nodes   = new ArrayList<>();
+
+    private char separator = ' ';
 
     NodeImpl(String value) {
-        this.value = value;
+        this.nodeName = value;
     }
 
     @Override
-    public Node addNode(Node node) {
-        this.node.add(node);
+    public Node addChildNode(Node node) {
+        nodes.add(node);
         return this;
     }
 
     @Override
-    public Node addNode(String name) {
-        this.node.add(new NodeImpl(name));
+    public Node addLeaf(String name) {
+        leaves.add(name);
         return this;
     }
 
     @Override
-    public String getValue() {
-        return value;
+    public String getNodeName() {
+        return nodeName;
     }
 
+    @Override
+    public List<String> getLeaves() {
+        return leaves;
+    }
+
+    @Override
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return nodes.size() == 0;
+    }
+
+    @Override
+    public Node setSeparator(char c) {
+        separator = c;
+        return this;
+    }
+
+    @Override
+    public char getSeparator() {
+        return separator;
+    }
 }

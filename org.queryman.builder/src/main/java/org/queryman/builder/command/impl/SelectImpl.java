@@ -63,6 +63,6 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public void buildTree(AbstractSyntaxTree tree) {
-//        tree.addNode(Keywords.SELECT);
+//        tree.addLeaf(Keywords.SELECT);
     }
 }

@@ -6,15 +6,27 @@
  */
 package org.queryman.builder.ast;
 
+import java.util.List;
+
 /**
  * Element of tree.
  *
  * @author Timur Shaidullin
  */
 interface Node {
-    Node addNode(Node node);
+    Node addChildNode(Node node);
 
-    Node addNode(String name);
+    Node addLeaf(String value);
 
-    String getValue();
+    List<String> getLeaves();
+
+    List<Node> getNodes();
+
+    boolean isEmpty();
+
+    Node setSeparator(char c);
+
+    char getSeparator();
+
+    String getNodeName();
 }

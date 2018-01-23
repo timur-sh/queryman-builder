@@ -7,11 +7,7 @@
 package org.queryman.builder.ast;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Standard implementation of {@link AbstractSyntaxTree}.
@@ -19,7 +15,7 @@ import java.util.Map;
  * @author Timur Shaidullin
  */
 public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
-    private Node root = ;
+    private Node root ;
 
     private final Deque<Node> nodes = new ArrayDeque<>();
 
@@ -28,13 +24,18 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
         if (root == null) {
             root = new NodeImpl(node);
         }
-        root.addNode(node);
-        nodes.add(node);
+        root.addLeaf(node);
+//        nodes.add(node);
 
         return this;
     }
 
     @Override
+    public AbstractSyntaxTree endNode(String node) {
+        return null;
+    }
+
+    //    @Override
     public AbstractSyntaxTree endNode(Node node) {
         nodes.removeLast();
         return this;
@@ -42,14 +43,14 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
 
     @Override
     public AbstractSyntaxTree addLeaf(String node) {
-        nodes.getLast().addNode(node);
+        nodes.getLast().addLeaf(node);
 
         return this;
     }
 
     @Override
     public AbstractSyntaxTree addChildNode(Node node) {
-        nodes.getLast().addNode(node);
+//        nodes.getLast().addLeaf(node);
         return this;
     }
 
