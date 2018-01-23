@@ -6,10 +6,12 @@
  */
 package org.queryman.builder;
 
+import org.queryman.builder.ast.ASTBuilder;
+
 /**
  * @author Timur Shaidullin
  */
-public interface Query {
+public interface Query extends ASTBuilder {
     /**
      * @return SQL as string
      */

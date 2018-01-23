@@ -13,7 +13,7 @@ package org.queryman.builder.ast;
  */
 public interface Leaf {
     /**
-     * N
+     * One node is to be assembled this method.
      */
-    void lookup(AbstractSyntaxTreeSQL tree);
+    void lookup(AbstractSyntaxTree tree);
 }

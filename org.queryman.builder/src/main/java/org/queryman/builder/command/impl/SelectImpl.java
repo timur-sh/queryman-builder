@@ -7,9 +7,8 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.ast.AbstractSyntaxTreeSQL;
+import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.Keywords;
-import org.queryman.builder.ast.AST;
 import org.queryman.builder.command.select.Select;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectInitialStep;
@@ -29,7 +28,7 @@ public class SelectImpl extends AbstractQuery implements
     private final Identifier[] columnsDistinct;
 
     public SelectImpl(
-        AST ast,
+        AbstractSyntaxTree ast,
         boolean distinct,
         boolean on,
         Identifier[] columnsDistinct,
@@ -63,7 +62,7 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public void buildTree(AbstractSyntaxTreeSQL tree) {
-        tree.addNode(Keywords.SELECT);
+    public void buildTree(AbstractSyntaxTree tree) {
+//        tree.addNode(Keywords.SELECT);
     }
 }

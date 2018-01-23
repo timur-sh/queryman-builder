@@ -16,6 +16,6 @@ class CommandImplTest {
     void selectAllOfClauses() {
         Command command = new ServiceRegister().make().getCommand();
 
-        String sql = command.select().sql();
+//        String sql = command.select().sql();
     }
 }

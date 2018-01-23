@@ -7,14 +7,14 @@
 package org.queryman.builder.ast;
 
 /**
- * Represents metadata of node.
+ * Element of tree.
  *
  * @author Timur Shaidullin
  */
-final class NodeMetadata {
-    private final String name;
+interface Node {
+    Node addNode(Node node);
 
-    NodeMetadata(String name) {
-        this.name = name;
-    }
+    Node createNode(String value);
+
+    String getValue();
 }

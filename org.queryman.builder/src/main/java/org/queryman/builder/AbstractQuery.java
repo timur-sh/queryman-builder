@@ -6,31 +6,27 @@
  */
 package org.queryman.builder;
 
-import org.queryman.builder.ast.AST;
 import org.queryman.builder.ast.ASTBuilder;
+import org.queryman.builder.ast.AbstractSyntaxTree;
 
 /**
  * @author Timur Shaidullin
  */
 public abstract class AbstractQuery implements Query, ASTBuilder {
-    private final AST ast;
+    private final AbstractSyntaxTree tree;
 
-    public AbstractQuery(AST ast) {
-        this.ast = ast;
+    public AbstractQuery(AbstractSyntaxTree tree) {
+        this.tree = tree;
     }
 
     @Override
     public String sql() {
-
-        return null;
+        buildTree(tree);
+        return tree.toString();
     }
 
     @Override
     public String toString() {
         return sql();
-    }
-
-    private void buildTree() {
-
     }
 }

@@ -6,11 +6,9 @@
  */
 package org.queryman.builder.ast;
 
-import org.queryman.builder.ast.AbstractSyntaxTreeSQL;
-
 /**
  * @author Timur Shaidullin
  */
 public interface ASTBuilder {
-    void buildTree(AbstractSyntaxTreeSQL tree);
+    void buildTree(AbstractSyntaxTree tree);
 }
