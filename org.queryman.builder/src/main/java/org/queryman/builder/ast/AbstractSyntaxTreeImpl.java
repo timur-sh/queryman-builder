@@ -6,8 +6,9 @@
  */
 package org.queryman.builder.ast;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Stack;
+
+import static org.queryman.builder.ast.NodeUtil.*;
 
 /**
  * Standard implementation of {@link AbstractSyntaxTree}.
@@ -15,47 +16,60 @@ import java.util.Deque;
  * @author Timur Shaidullin
  */
 public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
-    private Node root ;
+    private Node root;
 
-    private final Deque<Node> nodes = new ArrayDeque<>();
+    private final Stack<Node> nodes = new Stack<>();
 
     @Override
-    public AbstractSyntaxTree startNode(String node) {
-        if (root == null) {
-            root = new NodeImpl(node);
-        }
-        root.addLeaf(node);
-//        nodes.add(node);
+    public AbstractSyntaxTree startNode(String name) {
+        startNode(name, " ");
+        return this;
+    }
 
+    @Override
+    public AbstractSyntaxTree startNode(String name, String delimiter) {
+        Node node = node(name);
+        node.setDelimiter(delimiter);
+
+        //todo need concurrency tests.
+        if (root == null) {
+            root = node;
+        } else {
+            root.addChildNode(node);
+        }
+
+        nodes.push(node);
+        return this;
+    }
+
+    @Override
+    public AbstractSyntaxTree setDelimiter(String delimiter) {
+        nodes.peek().setDelimiter(delimiter);
         return this;
     }
 
     @Override
     public AbstractSyntaxTree endNode(String node) {
-        return null;
-    }
-
-    //    @Override
-    public AbstractSyntaxTree endNode(Node node) {
-        nodes.removeLast();
+        nodes.pop();
         return this;
     }
 
+
     @Override
     public AbstractSyntaxTree addLeaf(String node) {
-        nodes.getLast().addLeaf(node);
+        nodes.peek().addLeaf(node);
 
         return this;
     }
 
     @Override
     public AbstractSyntaxTree addChildNode(Node node) {
-//        nodes.getLast().addLeaf(node);
+        nodes.peek().addChildNode(node);
         return this;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return treeToString(root);
     }
 }

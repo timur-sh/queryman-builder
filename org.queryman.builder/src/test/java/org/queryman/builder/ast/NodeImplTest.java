@@ -2,15 +2,14 @@ package org.queryman.builder.ast;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.ast.NodeUtil.node;
+import static org.queryman.builder.ast.NodeUtil.treeToString;
 
 class NodeImplTest {
     @Test
     void simpleTree() {
-        Node node = node("select").setSeparator(',');
+        Node node = node(NodeMetadata.SELECT).setDelimiter(",");
 
         node.addLeaf("id")
            .addLeaf("name")
@@ -18,34 +17,22 @@ class NodeImplTest {
               node("from")
                  .addLeaf("table1")
                  .addChildNode(
-                    node("left join on")
-                       .addLeaf("id=id")
+                    node("left join")
+                       .addLeaf("table2")
+                       .addChildNode(node("on")
+                          .addLeaf("id")
+                          .addLeaf("=")
+                          .addLeaf("id")
+                          .setDelimiter("")
+                       )
                  )
            )
-           .addChildNode(node("where").addLeaf("asd"));
+           .addChildNode(node("where")
+              .addLeaf("id")
+              .addLeaf("=")
+              .addLeaf("id")
+           );
 
-        System.out.println(printNode(node));
-    }
-
-    private static String printNode(Node node) {
-        StringBuilder str = new StringBuilder(node.getNodeName());
-        str.append(' ');
-//        String result = node.getNodeName();
-
-//        List<String> str = new ArrayList<>();
-
-        for (String leaf : node.getLeaves()) {
-            str.append(leaf).append(node.getSeparator());
-        }
-
-//        result += String.join(node.getSeparator() + "", str);
-
-        if (!node.isEmpty()) {
-            for (Node n : node.getNodes()) {
-                 str.append(printNode(n));
-            }
-        }
-
-        return str.toString();
+        assertEquals("select id,name from table1 left join table2 on id=id where id = id ", treeToString(node));
     }
 }

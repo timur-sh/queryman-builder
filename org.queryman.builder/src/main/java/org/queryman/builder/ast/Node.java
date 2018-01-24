@@ -14,19 +14,44 @@ import java.util.List;
  * @author Timur Shaidullin
  */
 interface Node {
+    /**
+     * Add children node.
+     */
     Node addChildNode(Node node);
 
+    /**
+     * Add leaf.
+     */
     Node addLeaf(String value);
 
+    /**
+     * Get leaves.
+     */
     List<String> getLeaves();
 
+    /**
+     * Get children nodes.
+     */
     List<Node> getNodes();
 
+    /**
+     * Return true if {@code this} does not contain other nodes.
+     */
     boolean isEmpty();
 
-    Node setSeparator(char c);
+    /**
+     * Leaves is separated by delimiter.
+     */
+    Node setDelimiter(String c);
 
-    char getSeparator();
+    /**
+     * Leaves is separated by delimiter.
+     */
+    String getDelimiter();
 
+    /**
+     * Each node must named.
+     * Note. Maybe it will contain other node metadata.
+     */
     String getNodeName();
 }

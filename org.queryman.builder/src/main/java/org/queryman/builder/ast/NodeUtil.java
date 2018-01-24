@@ -13,4 +13,20 @@ public final class NodeUtil {
     public static final Node node(String name) {
         return new NodeImpl(name);
     }
+
+    public static String treeToString(Node node) {
+        StringBuilder str = new StringBuilder(node.getNodeName());
+
+        str.append(' ')
+           .append(String.join(node.getDelimiter(), node.getLeaves()))
+           .append(' ');
+
+        if (!node.isEmpty()) {
+            for (Node n : node.getNodes()) {
+                str.append(treeToString(n));
+            }
+        }
+
+        return str.toString();
+    }
 }

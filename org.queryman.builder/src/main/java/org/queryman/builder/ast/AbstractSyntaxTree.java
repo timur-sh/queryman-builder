@@ -18,7 +18,19 @@ public interface AbstractSyntaxTree {
     /**
      * Each node must have a {@code node object}, that contains metadata.
      */
-    AbstractSyntaxTree startNode(String node);
+    AbstractSyntaxTree startNode(String name);
+
+    /**
+     * Each node must have a {@code node object}, that contains metadata. Set
+     * custom delimiter. See {@link #setDelimiter(String)}.
+     */
+    AbstractSyntaxTree startNode(String name, String delimiter);
+
+    /**
+     * Each leaves must separated by {@code delimiter} token. If it is not
+     * specified, space {code " "} is used as default delimiter.
+     */
+    AbstractSyntaxTree setDelimiter(String delimiter);
 
     /**
      * Each node must closed.

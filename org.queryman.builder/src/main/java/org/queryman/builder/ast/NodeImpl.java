@@ -17,9 +17,13 @@ import java.util.List;
 public final class NodeImpl implements Node {
     private final String nodeName;
     private final List<String> leaves = new ArrayList<>();
-    private       List<Node>   nodes   = new ArrayList<>();
+    private       List<Node>   nodes  = new ArrayList<>();
 
-    private char separator = ' ';
+    private String separator = " ";
+
+    NodeImpl() {
+        this(null);
+    }
 
     NodeImpl(String value) {
         this.nodeName = value;
@@ -58,13 +62,13 @@ public final class NodeImpl implements Node {
     }
 
     @Override
-    public Node setSeparator(char c) {
+    public Node setDelimiter(String c) {
         separator = c;
         return this;
     }
 
     @Override
-    public char getSeparator() {
+    public String getDelimiter() {
         return separator;
     }
 }

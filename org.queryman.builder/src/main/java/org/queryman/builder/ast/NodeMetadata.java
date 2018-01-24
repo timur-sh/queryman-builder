@@ -6,13 +6,17 @@
  */
 package org.queryman.builder.ast;
 
-import static org.queryman.builder.ast.NodeUtil.node;
-
 /**
+ * This class contains node names. Usually node name is sequence of keywords.
+ *
  * @author Timur Shaidullin
  */
-public final class Nodes {
+public final class NodeMetadata {
     public static final String SELECT             = "select";
     public static final String SELECT_DISTINCT    = "select distinct";
     public static final String SELECT_DISTINCT_ON = "select distinct on";
+
+    public static final String FROM = "from";
+
+    public static final String WHERE = "where";
 }
