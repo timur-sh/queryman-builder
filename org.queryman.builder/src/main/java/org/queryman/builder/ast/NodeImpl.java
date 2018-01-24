@@ -6,7 +6,7 @@
  */
 package org.queryman.builder.ast;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,8 +16,8 @@ import java.util.List;
  */
 public final class NodeImpl implements Node {
     private final String nodeName;
-    private final List<String> leaves = new ArrayList<>();
-    private       List<Node>   nodes  = new ArrayList<>();
+    private final List<String> leaves = new LinkedList<>();
+    private       List<Node>   nodes  = new LinkedList<>();
 
     private String separator = " ";
 

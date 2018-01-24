@@ -49,9 +49,9 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     }
 
     @Override
-    public AbstractSyntaxTree endNode(String node) {
+    public AbstractSyntaxTree endNode() {
         nodes.pop();
-        return this;
+        return null;
     }
 
 

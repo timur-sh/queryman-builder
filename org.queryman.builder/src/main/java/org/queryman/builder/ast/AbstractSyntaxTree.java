@@ -35,7 +35,7 @@ public interface AbstractSyntaxTree {
     /**
      * Each node must closed.
      */
-    AbstractSyntaxTree endNode(String node);
+    AbstractSyntaxTree endNode();
 
     /**
      * Add leaf into current node. Kinds of {@link Node} are SQL key words,

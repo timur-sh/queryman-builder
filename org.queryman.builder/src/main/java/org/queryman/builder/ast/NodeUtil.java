@@ -6,6 +6,9 @@
  */
 package org.queryman.builder.ast;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author Timur Shaidullin
  */
@@ -15,18 +18,16 @@ public final class NodeUtil {
     }
 
     public static String treeToString(Node node) {
-        StringBuilder str = new StringBuilder(node.getNodeName());
-
-        str.append(' ')
-           .append(String.join(node.getDelimiter(), node.getLeaves()))
-           .append(' ');
+        List<String> list = new LinkedList<>();
+        list.add(node.getNodeName());
+        list.add(String.join(node.getDelimiter(), node.getLeaves()));
 
         if (!node.isEmpty()) {
             for (Node n : node.getNodes()) {
-                str.append(treeToString(n));
+                list.add(treeToString(n));
             }
         }
 
-        return str.toString();
+        return String.join(" ", list);
     }
 }

@@ -13,6 +13,7 @@ class NodeImplTest {
 
         node.addLeaf("id")
            .addLeaf("name")
+           .setDelimiter(", ")
            .addChildNode(
               node("from")
                  .addLeaf("table1")
@@ -33,6 +34,6 @@ class NodeImplTest {
               .addLeaf("id")
            );
 
-        assertEquals("select id,name from table1 left join table2 on id=id where id = id ", treeToString(node));
+        assertEquals("select id, name from table1 left join table2 on id=id where id = id", treeToString(node));
     }
 }
