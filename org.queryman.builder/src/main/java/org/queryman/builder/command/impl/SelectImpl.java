@@ -8,37 +8,28 @@ package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.Keywords;
 import org.queryman.builder.command.select.Select;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectInitialStep;
-import org.queryman.builder.token.Identifier;
+
+import static org.queryman.builder.ast.NodeMetadata.SELECT;
 
 /**
  * @author Timur Shaidullin
  */
 public class SelectImpl extends AbstractQuery implements
-    SelectInitialStep,
-    SelectFinalStep,
-    Select {
+   SelectInitialStep,
+   SelectFinalStep,
+   Select {
 
-    private final boolean distinct;
-    private final boolean on;
-    private final Identifier[] columnsSelect;
-    private final Identifier[] columnsDistinct;
+    private final String[] columnsSelect;
 
     public SelectImpl(
-        AbstractSyntaxTree ast,
-        boolean distinct,
-        boolean on,
-        Identifier[] columnsDistinct,
-        Identifier... columnsSelect
+       AbstractSyntaxTree ast,
+       String... columnsSelect
     ) {
         super(ast);
-        this.distinct = distinct;
-        this.on = on;
         this.columnsSelect = columnsSelect;
-        this.columnsDistinct = columnsDistinct;
     }
 
     @Override
@@ -62,7 +53,14 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public void buildTree(AbstractSyntaxTree tree) {
-//        tree.addLeaf(Keywords.SELECT);
+    public void assemble(AbstractSyntaxTree tree) {
+        tree.startNode(SELECT, ", ");
+
+        for (String column : columnsSelect) {
+            tree.addLeaf(column);
+        }
+
+        tree.endNode();
+
     }
 }

@@ -8,7 +8,7 @@ package org.queryman.builder.ast;
 
 /**
  * This class provides API to manipulate abstract syntax tree of SQL. Each node must
- * start with {@link #startNode(String)} and end with {@link #endNode(String)}
+ * start with {@link #startNode(String)} and end with {@link #endNode()}
  *
  * Each leaf added at the end of parent node.
  *

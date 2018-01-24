@@ -21,7 +21,7 @@ public abstract class AbstractQuery implements Query, ASTBuilder {
 
     @Override
     public String sql() {
-        buildTree(tree);
+        assemble(tree);
         return tree.toString();
     }
 

@@ -10,5 +10,5 @@ package org.queryman.builder.ast;
  * @author Timur Shaidullin
  */
 public interface ASTBuilder {
-    void buildTree(AbstractSyntaxTree tree);
+    void assemble(AbstractSyntaxTree tree);
 }

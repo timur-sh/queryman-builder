@@ -9,6 +9,8 @@ package org.queryman.builder.boot;
 import org.queryman.builder.Command;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
+import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.impl.MetadataBuilderImpl;
 
 /**
@@ -44,8 +46,12 @@ public class ServiceRegister {
         return this;
     }
 
+    private final AbstractSyntaxTree ast() {
+        return new AbstractSyntaxTreeImpl();
+    }
+
     public Command getCommand() {
-        return new Command();
+        return new Command(ast());
     }
 
 }

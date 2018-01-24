@@ -6,6 +6,7 @@
  */
 package org.queryman.builder;
 
+import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.token.Identifier;
@@ -16,16 +17,18 @@ import org.queryman.builder.token.Identifier;
  * @author Timur Shaidullin
  */
 public class Command {
-    public Command() {
+    private final AbstractSyntaxTree ast;
 
+    public Command(AbstractSyntaxTree ast) {
+
+        this.ast = ast;
     }
 
     //---
     // SELECT API
     //---
     public SelectFinalStep select(Identifier... columns) {
-//        return new SelectImpl();
-        return null;
+        return new SelectImpl(ast);
     }
 
 
