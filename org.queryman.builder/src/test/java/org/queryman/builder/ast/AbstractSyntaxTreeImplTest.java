@@ -18,6 +18,8 @@ public class AbstractSyntaxTreeImplTest {
         tree.addLeaf("name");
         tree.addLeaf("phone");
 
+        tree.addLeaves("date", "email");
+
         tree.startNode(FROM);
         tree.addLeaf("table1").addLeaf("table2").setDelimiter(" ");
         tree.endNode();
@@ -30,7 +32,7 @@ public class AbstractSyntaxTreeImplTest {
 
         tree.endNode();
 
-        assertEquals("select id, name, phone from table1 table2 where id=id", tree.toString());
+        assertEquals("select id, name, phone, date, email from table1 table2 where id=id", tree.toString());
 
         Field field = tree.getClass().getDeclaredField("nodes");
         field.setAccessible(true);

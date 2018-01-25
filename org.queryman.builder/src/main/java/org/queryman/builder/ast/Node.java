@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Timur Shaidullin
  */
-interface Node {
+interface Node extends Cloneable {
     /**
      * Add children node.
      */
@@ -54,4 +54,9 @@ interface Node {
      * Note. Maybe it will contain other node metadata.
      */
     String getNodeName();
+
+    /**
+     * Delete all nodes and leaves.
+     */
+    void clear();
 }

@@ -1,4 +1,8 @@
-Queryman. Java tools for working with queries of PostgreSQL database.
+For now it is in development stage.
+===
+
+Queryman Builder provides a fluent Java API that allows to write SQL in object oriented way.
+
 
 Documentation
 === 

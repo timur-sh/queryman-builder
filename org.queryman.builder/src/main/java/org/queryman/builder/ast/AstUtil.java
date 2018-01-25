@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Timur Shaidullin
  */
-public final class NodeUtil {
+public final class AstUtil {
     public static final Node node(String name) {
         return new NodeImpl(name);
     }

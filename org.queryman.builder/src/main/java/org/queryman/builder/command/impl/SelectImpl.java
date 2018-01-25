@@ -8,59 +8,63 @@ package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.command.select.Select;
+import org.queryman.builder.Select;
 import org.queryman.builder.command.select.SelectFinalStep;
-import org.queryman.builder.command.select.SelectInitialStep;
+import org.queryman.builder.command.select.SelectFromStep;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.queryman.builder.ast.NodeMetadata.FROM;
 import static org.queryman.builder.ast.NodeMetadata.SELECT;
 
 /**
  * @author Timur Shaidullin
  */
 public class SelectImpl extends AbstractQuery implements
-   SelectInitialStep,
+   SelectFromStep,
    SelectFinalStep,
    Select {
 
-    private final String[] columnsSelect;
+    private final String[] columnsSelected;
+    private final List<String> from = new LinkedList<>();
+
 
     public SelectImpl(
        AbstractSyntaxTree ast,
-       String... columnsSelect
+       String... columnsSelected
     ) {
         super(ast);
-        this.columnsSelect = columnsSelect;
-    }
-
-    @Override
-    public Select select() {
-        return null;
-    }
-
-    @Override
-    public Select selectDistinct() {
-        return null;
-    }
-
-    @Override
-    public Select selectAll() {
-        return null;
-    }
-
-    @Override
-    public Select selectOn() {
-        return null;
+        this.columnsSelected = columnsSelected;
     }
 
     @Override
     public void assemble(AbstractSyntaxTree tree) {
-        tree.startNode(SELECT, ", ");
+        tree.startNode(SELECT, ", ")
+           .addLeaves(columnsSelected);
 
-        for (String column : columnsSelect) {
-            tree.addLeaf(column);
+        if (!from.isEmpty()) {
+            tree.startNode(FROM, ", ")
+               .addLeaves(from)
+               .endNode();
         }
 
         tree.endNode();
+    }
 
+    //--
+    // FROM API
+    //--
+    @Override
+    public SelectImpl from(String table) {
+        from.add(table);
+        return this;
+    }
+
+    @Override
+    public SelectImpl from(String... tables) {
+        from.clear();
+        from.addAll(List.of(tables));
+        return this;
     }
 }

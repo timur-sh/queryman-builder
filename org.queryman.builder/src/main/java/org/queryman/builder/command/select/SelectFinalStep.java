@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.Select;
+
 /**
  *
  *

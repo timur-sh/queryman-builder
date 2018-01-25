@@ -4,13 +4,12 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.select;
-
-import org.queryman.builder.Query;
+package org.queryman.builder;
 
 /**
- * The {@code SELECT} statement. This {@code class} must be used as a start
- * point of select's query.
+ *
+ * This is marker interface represents {@code SELECT} clause of SQL. All of
+ * other interfaces of select must be based on this interface.
  *
  * @author Timur Shaidullin
  */

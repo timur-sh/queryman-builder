@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.ast;
 
+import java.util.List;
+
 /**
  * This class provides API to manipulate abstract syntax tree of SQL. Each node must
  * start with {@link #startNode(String)} and end with {@link #endNode()}
@@ -38,13 +40,30 @@ public interface AbstractSyntaxTree {
     AbstractSyntaxTree endNode();
 
     /**
-     * Add leaf into current node. Kinds of {@link Node} are SQL key words,
+     * Add {@code leaf} into current node. Kinds of leaf are SQL key words,
      * identifiers, constants, expressions etc.
      */
-    AbstractSyntaxTree addLeaf(String node);
+    AbstractSyntaxTree addLeaf(String leaf);
+
+    /**
+     * Add {@code leaves} into current node. Kinds of leaves are SQL key words,
+     * identifiers, constants, expressions etc.
+     */
+    AbstractSyntaxTree addLeaves(String... leaves);
+
+    /**
+     * Add {@code leaves} into current node. Kinds of leaves are SQL key words,
+     * identifiers, constants, expressions etc.
+     */
+    AbstractSyntaxTree addLeaves(List<String> leaves);
 
     /**
      * Insert child node into the parent node.
      */
     AbstractSyntaxTree addChildNode(Node node);
+
+    /**
+     * Assembled tree is destroyed then new one is initialized.
+     */
+    AbstractSyntaxTree reinitialize();
 }

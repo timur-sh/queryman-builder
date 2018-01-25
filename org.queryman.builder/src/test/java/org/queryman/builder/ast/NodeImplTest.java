@@ -3,8 +3,8 @@ package org.queryman.builder.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.ast.NodeUtil.node;
-import static org.queryman.builder.ast.NodeUtil.treeToString;
+import static org.queryman.builder.ast.AstUtil.node;
+import static org.queryman.builder.ast.AstUtil.treeToString;
 
 class NodeImplTest {
     @Test

@@ -47,6 +47,12 @@ public final class NodeImpl implements Node {
     }
 
     @Override
+    public void clear() {
+        nodes.clear();
+        leaves.clear();
+    }
+
+    @Override
     public List<String> getLeaves() {
         return leaves;
     }

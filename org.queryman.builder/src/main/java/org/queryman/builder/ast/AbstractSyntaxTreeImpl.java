@@ -6,9 +6,12 @@
  */
 package org.queryman.builder.ast;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
-import static org.queryman.builder.ast.NodeUtil.*;
+import static org.queryman.builder.ast.AstUtil.node;
+import static org.queryman.builder.ast.AstUtil.treeToString;
 
 /**
  * Standard implementation of {@link AbstractSyntaxTree}.
@@ -16,7 +19,7 @@ import static org.queryman.builder.ast.NodeUtil.*;
  * @author Timur Shaidullin
  */
 public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
-    private Node root;
+    private Node root = new NodeImpl();
 
     private final Stack<Node> nodes = new Stack<>();
 
@@ -31,12 +34,7 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
         Node node = node(name);
         node.setDelimiter(delimiter);
 
-        //todo need concurrency tests.
-        if (root == null) {
-            root = node;
-        } else {
-            root.addChildNode(node);
-        }
+        firstNode().addChildNode(node);
 
         nodes.push(node);
         return this;
@@ -51,13 +49,28 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     @Override
     public AbstractSyntaxTree endNode() {
         nodes.pop();
-        return null;
+
+        return this;
     }
 
 
     @Override
-    public AbstractSyntaxTree addLeaf(String node) {
-        nodes.peek().addLeaf(node);
+    public AbstractSyntaxTree addLeaf(String leaf) {
+        nodes.peek().addLeaf(leaf);
+
+        return this;
+    }
+
+    @Override
+    public AbstractSyntaxTree addLeaves(String... leaves) {
+        nodes.peek().getLeaves().addAll(Arrays.asList(leaves));
+
+        return this;
+    }
+
+    @Override
+    public AbstractSyntaxTree addLeaves(List<String> leaves) {
+        nodes.peek().getLeaves().addAll(leaves);
 
         return this;
     }
@@ -69,7 +82,22 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     }
 
     @Override
+    public AbstractSyntaxTree reinitialize() {
+        root.clear();
+        nodes.clear();
+        return this;
+    }
+
+    @Override
     public String toString() {
-        return treeToString(root);
+        return treeToString(firstNode());
+    }
+
+    private Node firstNode() {
+        if (root.isEmpty()) {
+            return root;
+        }
+
+        return root.getNodes().get(0);
     }
 }

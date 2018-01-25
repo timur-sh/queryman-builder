@@ -19,9 +19,14 @@ public abstract class AbstractQuery implements Query, ASTBuilder {
         this.tree = tree;
     }
 
+    private void assembleTree() {
+        tree.reinitialize();
+        assemble(tree);
+    }
+
     @Override
     public String sql() {
-        assemble(tree);
+        assembleTree();
         return tree.toString();
     }
 

@@ -7,6 +7,7 @@
 package org.queryman.builder.command.select;
 
 import org.queryman.builder.Query;
+import org.queryman.builder.Select;
 
 /**
  * The {@code SELECT} statement. This {@code class} must be used as a start
@@ -15,11 +16,9 @@ import org.queryman.builder.Query;
  * @author Timur Shaidullin
  */
 public interface SelectInitialStep extends Query {
-    Select select();
+    SelectFromStep select();
 
     Select selectDistinct();
 
     Select selectAll();
-
-    Select selectOn();
 }
