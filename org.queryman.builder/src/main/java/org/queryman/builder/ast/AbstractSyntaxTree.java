@@ -66,4 +66,10 @@ public interface AbstractSyntaxTree {
      * Assembled tree is destroyed then new one is initialized.
      */
     AbstractSyntaxTree reinitialize();
+
+    /**
+     * It look into {@code node} object, then the method {@link ASTBuilder#assemble(AbstractSyntaxTree)}
+     * is called.
+     */
+    AbstractSyntaxTree peek(ASTBuilder node);
 }

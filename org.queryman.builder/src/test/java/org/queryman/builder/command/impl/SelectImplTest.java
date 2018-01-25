@@ -32,5 +32,16 @@ class SelectImplTest {
         assertEquals("select id, name from table1, table2", select.from("table1", "table2").sql());
     }
 
+    @Test
+    void selectFromWhere() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .andWhere("id", "=", "1")
+           .sql();
+
+        assertEquals("select id, name from books where id = 1 AND id = 1", sql);
+    }
+
 
 }

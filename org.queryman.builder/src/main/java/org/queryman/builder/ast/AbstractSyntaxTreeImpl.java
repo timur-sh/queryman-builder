@@ -89,6 +89,12 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     }
 
     @Override
+    public AbstractSyntaxTree peek(ASTBuilder node) {
+        node.assemble(this);
+        return this;
+    }
+
+    @Override
     public String toString() {
         return treeToString(firstNode());
     }

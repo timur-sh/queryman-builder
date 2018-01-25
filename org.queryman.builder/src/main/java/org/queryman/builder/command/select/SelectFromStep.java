@@ -21,10 +21,10 @@ public interface SelectFromStep extends Query, Select {
     /**
      * Specify table name that be used to retrieve rows
      */
-    SelectFinalStep from(String table);
+    SelectFromManySteps from(String table);
 
     /**
      * Specify several tables. They are cross joined together.
      */
-    SelectFinalStep from(String... table);
+    SelectFromManySteps from(String... table);
 }
