@@ -9,7 +9,8 @@ package org.queryman.builder.command.impl;
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.Select;
 import org.queryman.builder.Statements;
-import org.queryman.builder.Where;
+import org.queryman.builder.command.where.AndOrWhere;
+import org.queryman.builder.command.where.Where;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
@@ -48,7 +49,7 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public void assemble(AbstractSyntaxTree tree) {
+    public final void assemble(AbstractSyntaxTree tree) {
         tree.startNode(SELECT, ", ")
            .addLeaves(columnsSelected);
 
@@ -82,7 +83,7 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectImpl from(String... tables) {
+    public final SelectImpl from(String... tables) {
         from.clear();
         from.addAll(List.of(tables));
         return this;
@@ -93,27 +94,28 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectImpl where(String left, String operator, String right) {
+    public final SelectImpl where(String left, String operator, String right) {
         wheres.clear();
         wheres.add(Statements.where(left, operator, right));
         return this;
     }
 
     @Override
-    public SelectWhereStep where(Where... wheres) {
+    public SelectWhereStep where(Where where, AndOrWhere... wheres) {
         this.wheres.clear();
+        this.wheres.add(where);
         this.wheres.addAll(Arrays.asList(wheres));
         return this;
     }
 
     @Override
-    public SelectImpl andWhere(String left, String operator, String right) {
+    public final SelectImpl andWhere(String left, String operator, String right) {
         wheres.add(Statements.andWhere(left, operator, right));
         return this;
     }
 
     @Override
-    public SelectImpl orWhere(String left, String operator, String right) {
+    public final SelectImpl orWhere(String left, String operator, String right) {
         wheres.add(Statements.orWhere(left, operator, right));
         return this;
     }

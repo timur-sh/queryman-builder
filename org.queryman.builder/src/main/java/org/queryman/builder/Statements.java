@@ -7,6 +7,9 @@
 package org.queryman.builder;
 
 import org.queryman.builder.command.impl.WhereImpl;
+import org.queryman.builder.command.where.AndWhere;
+import org.queryman.builder.command.where.OrWhere;
+import org.queryman.builder.command.where.Where;
 
 import static org.queryman.builder.command.impl.WhereImpl.AND;
 import static org.queryman.builder.command.impl.WhereImpl.OR;
@@ -19,11 +22,11 @@ public class Statements {
         return new WhereImpl(leftValue, operator, rightValue);
     }
 
-    public static Where andWhere(String leftValue, String operator, String rightValue) {
+    public static AndWhere andWhere(String leftValue, String operator, String rightValue) {
         return new WhereImpl(AND, leftValue, operator, rightValue);
     }
 
-    public static Where orWhere(String leftValue, String operator, String rightValue) {
+    public static OrWhere orWhere(String leftValue, String operator, String rightValue) {
         return new WhereImpl(OR, leftValue, operator, rightValue);
     }
 }

@@ -6,14 +6,20 @@
  */
 package org.queryman.builder.command.impl;
 
-import org.queryman.builder.Where;
+import org.queryman.builder.command.where.AndWhere;
+import org.queryman.builder.command.where.OrWhere;
+import org.queryman.builder.command.where.Where;
 
 /**
  * It represents {@code WHERE} statement.
  *
  * @author Timur Shaidullin
  */
-public final class WhereImpl implements Where {
+public final class WhereImpl implements
+   Where,
+   AndWhere,
+   OrWhere {
+
     public static final String AND = "AND";
     public static final String OR  = "OR";
 

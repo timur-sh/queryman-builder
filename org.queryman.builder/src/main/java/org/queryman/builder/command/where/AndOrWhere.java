@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder;
+package org.queryman.builder.command.where;
 
 /**
  *
@@ -12,9 +12,7 @@ package org.queryman.builder;
  *
  * @author Timur Shaidullin
  */
-public interface Where {
-
-
+public interface AndOrWhere {
     public String getToken();
 
     public String getLeftValue();
