@@ -9,5 +9,6 @@ package org.queryman.builder.command.select;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectFromManySteps extends SelectWhereFirstStep {
+public interface SelectFromManySteps extends
+    SelectWhereFirstStep {
 }

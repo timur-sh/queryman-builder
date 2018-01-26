@@ -19,7 +19,7 @@ import static org.queryman.builder.ast.AstUtil.treeToString;
  * @author Timur Shaidullin
  */
 public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
-    private Node root = new NodeImpl();
+    private final Node root = new NodeImpl();
 
     private final Stack<Node> nodes = new Stack<>();
 

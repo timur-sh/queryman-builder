@@ -19,12 +19,8 @@ import org.queryman.builder.Select;
  */
 public interface SelectFromStep extends Query, Select {
     /**
-     * Specify table name that be used to retrieve rows
+     * Specify table name that be used to retrieve rows. If several names are
+     * provided, they will be cross-joined together.
      */
-    SelectFromManySteps from(String table);
-
-    /**
-     * Specify several tables. They are cross joined together.
-     */
-    SelectFromManySteps from(String... table);
+    SelectFromManySteps from(String... tables);
 }

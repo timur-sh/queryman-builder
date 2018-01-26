@@ -17,7 +17,7 @@ import java.util.List;
 public final class NodeImpl implements Node {
     private final String nodeName;
     private final List<String> leaves = new LinkedList<>();
-    private       List<Node>   nodes  = new LinkedList<>();
+    private final List<Node>   nodes  = new LinkedList<>();
 
     private String separator = " ";
 
