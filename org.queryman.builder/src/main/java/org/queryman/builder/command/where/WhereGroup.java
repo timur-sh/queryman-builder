@@ -6,12 +6,12 @@
  */
 package org.queryman.builder.command.where;
 
-import org.queryman.builder.ast.ASTBuilder;
+import org.queryman.builder.ast.AstVisitor;
 
 /**
  * @author Timur Shaidullin
  */
-public interface WhereGroup extends ASTBuilder {
+public interface WhereGroup extends AstVisitor {
     WhereGroup andWhere(String leftValue, String operator, String rightValue);
 
     WhereGroup orWhere(String leftValue, String operator, String rightValue);

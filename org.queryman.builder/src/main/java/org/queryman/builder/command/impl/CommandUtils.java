@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.command.impl;
 
+import org.queryman.builder.ast.NodeMetadata;
+
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 
@@ -13,8 +15,8 @@ import static org.queryman.builder.ast.NodesMetadata.OR;
  * @author Timur Shaidullin
  */
 final class CommandUtils {
-    static Where stubWhere() {
-        return new Where();
+    static Where stubWhere(NodeMetadata metadata) {
+        return new Where(metadata);
     }
 
     static Where where(String left, String operator, String right) {

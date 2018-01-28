@@ -6,13 +6,13 @@
  */
 package org.queryman.builder;
 
-import org.queryman.builder.ast.ASTBuilder;
+import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 
 /**
  * @author Timur Shaidullin
  */
-public abstract class AbstractQuery implements Query, ASTBuilder {
+public abstract class AbstractQuery implements Query, AstVisitor {
     private final AbstractSyntaxTree tree;
 
     public AbstractQuery(AbstractSyntaxTree tree) {

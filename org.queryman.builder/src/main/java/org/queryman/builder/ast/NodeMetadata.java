@@ -7,6 +7,8 @@
 package org.queryman.builder.ast;
 
 /**
+ * NodeMetadata contains configuration of particular node.
+ *
  * @author Timur Shaidullin
  */
 public class NodeMetadata {

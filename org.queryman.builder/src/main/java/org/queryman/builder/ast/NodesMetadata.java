@@ -7,7 +7,7 @@
 package org.queryman.builder.ast;
 
 /**
- * This class contains node names. Usually node name is sequence of keywords.
+ * List of all configured {@link Node Metadata} objects.
  *
  * @author Timur Shaidullin
  */

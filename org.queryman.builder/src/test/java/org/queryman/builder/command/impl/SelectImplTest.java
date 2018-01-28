@@ -61,4 +61,19 @@ class SelectImplTest extends BaseTest {
         //todo this is not valid sql query: ... = timur@shaidullin.net
         assertEquals("select id, name from user where (name = timur and phone is null or email = timur@shaidullin.net) or id = 1", sql);
     }
+
+    @Test
+    void selectFromWhereAndWhereGroup() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("user")
+           .where("id", "=", "1")
+           .andWhere(where("name", "=", "timur")
+              .andWhere("phone", "is", "null")
+              .orWhere("email", "=", "timur@shaidullin.net")
+           )
+           .sql();
+
+        //todo this is not valid sql query: ... = timur@shaidullin.net
+        assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = timur@shaidullin.net)", sql);
+    }
 }

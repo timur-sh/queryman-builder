@@ -10,9 +10,30 @@ import java.util.List;
 
 /**
  * This class provides API to manipulate abstract syntax tree of SQL. Each node must
- * start with {@link #startNode(NodeMetadata)} and end with {@link #endNode()}
+ * start with {@link #startNode(NodeMetadata)} and end with {@link #endNode()}.
+ * Each node may or may not {@code leaves}.
+ * <p>
+ * Example:
  *
- * Each leaf added at the end of parent node.
+ * AbstractSyntaxTree tree = new AbstractSyntaxTree();
+ * tree.startNode(SELECT, ", ");
+ *    .addLeaf("id");
+ *    .addLeaf("name");
+ *    .addLeaf("phone");
+ * tree.addLeaves("date", "email");
+ *
+ * tree.startNode(FROM);
+ * tree.addLeaf("table1").addLeaf("table2").setDelimiter(" ");
+ * tree.endNode();
+ *
+ * tree.startNode(WHERE, "")
+ *    .addLeaf("id")
+ *    .addLeaf("=")
+ *    .addLeaf("id")
+ *    .endNode();
+ *
+ * tree.endNode();
+ * </p>
  *
  * @author Timur Shaidullin
  */
@@ -68,8 +89,8 @@ public interface AbstractSyntaxTree {
     AbstractSyntaxTree reinitialize();
 
     /**
-     * It look into {@code node} object, then the method {@link ASTBuilder#assemble(AbstractSyntaxTree)}
+     * It look into {@code node} object, then the method {@link AstVisitor#assemble(AbstractSyntaxTree)}
      * is called.
      */
-    AbstractSyntaxTree peek(ASTBuilder node);
+    AbstractSyntaxTree peek(AstVisitor node);
 }

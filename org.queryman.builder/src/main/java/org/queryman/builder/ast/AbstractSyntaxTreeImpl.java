@@ -15,7 +15,7 @@ import static org.queryman.builder.ast.NodeUtil.node;
 /**
  * Standard implementation of {@link AbstractSyntaxTree}.
  *
- * If {@link #NODES} stack is empty, a new node is pushed to top of it. Otherwise
+ * If {@link #NODES} stack is empty, a new node is pushed at the top of it. Otherwise
  * the new node is added as a child of latest node of {@link #NODES} stack,
  * then the new node is pushed to this stack.
  *
@@ -98,7 +98,7 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     }
 
     @Override
-    public AbstractSyntaxTree peek(ASTBuilder node) {
+    public AbstractSyntaxTree peek(AstVisitor node) {
         node.assemble(this);
         return this;
     }

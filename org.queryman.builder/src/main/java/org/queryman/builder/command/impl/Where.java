@@ -18,8 +18,8 @@ final class Where {
     String rightValue;
     String operator;
 
-    Where() {
-
+    Where(NodeMetadata metadata) {
+        token = metadata;
     }
 
     Where(String leftValue, String operator, String rightValue) {

@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.queryman.builder.ast.NodesMetadata.AND;
+import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 
 /**
@@ -63,7 +65,14 @@ public class SelectImpl extends AbstractQuery implements
 
             for (Where where : WHERE) {
                 if (WHERE_GROUP.containsKey(where)) {
-                    tree.peek(WHERE_GROUP.get(where));
+                    if (where.getToken() == null) {
+                        tree.peek(WHERE_GROUP.get(where));
+
+                    } else {
+                        tree.startNode(where.getToken())
+                           .peek(WHERE_GROUP.get(where))
+                           .endNode();
+                    }
 
                 } else if (where.getToken() == null) {
                     tree.addLeaves(where.getLeftValue(), where.getOperator(), where.getRightValue());
@@ -106,7 +115,7 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public SelectWhereStep where(WhereGroup whereGroup) {
         WHERE.clear();
-        Where where = CommandUtils.stubWhere();
+        Where where = CommandUtils.stubWhere(null);
         this.WHERE.add(where);
         this.WHERE_GROUP.put(where, whereGroup);
         return this;
@@ -121,6 +130,22 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl orWhere(String left, String operator, String right) {
         WHERE.add(CommandUtils.orWhere(left, operator, right));
+        return this;
+    }
+
+    @Override
+    public SelectWhereStep andWhere(WhereGroup whereGroup) {
+        Where where = CommandUtils.stubWhere(AND);
+        this.WHERE.add(where);
+        this.WHERE_GROUP.put(where, whereGroup);
+        return this;
+    }
+
+    @Override
+    public SelectWhereStep orWhere(WhereGroup whereGroup) {
+        Where where = CommandUtils.stubWhere(OR);
+        this.WHERE.add(where);
+        this.WHERE_GROUP.put(where, whereGroup);
         return this;
     }
 }
