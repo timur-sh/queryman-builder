@@ -11,7 +11,7 @@ import org.queryman.builder.MetadataBuilder;
 import org.queryman.builder.boot.JaxbLoader;
 import org.queryman.builder.boot.PropertiesLoader;
 import org.queryman.builder.boot.ServiceLoader;
-import org.queryman.builder.boot.impl.ServiceLoaderImpl;
+import org.queryman.builder.boot.ServiceLoaderImpl;
 import org.queryman.builder.cfg.Settings;
 
 /**

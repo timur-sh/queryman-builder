@@ -15,17 +15,13 @@ import java.util.List;
  * @author Timur Shaidullin
  */
 public final class NodeImpl implements Node {
-    private final String nodeName;
+    private final NodeMetadata nodeName;
     private final List<String> leaves = new LinkedList<>();
     private final List<Node>   nodes  = new LinkedList<>();
 
     private String separator = " ";
 
-    NodeImpl() {
-        this(null);
-    }
-
-    NodeImpl(String value) {
+    NodeImpl(NodeMetadata value) {
         this.nodeName = value;
     }
 
@@ -42,7 +38,7 @@ public final class NodeImpl implements Node {
     }
 
     @Override
-    public String getNodeName() {
+    public NodeMetadata getNodeMetadata() {
         return nodeName;
     }
 

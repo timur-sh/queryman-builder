@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Timur Shaidullin
  */
-interface Node extends Cloneable {
+public interface Node {
     /**
      * Add children node.
      */
@@ -50,10 +50,9 @@ interface Node extends Cloneable {
     String getDelimiter();
 
     /**
-     * Each node must named.
-     * Note. Maybe it will contain other node metadata.
+     * Get node metadata.
      */
-    String getNodeName();
+    NodeMetadata getNodeMetadata();
 
     /**
      * Delete all nodes and leaves.

@@ -1,22 +1,37 @@
 /*
  *  Queryman. Java tools for working with queries of PostgreSQL database.
  *
- *  License: MIT License
+ *  License: MIT License.
  *  To see license follow by http://queryman.org/license.txt
  */
 package org.queryman.builder.ast;
 
 /**
- * This class contains node names. Usually node name is sequence of keywords.
- *
  * @author Timur Shaidullin
  */
-public final class NodeMetadata {
-    public static final String SELECT             = "select";
-    public static final String SELECT_DISTINCT    = "select distinct";
-    public static final String SELECT_DISTINCT_ON = "select distinct on";
+public class NodeMetadata {
+    private final String name;
+    private boolean parentheses;
 
-    public static final String FROM = "from";
+    public NodeMetadata(String name) {
+        this.name = name;
+    }
 
-    public static final String WHERE = "where";
+    public boolean hasParentheses() {
+        return parentheses;
+    }
+
+    public NodeMetadata setParentheses(boolean parentheses) {
+        this.parentheses = parentheses;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

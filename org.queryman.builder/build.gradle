@@ -3,4 +3,7 @@ dependencies {
     compile(libraries['jaxbImpl'])
     compile(libraries['jaxbCore'])
     compile(libraries['activation'])
+
+    testCompile(libraries['flyway'])
+    testCompile(libraries['postgres'])
 }

@@ -3,13 +3,12 @@ package org.queryman.builder.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.ast.AstUtil.node;
-import static org.queryman.builder.ast.AstUtil.treeToString;
+import static org.queryman.builder.ast.NodeUtil.node;
 
 class NodeImplTest {
     @Test
     void simpleTree() {
-        Node node = node(NodeMetadata.SELECT).setDelimiter(",");
+        Node node = node(NodesMetadata.SELECT).setDelimiter(",");
 
         node.addLeaf("id")
            .addLeaf("name")
@@ -34,6 +33,7 @@ class NodeImplTest {
               .addLeaf("id")
            );
 
-        assertEquals("select id, name from table1 left join table2 on id=id where id = id", treeToString(node));
+        TreeFormatter formatter = new TreeFormatter();
+        assertEquals("select id, name from table1 left join table2 on id=id where id = id", formatter.treeToString(node));
     }
 }

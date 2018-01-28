@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.boot.JaxbLoader;
 import org.queryman.builder.boot.ServiceLoader;
+import org.queryman.builder.boot.ServiceLoaderImpl;
 
 import java.io.IOException;
 

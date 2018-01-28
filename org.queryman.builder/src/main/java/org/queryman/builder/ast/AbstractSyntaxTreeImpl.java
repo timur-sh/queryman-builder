@@ -10,81 +10,90 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
-import static org.queryman.builder.ast.AstUtil.node;
-import static org.queryman.builder.ast.AstUtil.treeToString;
+import static org.queryman.builder.ast.NodeUtil.node;
 
 /**
  * Standard implementation of {@link AbstractSyntaxTree}.
  *
+ * If {@link #NODES} stack is empty, a new node is pushed to top of it. Otherwise
+ * the new node is added as a child of latest node of {@link #NODES} stack,
+ * then the new node is pushed to this stack.
+ *
  * @author Timur Shaidullin
  */
 public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
-    private final Node root = new NodeImpl();
+    private Node root;
 
-    private final Stack<Node> nodes = new Stack<>();
+    private       Stack<Node>   NODES     = new Stack<>();
+    private final TreeFormatter FORMATTER = new TreeFormatter();
 
     @Override
-    public AbstractSyntaxTree startNode(String name) {
-        startNode(name, " ");
+    public AbstractSyntaxTree startNode(NodeMetadata metadata) {
+        startNode(metadata, " ");
         return this;
     }
 
     @Override
-    public AbstractSyntaxTree startNode(String name, String delimiter) {
-        Node node = node(name);
-        node.setDelimiter(delimiter);
+    public AbstractSyntaxTree startNode(NodeMetadata metadata, String delimiter) {
+        Node node = node(metadata)
+           .setDelimiter(delimiter);
 
-        firstNode().addChildNode(node);
+        if (NODES.size() > 0) {
+            NODES.peek().addChildNode(node);
+        }
 
-        nodes.push(node);
+        NODES.push(node);
+
         return this;
     }
 
     @Override
     public AbstractSyntaxTree setDelimiter(String delimiter) {
-        nodes.peek().setDelimiter(delimiter);
+        NODES.peek().setDelimiter(delimiter);
         return this;
     }
 
     @Override
     public AbstractSyntaxTree endNode() {
-        nodes.pop();
+        if (NODES.size() == 1) {
+            root = NODES.pop();
+        } else {
+            NODES.pop();
+        }
 
         return this;
     }
 
-
     @Override
     public AbstractSyntaxTree addLeaf(String leaf) {
-        nodes.peek().addLeaf(leaf);
+        NODES.peek().addLeaf(leaf);
 
         return this;
     }
 
     @Override
     public AbstractSyntaxTree addLeaves(String... leaves) {
-        nodes.peek().getLeaves().addAll(Arrays.asList(leaves));
+        NODES.peek().getLeaves().addAll(Arrays.asList(leaves));
 
         return this;
     }
 
     @Override
     public AbstractSyntaxTree addLeaves(List<String> leaves) {
-        nodes.peek().getLeaves().addAll(leaves);
+        NODES.peek().getLeaves().addAll(leaves);
 
         return this;
     }
 
     @Override
     public AbstractSyntaxTree addChildNode(Node node) {
-        nodes.peek().addChildNode(node);
+        NODES.peek().addChildNode(node);
         return this;
     }
 
     @Override
     public AbstractSyntaxTree reinitialize() {
-        root.clear();
-        nodes.clear();
+        NODES.clear();
         return this;
     }
 
@@ -96,14 +105,10 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
 
     @Override
     public String toString() {
-        return treeToString(firstNode());
-    }
-
-    private Node firstNode() {
-        if (root.isEmpty()) {
-            return root;
+        if (NODES.size() != 0) {
+            throw new BrokenTreeException();
         }
 
-        return root.getNodes().get(0);
+        return FORMATTER.treeToString(root);
     }
 }

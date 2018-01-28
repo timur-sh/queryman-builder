@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * This class provides API to manipulate abstract syntax tree of SQL. Each node must
- * start with {@link #startNode(String)} and end with {@link #endNode()}
+ * start with {@link #startNode(NodeMetadata)} and end with {@link #endNode()}
  *
  * Each leaf added at the end of parent node.
  *
@@ -18,15 +18,15 @@ import java.util.List;
  */
 public interface AbstractSyntaxTree {
     /**
-     * Each node must have a {@code node object}, that contains metadata.
+     * Each node must have a {@code metadata} object.
      */
-    AbstractSyntaxTree startNode(String name);
+    AbstractSyntaxTree startNode(NodeMetadata metadata);
 
     /**
-     * Each node must have a {@code node object}, that contains metadata. Set
-     * custom delimiter. See {@link #setDelimiter(String)}.
+     * Each node must have a {@code metadata}. Set custom delimiter.
+     * See {@link #setDelimiter(String)}.
      */
-    AbstractSyntaxTree startNode(String name, String delimiter);
+    AbstractSyntaxTree startNode(NodeMetadata metadata, String delimiter);
 
     /**
      * Each leaves must separated by {@code delimiter} token. If it is not

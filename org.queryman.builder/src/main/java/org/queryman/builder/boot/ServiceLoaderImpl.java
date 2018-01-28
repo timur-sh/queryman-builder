@@ -4,11 +4,9 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.boot.impl;
+package org.queryman.builder.boot;
 
 import org.queryman.builder.Metadata;
-import org.queryman.builder.boot.ConfigLoader;
-import org.queryman.builder.boot.ServiceLoader;
 
 import java.io.IOException;
 
@@ -35,7 +33,7 @@ public class ServiceLoaderImpl implements ServiceLoader {
                 return true;
             } catch (IllegalStateException | ClassNotFoundException | IOException e) {
                 //todo log an error
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
 

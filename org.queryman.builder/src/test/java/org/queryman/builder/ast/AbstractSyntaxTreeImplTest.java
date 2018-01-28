@@ -3,10 +3,12 @@ package org.queryman.builder.ast;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.Deque;
 import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.ast.NodeMetadata.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.queryman.builder.ast.NodesMetadata.*;
 
 public class AbstractSyntaxTreeImplTest {
     @Test
@@ -30,11 +32,13 @@ public class AbstractSyntaxTreeImplTest {
            .addLeaf("id")
            .endNode();
 
+        assertThrows(BrokenTreeException.class, () -> tree.toString());
+
         tree.endNode();
 
         assertEquals("select id, name, phone, date, email from table1 table2 where id=id", tree.toString());
 
-        Field field = tree.getClass().getDeclaredField("nodes");
+        Field field = tree.getClass().getDeclaredField("NODES");
         field.setAccessible(true);
         Stack<Node> nodes = (Stack<Node>) field.get(tree);
         assertEquals(nodes.size(), 0);

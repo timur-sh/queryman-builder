@@ -2,19 +2,16 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.Statements;
+import org.queryman.builder.BaseTest;
+import org.queryman.builder.Select;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
-import org.queryman.builder.Select;
 import org.queryman.builder.command.select.SelectFromStep;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.Statements.*;
+import static org.queryman.builder.Statements.where;
 
-class SelectImplTest {
+class SelectImplTest extends BaseTest {
     private AbstractSyntaxTree ast;
 
     @BeforeEach
@@ -32,7 +29,10 @@ class SelectImplTest {
     void selectFrom() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 
-        assertEquals("select id, name from books", select.from("books").sql());
+        assertEquals(
+           "select id, name from books",
+           select.from("books").sql()
+        );
 
         assertEquals("select id, name from table1, table2", select.from("table1", "table2").sql());
     }
@@ -42,15 +42,23 @@ class SelectImplTest {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
-           .andWhere("id", "=", "1")
-           .sql();
-        assertEquals("select id, name from books where id = 1 AND id = 1", sql);
-
-        sql = select.from("books")
-           .where(where("id", "=", "1"))
            .andWhere("id2", "=", "2")
-           .orWhere("id3", "=", "3")
            .sql();
-        assertEquals("select id, name from books where id = 1 AND id2 = 2 OR id3 = 3", sql);
+        assertEquals("select id, name from books where id = 1 and id2 = 2", sql);
+    }
+
+    @Test
+    void selectFromWhereGroup() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("user")
+           .where(where("name", "=", "timur")
+              .andWhere("phone", "is", "null")
+              .orWhere("email", "=", "timur@shaidullin.net")
+           )
+           .orWhere("id", "=", "1")
+           .sql();
+
+        //todo this is not valid sql query: ... = timur@shaidullin.net
+        assertEquals("select id, name from user where (name = timur and phone is null or email = timur@shaidullin.net) or id = 1", sql);
     }
 }

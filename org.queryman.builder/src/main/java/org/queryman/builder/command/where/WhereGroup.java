@@ -6,18 +6,13 @@
  */
 package org.queryman.builder.command.where;
 
+import org.queryman.builder.ast.ASTBuilder;
+
 /**
- *
- * This is marker interface represents {@code WHERE} clause of SQL.
- *
  * @author Timur Shaidullin
  */
-public interface AndOrWhere {
-    public String getToken();
+public interface WhereGroup extends ASTBuilder {
+    WhereGroup andWhere(String leftValue, String operator, String rightValue);
 
-    public String getLeftValue();
-
-    public String getRightValue();
-
-    public String getOperator();
+    WhereGroup orWhere(String leftValue, String operator, String rightValue);
 }

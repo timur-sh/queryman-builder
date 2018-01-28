@@ -1,5 +1,4 @@
 ext {
-    junit = '5.0.2'
     jaxb = '2.3.0'
     queryman = '1.0.0.beta'
 
@@ -7,8 +6,9 @@ ext {
             querymanBuilder: "org.queryman:builder:${queryman}",
 
             postgres       : 'org.postgresql:postgresql:42.1.4',
-            junit          : "org.junit.jupiter:junit-jupiter-api:${junit}",
+            junit          : "org.junit.jupiter:junit-jupiter-api:5.0.2",
             apuGuardian    : "org.apiguardian:apiguardian-api:1.0.0",
+            flyway         : 'org.flywaydb:flyway-core:5.0.6',
 
             log4j          : 'org.apache.logging.log4j:log4j-core:2.10.0',
             jaxbApi        : "javax.xml.bind:jaxb-api:${jaxb}",

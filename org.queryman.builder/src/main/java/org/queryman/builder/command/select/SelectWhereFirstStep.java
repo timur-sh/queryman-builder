@@ -7,8 +7,7 @@
 package org.queryman.builder.command.select;
 
 import org.queryman.builder.Query;
-import org.queryman.builder.command.where.AndOrWhere;
-import org.queryman.builder.command.where.Where;
+import org.queryman.builder.command.where.WhereGroup;
 
 /**
  * @author Timur Shaidullin
@@ -16,5 +15,5 @@ import org.queryman.builder.command.where.Where;
 public interface SelectWhereFirstStep extends Query {
     SelectWhereStep where(String left, String operator, String right);
 
-    SelectWhereStep where(Where where, AndOrWhere... wheres);
+    SelectWhereStep where(WhereGroup whereGroup);
 }
