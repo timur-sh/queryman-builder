@@ -11,7 +11,7 @@ import org.queryman.builder.command.where.WhereGroup;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectWhereStep extends SelectFinalStep {
+public interface SelectWhereStep extends SelectGroupByStep {
     SelectWhereStep andWhere(String left, String operator, String right);
 
     SelectWhereStep orWhere(String left, String operator, String right);

@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.Query;
 import org.queryman.builder.Select;
 
 /**
@@ -13,5 +14,5 @@ import org.queryman.builder.Select;
  *
  * @author Timur Shaidullin
  */
-public interface SelectFinalStep extends Select {
+public interface SelectFinalStep extends Query, Select {
 }

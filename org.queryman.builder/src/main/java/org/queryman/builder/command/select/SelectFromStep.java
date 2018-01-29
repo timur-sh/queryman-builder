@@ -12,12 +12,12 @@ import org.queryman.builder.Select;
 /**
  * {@code FROM} clause is a part of {@code SELECT} statement.
  *
- * Usual rows are derived from {@code table}, but it is possible to retrieve
+ * Usual rows are derived from table, but it is possible to retrieve
  * rows from subselect or other virtual table, created {@code VIEW}, etc..
  *
  * @author Timur Shaidullin
  */
-public interface SelectFromStep extends Query, Select {
+public interface SelectFromStep extends Query {
     /**
      * Specify table name that be used to retrieve rows. If several names are
      * provided, they will be cross-joined together.

@@ -18,6 +18,8 @@ public final class NodesMetadata {
 
     public static final NodeMetadata FROM = new NodeMetadata("from");
 
+    public static final NodeMetadata GROUP_BY = new NodeMetadata("group by");
+
     public static final NodeMetadata WHERE         = new NodeMetadata("where");
     public static final NodeMetadata WHERE_GROUPED = new NodeMetadata("").setParentheses(true);
 

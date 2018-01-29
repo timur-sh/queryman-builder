@@ -48,18 +48,37 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
+    void selectFromWhereGroupBy() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .groupBy("id")
+           .sql();
+        assertEquals("select id, name from books where id = 1 group by id", sql);
+    }
+
+    @Test
+    void selectFromGroupBy() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .groupBy("id")
+           .sql();
+        assertEquals("select id, name from books group by id", sql);
+    }
+
+    @Test
     void selectFromWhereGroup() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("user")
            .where(where("name", "=", "timur")
               .andWhere("phone", "is", "null")
-              .orWhere("email", "=", "timur@shaidullin.net")
+              .orWhere("email", "=", "'timur@shaidullin.net'")
            )
            .orWhere("id", "=", "1")
            .sql();
 
         //todo this is not valid sql query: ... = timur@shaidullin.net
-        assertEquals("select id, name from user where (name = timur and phone is null or email = timur@shaidullin.net) or id = 1", sql);
+        assertEquals("select id, name from user where (name = timur and phone is null or email = 'timur@shaidullin.net') or id = 1", sql);
     }
 
     @Test
@@ -69,11 +88,11 @@ class SelectImplTest extends BaseTest {
            .where("id", "=", "1")
            .andWhere(where("name", "=", "timur")
               .andWhere("phone", "is", "null")
-              .orWhere("email", "=", "timur@shaidullin.net")
+              .orWhere("email", "=", "'timur@shaidullin.net'")
            )
            .sql();
 
         //todo this is not valid sql query: ... = timur@shaidullin.net
-        assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = timur@shaidullin.net)", sql);
+        assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = 'timur@shaidullin.net')", sql);
     }
 }

@@ -13,6 +13,7 @@ import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
+import org.queryman.builder.command.select.SelectGroupByStep;
 import org.queryman.builder.command.select.SelectWhereStep;
 import org.queryman.builder.command.where.WhereGroup;
 
@@ -32,11 +33,13 @@ public class SelectImpl extends AbstractQuery implements
    SelectFromStep,
    SelectFromManySteps,
    SelectWhereStep,
+   SelectGroupByStep,
    SelectFinalStep,
    Select {
 
     private final String[] COLUMNS_SELECTED;
     private final List<String>           FROM        = new LinkedList<>();
+    private final List<String>           GROUP_BY    = new LinkedList<>();
     private final List<Where>            WHERE       = new LinkedList<>();
     private final Map<Where, WhereGroup> WHERE_GROUP = new HashMap<>();
 
@@ -87,6 +90,12 @@ public class SelectImpl extends AbstractQuery implements
             tree.endNode();
         }
 
+        if (!GROUP_BY.isEmpty()) {
+            tree.startNode(NodesMetadata.GROUP_BY, ", ")
+               .addLeaves(GROUP_BY)
+               .endNode();
+        }
+
         tree.endNode();
     }
 
@@ -116,8 +125,8 @@ public class SelectImpl extends AbstractQuery implements
     public SelectWhereStep where(WhereGroup whereGroup) {
         WHERE.clear();
         Where where = CommandUtils.stubWhere(null);
-        this.WHERE.add(where);
-        this.WHERE_GROUP.put(where, whereGroup);
+        WHERE.add(where);
+        WHERE_GROUP.put(where, whereGroup);
         return this;
     }
 
@@ -136,16 +145,26 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public SelectWhereStep andWhere(WhereGroup whereGroup) {
         Where where = CommandUtils.stubWhere(AND);
-        this.WHERE.add(where);
-        this.WHERE_GROUP.put(where, whereGroup);
+        WHERE.add(where);
+        WHERE_GROUP.put(where, whereGroup);
         return this;
     }
 
     @Override
     public SelectWhereStep orWhere(WhereGroup whereGroup) {
         Where where = CommandUtils.stubWhere(OR);
-        this.WHERE.add(where);
-        this.WHERE_GROUP.put(where, whereGroup);
+        WHERE.add(where);
+        WHERE_GROUP.put(where, whereGroup);
+        return this;
+    }
+
+    //--
+    // GROUP BY API
+    //--
+
+    @Override
+    public SelectFinalStep groupBy(String... expressions) {
+        GROUP_BY.addAll(List.of(expressions));
         return this;
     }
 }
