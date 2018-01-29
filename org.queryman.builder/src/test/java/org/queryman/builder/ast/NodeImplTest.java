@@ -27,13 +27,13 @@ class NodeImplTest {
                        )
                  )
            )
-           .addChildNode(node("where")
+           .addChildNode(node("condition")
               .addLeaf("id")
               .addLeaf("=")
               .addLeaf("id")
            );
 
         TreeFormatter formatter = new TreeFormatter();
-        assertEquals("select id, name from table1 left join table2 on id=id where id = id", formatter.treeToString(node));
+        assertEquals("select id, name from table1 left join table2 on id=id condition id = id", formatter.treeToString(node));
     }
 }

@@ -6,14 +6,14 @@
  */
 package org.queryman.builder;
 
-import org.queryman.builder.command.impl.WhereGroupImpl;
-import org.queryman.builder.command.where.WhereGroup;
+import org.queryman.builder.command.impl.ConditionsImpl;
+import org.queryman.builder.command.where.Conditions;
 
 /**
  * @author Timur Shaidullin
  */
 public class Statements {
-    public static WhereGroup where(String leftValue, String operator, String rightValue) {
-        return new WhereGroupImpl(leftValue, operator, rightValue);
+    public static Conditions condition(String leftValue, String operator, String rightValue) {
+        return new ConditionsImpl(leftValue, operator, rightValue);
     }
 }

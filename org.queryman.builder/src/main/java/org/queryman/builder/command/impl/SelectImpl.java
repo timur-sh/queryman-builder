@@ -8,6 +8,7 @@ package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.Select;
+import org.queryman.builder.Statements;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.select.SelectFinalStep;
@@ -15,13 +16,12 @@ import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
 import org.queryman.builder.command.select.SelectWhereStep;
-import org.queryman.builder.command.where.WhereGroup;
+import org.queryman.builder.command.where.Conditions;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import static org.queryman.builder.Statements.condition;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
@@ -38,10 +38,10 @@ public class SelectImpl extends AbstractQuery implements
    Select {
 
     private final String[] COLUMNS_SELECTED;
-    private final List<String>           FROM        = new LinkedList<>();
-    private final List<String>           GROUP_BY    = new LinkedList<>();
-    private final List<Where>            WHERE       = new LinkedList<>();
-    private final Map<Where, WhereGroup> WHERE_GROUP = new HashMap<>();
+    private final List<String>     FROM     = new LinkedList<>();
+    private final List<String>     GROUP_BY = new LinkedList<>();
+    private final List<Conditions> WHERE    = new LinkedList<>();
+//    private final Map<ConditionItem, Condition> WHERE_GROUP = new HashMap<>();
 
 
     public SelectImpl(
@@ -66,25 +66,8 @@ public class SelectImpl extends AbstractQuery implements
         if (!WHERE.isEmpty()) {
             tree.startNode(NodesMetadata.WHERE);
 
-            for (Where where : WHERE) {
-                if (WHERE_GROUP.containsKey(where)) {
-                    if (where.getToken() == null) {
-                        tree.peek(WHERE_GROUP.get(where));
-
-                    } else {
-                        tree.startNode(where.getToken())
-                           .peek(WHERE_GROUP.get(where))
-                           .endNode();
-                    }
-
-                } else if (where.getToken() == null) {
-                    tree.addLeaves(where.getLeftValue(), where.getOperator(), where.getRightValue());
-
-                } else {
-                    tree.startNode(where.getToken())
-                       .addLeaves(where.getLeftValue(), where.getOperator(), where.getRightValue())
-                       .endNode();
-                }
+            for (Conditions condition : WHERE) {
+                tree.peek(condition);
             }
 
             tree.endNode();
@@ -116,45 +99,44 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl where(String left, String operator, String right) {
+        where(condition(left, operator, right));
+
+        return this;
+    }
+
+    @Override
+    public SelectImpl where(Conditions conditions) {
         WHERE.clear();
-        WHERE.add(CommandUtils.where(left, operator, right));
+        WHERE.add(conditions);
+
         return this;
     }
 
     @Override
-    public SelectWhereStep where(WhereGroup whereGroup) {
-        WHERE.clear();
-        Where where = CommandUtils.stubWhere(null);
-        WHERE.add(where);
-        WHERE_GROUP.put(where, whereGroup);
+    public final SelectImpl and(String left, String operator, String right) {
+        and(condition(left, operator, right));
+
         return this;
     }
 
     @Override
-    public final SelectImpl andWhere(String left, String operator, String right) {
-        WHERE.add(CommandUtils.andWhere(left, operator, right));
+    public SelectWhereStep and(Conditions conditions) {
+        WHERE.add(new ConditionsImpl(AND, conditions));
+
         return this;
     }
 
     @Override
-    public final SelectImpl orWhere(String left, String operator, String right) {
-        WHERE.add(CommandUtils.orWhere(left, operator, right));
+    public final SelectImpl or(String left, String operator, String right) {
+        or(condition(left, operator, right));
+
         return this;
     }
 
     @Override
-    public SelectWhereStep andWhere(WhereGroup whereGroup) {
-        Where where = CommandUtils.stubWhere(AND);
-        WHERE.add(where);
-        WHERE_GROUP.put(where, whereGroup);
-        return this;
-    }
+    public SelectWhereStep or(Conditions conditions) {
+        WHERE.add(new ConditionsImpl(OR, conditions));
 
-    @Override
-    public SelectWhereStep orWhere(WhereGroup whereGroup) {
-        Where where = CommandUtils.stubWhere(OR);
-        WHERE.add(where);
-        WHERE_GROUP.put(where, whereGroup);
         return this;
     }
 

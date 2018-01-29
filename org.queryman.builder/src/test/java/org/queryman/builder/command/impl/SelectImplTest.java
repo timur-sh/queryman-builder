@@ -9,7 +9,7 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.Statements.where;
+import static org.queryman.builder.Statements.condition;
 
 class SelectImplTest extends BaseTest {
     private AbstractSyntaxTree ast;
@@ -42,7 +42,7 @@ class SelectImplTest extends BaseTest {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
-           .andWhere("id2", "=", "2")
+           .and("id2", "=", "2")
            .sql();
         assertEquals("select id, name from books where id = 1 and id2 = 2", sql);
     }
@@ -70,11 +70,11 @@ class SelectImplTest extends BaseTest {
     void selectFromWhereGroup() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("user")
-           .where(where("name", "=", "timur")
-              .andWhere("phone", "is", "null")
-              .orWhere("email", "=", "'timur@shaidullin.net'")
+           .where(condition("name", "=", "timur")
+              .and("phone", "is", "null")
+              .or("email", "=", "'timur@shaidullin.net'")
            )
-           .orWhere("id", "=", "1")
+           .or("id", "=", "1")
            .sql();
 
         //todo this is not valid sql query: ... = timur@shaidullin.net
@@ -86,13 +86,14 @@ class SelectImplTest extends BaseTest {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("user")
            .where("id", "=", "1")
-           .andWhere(where("name", "=", "timur")
-              .andWhere("phone", "is", "null")
-              .orWhere("email", "=", "'timur@shaidullin.net'")
+           .and(condition("name", "=", "timur")
+              .and("phone", "is", "null")
+              .or("email", "=", "'timur@shaidullin.net'")
            )
+           .and("id2", "=", "2")
            .sql();
 
         //todo this is not valid sql query: ... = timur@shaidullin.net
-        assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = 'timur@shaidullin.net')", sql);
+        assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = 'timur@shaidullin.net') and id2 = 2", sql);
     }
 }

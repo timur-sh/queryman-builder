@@ -6,21 +6,27 @@
  */
 package org.queryman.builder.ast;
 
-import java.util.Deque;
-import java.util.LinkedList;
+import org.queryman.builder.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Timur Shaidullin
  */
 final class TreeFormatter {
     String treeToString(Node node) {
-        Deque<String> list = new LinkedList<>();
+        List<String> leaves = node.getLeaves();
+
+        List<String> list = new ArrayList<>(leaves.subList(0, node.getNodeMetadata().getPosition()));
+
         if (node.getNodeMetadata().getName().length() > 0) {
             list.add(node.getNodeMetadata().getName());
         }
 
-        if (node.getLeaves().size() > 0) {
-            list.add(String.join(node.getDelimiter(), node.getLeaves()));
+        if (leaves.size() > 0) {
+            List<String> tmp = leaves.subList(node.getNodeMetadata().getPosition(), leaves.size());
+            list.add(String.join(node.getDelimiter(), tmp));
         }
 
         if (!node.isEmpty()) {
@@ -40,15 +46,15 @@ final class TreeFormatter {
             this.metadata = metadata;
         }
 
-        private String process(Deque<String> list) {
+        private String process(List<String> list) {
             list = parentheses(list);
 
             return String.join(" ", list);
         }
 
-        private Deque<String> parentheses(Deque<String> list) {
-            if (metadata.hasParentheses()) {
-                Deque<String> newList = new LinkedList<>();
+        private List<String> parentheses(List<String> list) {
+            if (metadata.isParentheses()) {
+                List<String> newList = new ArrayList<>();
                 newList.add("(" + String.join(" ", list) + ")");
 
                 return newList;

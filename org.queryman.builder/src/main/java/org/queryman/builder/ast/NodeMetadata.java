@@ -15,21 +15,33 @@ public class NodeMetadata {
     private final String name;
     private boolean parentheses;
 
+    // position in a condition, where operator is appeared
+    private int position;
+
     public NodeMetadata(String name) {
+        this(name, 0, false);
+    }
+
+    public NodeMetadata(String name, int position) {
+        this(name, position, false);
+    }
+
+    public NodeMetadata(String name, int position, boolean parentheses) {
         this.name = name;
-    }
-
-    public boolean hasParentheses() {
-        return parentheses;
-    }
-
-    public NodeMetadata setParentheses(boolean parentheses) {
+        this.position = position;
         this.parentheses = parentheses;
-        return this;
     }
 
     public String getName() {
         return name;
+    }
+
+    public boolean isParentheses() {
+        return parentheses;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     @Override

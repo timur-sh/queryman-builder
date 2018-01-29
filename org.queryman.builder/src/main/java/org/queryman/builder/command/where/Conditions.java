@@ -8,11 +8,16 @@ package org.queryman.builder.command.where;
 
 import org.queryman.builder.ast.AstVisitor;
 
+import java.util.List;
+
 /**
  * @author Timur Shaidullin
  */
-public interface WhereGroup extends AstVisitor {
-    WhereGroup andWhere(String leftValue, String operator, String rightValue);
+public interface Conditions extends AstVisitor {
+    Conditions and(String leftValue, String operator, String rightValue);
 
-    WhereGroup orWhere(String leftValue, String operator, String rightValue);
+    Conditions or(String leftValue, String operator, String rightValue);
+
+    //todo refactor this
+    List<?> conditions();
 }
