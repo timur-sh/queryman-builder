@@ -32,7 +32,8 @@ public final class ConditionsImpl implements
 
     ConditionsImpl(NodeMetadata metadata, Conditions conditions) {
         this.metadata = metadata;
-        CONDITIONS.addAll((List<Condition>) conditions.conditions());
+
+        CONDITIONS.addAll(((ConditionsImpl) conditions).CONDITIONS);
     }
 
     public NodeMetadata getMetadata() {
@@ -49,11 +50,6 @@ public final class ConditionsImpl implements
     public ConditionsImpl or(String leftValue, String operator, String rightValue) {
         CONDITIONS.add(orCondition(leftValue, operator, rightValue));
         return this;
-    }
-
-    @Override
-    public List<Condition> conditions() {
-        return CONDITIONS;
     }
 
     @Override

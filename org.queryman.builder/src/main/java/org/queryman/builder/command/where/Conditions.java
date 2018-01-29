@@ -17,7 +17,4 @@ public interface Conditions extends AstVisitor {
     Conditions and(String leftValue, String operator, String rightValue);
 
     Conditions or(String leftValue, String operator, String rightValue);
-
-    //todo refactor this
-    List<?> conditions();
 }
