@@ -9,7 +9,7 @@ package org.queryman.builder.command.impl;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.ast.NodesMetadata;
-import org.queryman.builder.command.where.Conditions;
+import org.queryman.builder.command.Conditions;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -20,11 +20,13 @@ public final class NodesMetadata {
 
     public static final NodeMetadata GROUP_BY = new NodeMetadata("group by");
 
+    public static final NodeMetadata ORDER_BY = new NodeMetadata("order by");
+
     public static final NodeMetadata WHERE = new NodeMetadata("where");
 
 
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata("", 0, true);
-    public static final NodeMetadata EQUAL = new NodeMetadata("");
+    public static final NodeMetadata EMPTY         = new NodeMetadata("");
 
     public static final NodeMetadata AND = new NodeMetadata("and");
     public static final NodeMetadata OR  = new NodeMetadata("or");

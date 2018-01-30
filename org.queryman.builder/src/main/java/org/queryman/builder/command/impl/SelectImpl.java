@@ -8,20 +8,21 @@ package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.Select;
-import org.queryman.builder.Statements;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
+import org.queryman.builder.command.select.SelectOrderByStep;
+import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
-import org.queryman.builder.command.where.Conditions;
+import org.queryman.builder.command.Conditions;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.queryman.builder.Statements.condition;
+import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
@@ -33,7 +34,9 @@ public class SelectImpl extends AbstractQuery implements
    SelectFromStep,
    SelectFromManySteps,
    SelectWhereStep,
+   SelectWhereManySteps,
    SelectGroupByStep,
+   SelectOrderByStep,
    SelectFinalStep,
    Select {
 
@@ -41,7 +44,7 @@ public class SelectImpl extends AbstractQuery implements
     private final List<String>     FROM     = new LinkedList<>();
     private final List<String>     GROUP_BY = new LinkedList<>();
     private final List<Conditions> WHERE    = new LinkedList<>();
-//    private final Map<ConditionItem, Condition> WHERE_GROUP = new HashMap<>();
+    private final List<OrderBy>    ORDER_BY = new LinkedList<>();
 
 
     public SelectImpl(
@@ -77,6 +80,16 @@ public class SelectImpl extends AbstractQuery implements
             tree.startNode(NodesMetadata.GROUP_BY, ", ")
                .addLeaves(GROUP_BY)
                .endNode();
+        }
+
+        if (!ORDER_BY.isEmpty()) {
+            tree.startNode(NodesMetadata.ORDER_BY, ", ");
+
+            for (OrderBy orderBy : ORDER_BY) {
+                tree.peek(orderBy);
+            }
+
+            tree.endNode();
         }
 
         tree.endNode();
@@ -145,8 +158,31 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectFinalStep groupBy(String... expressions) {
+    public SelectOrderByStep groupBy(String... expressions) {
         GROUP_BY.addAll(List.of(expressions));
+        return this;
+    }
+
+    //--
+    // ORDER BY API
+    //--
+
+    @Override
+    public SelectFinalStep orderBy(String column) {
+        orderBy(column, null, null);
+        return this;
+    }
+
+    @Override
+    public SelectFinalStep orderBy(String column, String sorting) {
+        orderBy(column, sorting, null);
+        return this;
+    }
+
+    @Override
+    public SelectFinalStep orderBy(String column, String sorting, String nulls) {
+        ORDER_BY.clear();
+        ORDER_BY.add(new OrderBy(column, sorting, nulls));
         return this;
     }
 }

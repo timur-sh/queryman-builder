@@ -10,5 +10,5 @@ package org.queryman.builder.command.select;
  * @author Timur Shaidullin
  */
 public interface SelectGroupByStep extends SelectFinalStep {
-    SelectFinalStep groupBy(String... expressions);
+    SelectOrderByStep groupBy(String... expressions);
 }

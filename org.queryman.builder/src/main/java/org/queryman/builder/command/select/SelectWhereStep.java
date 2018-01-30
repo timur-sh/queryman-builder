@@ -6,12 +6,12 @@
  */
 package org.queryman.builder.command.select;
 
-import org.queryman.builder.command.where.Conditions;
+import org.queryman.builder.command.Conditions;
 
 /**
  * @author Timur Shaidullin
  */
-public interface SelectWhereStep extends SelectGroupByStep {
+public interface SelectWhereStep extends SelectWhereManySteps {
     SelectWhereStep and(String left, String operator, String right);
 
     SelectWhereStep or(String left, String operator, String right);

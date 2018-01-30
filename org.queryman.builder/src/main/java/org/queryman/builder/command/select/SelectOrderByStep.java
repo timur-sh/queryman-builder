@@ -9,8 +9,10 @@ package org.queryman.builder.command.select;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectFromManySteps extends
-   SelectWhereFirstStep,
-   SelectGroupByStep,
-   SelectOrderByStep {
+public interface SelectOrderByStep extends SelectFinalStep {
+    SelectFinalStep orderBy(String column);
+
+    SelectFinalStep orderBy(String column, String sorting);
+
+    SelectFinalStep orderBy(String column, String sorting, String nulls);
 }

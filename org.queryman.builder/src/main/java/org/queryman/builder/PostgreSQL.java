@@ -7,12 +7,12 @@
 package org.queryman.builder;
 
 import org.queryman.builder.command.impl.ConditionsImpl;
-import org.queryman.builder.command.where.Conditions;
+import org.queryman.builder.command.Conditions;
 
 /**
  * @author Timur Shaidullin
  */
-public class Statements {
+public class PostgreSQL {
     public static Conditions condition(String leftValue, String operator, String rightValue) {
         return new ConditionsImpl(leftValue, operator, rightValue);
     }

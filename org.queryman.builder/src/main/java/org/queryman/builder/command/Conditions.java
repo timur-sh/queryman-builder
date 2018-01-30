@@ -4,11 +4,9 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.where;
+package org.queryman.builder.command;
 
 import org.queryman.builder.ast.AstVisitor;
-
-import java.util.List;
 
 /**
  * @author Timur Shaidullin

@@ -7,7 +7,7 @@
 package org.queryman.builder.command.select;
 
 import org.queryman.builder.Query;
-import org.queryman.builder.command.where.Conditions;
+import org.queryman.builder.command.Conditions;
 
 /**
  * @author Timur Shaidullin

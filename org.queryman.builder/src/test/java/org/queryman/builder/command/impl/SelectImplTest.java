@@ -9,7 +9,7 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.Statements.condition;
+import static org.queryman.builder.PostgreSQL.condition;
 
 class SelectImplTest extends BaseTest {
     private AbstractSyntaxTree ast;
@@ -29,12 +29,31 @@ class SelectImplTest extends BaseTest {
     void selectFrom() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 
-        assertEquals(
-           "select id, name from books",
-           select.from("books").sql()
-        );
+        assertEquals("select id, name from books", select.from("books").sql());
 
         assertEquals("select id, name from table1, table2", select.from("table1", "table2").sql());
+    }
+
+    @Test
+    void selectFromOrderBy() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .orderBy("id")
+           .sql();
+
+        assertEquals("select id, name from books order by id", sql);
+
+        sql = select.from("books")
+           .orderBy("name", "desc")
+           .sql();
+
+        assertEquals("select id, name from books order by name desc", sql);
+
+        sql = select.from("books")
+           .orderBy("name", "desc", "nulls last")
+           .sql();
+
+        assertEquals("select id, name from books order by name desc nulls last", sql);
     }
 
     @Test
@@ -48,6 +67,23 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
+    void selectFromWhereOrderBy() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .orderBy("name")
+           .sql();
+        assertEquals("select id, name from books where id = 1 order by name", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .and("id2", "=", "2")
+           .orderBy("id")
+           .sql();
+        assertEquals("select id, name from books where id = 1 and id2 = 2 order by id", sql);
+    }
+
+    @Test
     void selectFromWhereGroupBy() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
@@ -55,6 +91,17 @@ class SelectImplTest extends BaseTest {
            .groupBy("id")
            .sql();
         assertEquals("select id, name from books where id = 1 group by id", sql);
+    }
+
+    @Test
+    void selectFromWhereGroupByOrderBy() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .groupBy("id")
+           .orderBy("name")
+           .sql();
+        assertEquals("select id, name from books where id = 1 group by id order by name", sql);
     }
 
     @Test
@@ -77,7 +124,6 @@ class SelectImplTest extends BaseTest {
            .or("id", "=", "1")
            .sql();
 
-        //todo this is not valid sql query: ... = timur@shaidullin.net
         assertEquals("select id, name from user where (name = timur and phone is null or email = 'timur@shaidullin.net') or id = 1", sql);
     }
 
@@ -93,7 +139,6 @@ class SelectImplTest extends BaseTest {
            .and("id2", "=", "2")
            .sql();
 
-        //todo this is not valid sql query: ... = timur@shaidullin.net
         assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = 'timur@shaidullin.net') and id2 = 2", sql);
     }
 }
