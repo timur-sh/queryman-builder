@@ -57,6 +57,49 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
+    void selectFromLimit() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .limit(1)
+           .sql();
+
+        assertEquals("select id, name from books limit 1", sql);
+    }
+
+    @Test
+    void selectFromOrderByLimit() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .orderBy("id")
+           .limit(2)
+           .sql();
+
+        assertEquals("select id, name from books order by id limit 2", sql);
+    }
+
+    @Test
+    void selectFromGroupByLimit() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .groupBy("id")
+           .limit(2)
+           .sql();
+
+        assertEquals("select id, name from books group by id limit 2", sql);
+    }
+
+    @Test
+    void selectFromWhereLimit() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .and("id2", "=", "2")
+           .limit(3)
+           .sql();
+        assertEquals("select id, name from books where id = 1 and id2 = 2 limit 3", sql);
+    }
+
+    @Test
     void selectFromWhere() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")

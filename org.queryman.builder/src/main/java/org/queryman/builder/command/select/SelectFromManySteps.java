@@ -12,5 +12,6 @@ package org.queryman.builder.command.select;
 public interface SelectFromManySteps extends
    SelectWhereFirstStep,
    SelectGroupByStep,
+   SelectLimitStep,
    SelectOrderByStep {
 }

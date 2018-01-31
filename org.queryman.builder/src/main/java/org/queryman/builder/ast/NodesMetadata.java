@@ -24,6 +24,8 @@ public final class NodesMetadata {
 
     public static final NodeMetadata WHERE = new NodeMetadata("where");
 
+    public static final NodeMetadata LIMIT = new NodeMetadata("limit");
+
 
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata("", 0, true);
     public static final NodeMetadata EMPTY         = new NodeMetadata("");

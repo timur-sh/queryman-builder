@@ -14,6 +14,7 @@ import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
+import org.queryman.builder.command.select.SelectLimitStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
@@ -37,6 +38,7 @@ public class SelectImpl extends AbstractQuery implements
    SelectWhereManySteps,
    SelectGroupByStep,
    SelectOrderByStep,
+   SelectLimitStep,
    SelectFinalStep,
    Select {
 
@@ -45,6 +47,7 @@ public class SelectImpl extends AbstractQuery implements
     private final List<String>     GROUP_BY = new LinkedList<>();
     private final List<Conditions> WHERE    = new LinkedList<>();
     private final List<OrderBy>    ORDER_BY = new LinkedList<>();
+    private Long limit;
 
 
     public SelectImpl(
@@ -92,6 +95,11 @@ public class SelectImpl extends AbstractQuery implements
             tree.endNode();
         }
 
+        if (limit != null)
+            tree.startNode(NodesMetadata.LIMIT)
+                .addLeaf(String.valueOf(limit))
+                .endNode();
+
         tree.endNode();
     }
 
@@ -133,7 +141,7 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectWhereStep and(Conditions conditions) {
+    public SelectImpl and(Conditions conditions) {
         WHERE.add(new ConditionsImpl(AND, conditions));
 
         return this;
@@ -147,7 +155,7 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectWhereStep or(Conditions conditions) {
+    public SelectImpl or(Conditions conditions) {
         WHERE.add(new ConditionsImpl(OR, conditions));
 
         return this;
@@ -158,7 +166,7 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectOrderByStep groupBy(String... expressions) {
+    public SelectImpl groupBy(String... expressions) {
         GROUP_BY.addAll(List.of(expressions));
         return this;
     }
@@ -168,21 +176,27 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectFinalStep orderBy(String column) {
+    public SelectImpl orderBy(String column) {
         orderBy(column, null, null);
         return this;
     }
 
     @Override
-    public SelectFinalStep orderBy(String column, String sorting) {
+    public SelectImpl orderBy(String column, String sorting) {
         orderBy(column, sorting, null);
         return this;
     }
 
     @Override
-    public SelectFinalStep orderBy(String column, String sorting, String nulls) {
+    public SelectImpl orderBy(String column, String sorting, String nulls) {
         ORDER_BY.clear();
         ORDER_BY.add(new OrderBy(column, sorting, nulls));
+        return this;
+    }
+
+    @Override
+    public SelectImpl limit(long limit) {
+        this.limit = limit;
         return this;
     }
 }
