@@ -3,7 +3,6 @@ package org.queryman.builder.command.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.BaseTest;
-import org.queryman.builder.Select;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
@@ -21,7 +20,7 @@ class SelectImplTest extends BaseTest {
 
     @Test
     void select() {
-        Select select = new SelectImpl(ast, "id", "name", "min(price) as min");
+        SelectFromStep select = new SelectImpl(ast, "id", "name", "min(price) as min");
         assertEquals("SELECT id, name, min(price) as min", select.sql());
     }
 

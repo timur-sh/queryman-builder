@@ -7,7 +7,6 @@
 package org.queryman.builder.command.select;
 
 import org.queryman.builder.Query;
-import org.queryman.builder.Select;
 
 /**
  * {@code FROM} clause is a part of {@code SELECT} statement.

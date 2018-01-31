@@ -7,7 +7,6 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.Select;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.select.SelectFinalStep;
@@ -43,8 +42,7 @@ public class SelectImpl extends AbstractQuery implements
    SelectOrderByStep,
    SelectLimitStep,
    SelectOffsetStep,
-   SelectFinalStep,
-   Select {
+   SelectFinalStep {
 
     private final String[] COLUMNS_SELECTED;
     private final List<String>     FROM     = new LinkedList<>();
