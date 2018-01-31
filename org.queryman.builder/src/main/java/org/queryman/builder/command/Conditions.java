@@ -14,5 +14,9 @@ import org.queryman.builder.ast.AstVisitor;
 public interface Conditions extends AstVisitor {
     Conditions and(String leftValue, String operator, String rightValue);
 
+    Conditions andNot(String leftValue, String operator, String rightValue);
+
     Conditions or(String leftValue, String operator, String rightValue);
+
+    Conditions orNot(String leftValue, String operator, String rightValue);
 }

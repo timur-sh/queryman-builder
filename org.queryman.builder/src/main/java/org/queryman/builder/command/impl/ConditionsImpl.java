@@ -15,7 +15,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.queryman.builder.ast.NodesMetadata.AND;
+import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.OR;
+import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
 
 /**
  * @author Timur Shaidullin
@@ -27,7 +29,7 @@ public final class ConditionsImpl implements
     private final List<Condition> CONDITIONS = new LinkedList<>();
 
     public ConditionsImpl(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(condition(leftValue, operator, rightValue));
+        CONDITIONS.add(new Condition(leftValue, operator, rightValue));
     }
 
     ConditionsImpl(NodeMetadata metadata, Conditions conditions) {
@@ -42,13 +44,25 @@ public final class ConditionsImpl implements
 
     @Override
     public ConditionsImpl and(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(andCondition(leftValue, operator, rightValue));
+        CONDITIONS.add(new Condition(AND, leftValue, operator, rightValue));
+        return this;
+    }
+
+    @Override
+    public ConditionsImpl andNot(String leftValue, String operator, String rightValue) {
+        CONDITIONS.add(new Condition(AND_NOT, leftValue, operator, rightValue));
         return this;
     }
 
     @Override
     public ConditionsImpl or(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(orCondition(leftValue, operator, rightValue));
+        CONDITIONS.add(new Condition(OR, leftValue, operator, rightValue));
+        return this;
+    }
+
+    @Override
+    public ConditionsImpl orNot(String leftValue, String operator, String rightValue) {
+        CONDITIONS.add(new Condition(OR_NOT, leftValue, operator, rightValue));
         return this;
     }
 
@@ -87,18 +101,6 @@ public final class ConditionsImpl implements
                .addLeaves(condition.getLeftValue(), condition.getRightValue())
                .endNode();
         }
-    }
-
-    private Condition condition(String left, String operator, String right) {
-        return new Condition(left, operator, right);
-    }
-
-    private Condition orCondition(String left, String operator, String right) {
-        return new Condition(OR, left, operator, right);
-    }
-
-    private Condition andCondition(String left, String operator, String right) {
-        return new Condition(AND, left, operator, right);
     }
 
     private class Condition {

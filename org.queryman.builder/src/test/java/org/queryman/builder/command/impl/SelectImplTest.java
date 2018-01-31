@@ -22,16 +22,16 @@ class SelectImplTest extends BaseTest {
     @Test
     void select() {
         Select select = new SelectImpl(ast, "id", "name", "min(price) as min");
-        assertEquals("select id, name, min(price) as min", select.sql());
+        assertEquals("SELECT id, name, min(price) as min", select.sql());
     }
 
     @Test
     void selectFrom() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 
-        assertEquals("select id, name from books", select.from("books").sql());
+        assertEquals("SELECT id, name FROM books", select.from("books").sql());
 
-        assertEquals("select id, name from table1, table2", select.from("table1", "table2").sql());
+        assertEquals("SELECT id, name FROM table1, table2", select.from("table1", "table2").sql());
     }
 
     //---
@@ -45,7 +45,20 @@ class SelectImplTest extends BaseTest {
            .where("id", "=", "1")
            .and("id2", "=", "2")
            .sql();
-        assertEquals("select id, name from books where id = 1 and id2 = 2", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andNot("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT id2 = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orNot("id3", "=", "3")
+           .andNot("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
     }
 
     @Test
@@ -59,7 +72,7 @@ class SelectImplTest extends BaseTest {
            .or("id", "=", "1")
            .sql();
 
-        assertEquals("select id, name from user where (name = timur and phone is null or email = 'timur@shaidullin.net') or id = 1", sql);
+        assertEquals("SELECT id, name FROM user WHERE (name = timur AND phone is null OR email = 'timur@shaidullin.net') OR id = 1", sql);
     }
 
     @Test
@@ -74,7 +87,7 @@ class SelectImplTest extends BaseTest {
            .and("id2", "=", "2")
            .sql();
 
-        assertEquals("select id, name from user where id = 1 and (name = timur and phone is null or email = 'timur@shaidullin.net') and id2 = 2", sql);
+        assertEquals("SELECT id, name FROM user WHERE id = 1 AND (name = timur AND phone is null OR email = 'timur@shaidullin.net') AND id2 = 2", sql);
     }
 
     //---
@@ -87,7 +100,7 @@ class SelectImplTest extends BaseTest {
         String sql = select.from("books")
            .groupBy("id")
            .sql();
-        assertEquals("select id, name from books group by id", sql);
+        assertEquals("SELECT id, name FROM books GROUP BY id", sql);
     }
 
     @Test
@@ -97,7 +110,7 @@ class SelectImplTest extends BaseTest {
            .where("id", "=", "1")
            .groupBy("id")
            .sql();
-        assertEquals("select id, name from books where id = 1 group by id", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id", sql);
     }
 
     //---
@@ -111,19 +124,19 @@ class SelectImplTest extends BaseTest {
            .orderBy("id")
            .sql();
 
-        assertEquals("select id, name from books order by id", sql);
+        assertEquals("SELECT id, name FROM books ORDER BY id", sql);
 
         sql = select.from("books")
            .orderBy("name", "desc")
            .sql();
 
-        assertEquals("select id, name from books order by name desc", sql);
+        assertEquals("SELECT id, name FROM books ORDER BY name desc", sql);
 
         sql = select.from("books")
            .orderBy("name", "desc", "nulls last")
            .sql();
 
-        assertEquals("select id, name from books order by name desc nulls last", sql);
+        assertEquals("SELECT id, name FROM books ORDER BY name desc nulls last", sql);
     }
 
     @Test
@@ -134,7 +147,7 @@ class SelectImplTest extends BaseTest {
            .groupBy("id")
            .orderBy("name")
            .sql();
-        assertEquals("select id, name from books where id = 1 group by id order by name", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id ORDER BY name", sql);
     }
 
     @Test
@@ -144,14 +157,14 @@ class SelectImplTest extends BaseTest {
            .where("id", "=", "1")
            .orderBy("name")
            .sql();
-        assertEquals("select id, name from books where id = 1 order by name", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 ORDER BY name", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
            .and("id2", "=", "2")
            .orderBy("id")
            .sql();
-        assertEquals("select id, name from books where id = 1 and id2 = 2 order by id", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2 ORDER BY id", sql);
     }
 
     //---
@@ -165,7 +178,7 @@ class SelectImplTest extends BaseTest {
            .limit(1)
            .sql();
 
-        assertEquals("select id, name from books limit 1", sql);
+        assertEquals("SELECT id, name FROM books LIMIT 1", sql);
     }
 
     @Test
@@ -176,7 +189,7 @@ class SelectImplTest extends BaseTest {
            .limit(2)
            .sql();
 
-        assertEquals("select id, name from books order by id limit 2", sql);
+        assertEquals("SELECT id, name FROM books ORDER BY id LIMIT 2", sql);
     }
 
     @Test
@@ -187,7 +200,7 @@ class SelectImplTest extends BaseTest {
            .limit(2)
            .sql();
 
-        assertEquals("select id, name from books group by id limit 2", sql);
+        assertEquals("SELECT id, name FROM books GROUP BY id LIMIT 2", sql);
     }
 
     @Test
@@ -198,7 +211,7 @@ class SelectImplTest extends BaseTest {
            .and("id2", "=", "2")
            .limit(3)
            .sql();
-        assertEquals("select id, name from books where id = 1 and id2 = 2 limit 3", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2 LIMIT 3", sql);
     }
 
     //---
@@ -212,7 +225,7 @@ class SelectImplTest extends BaseTest {
            .limit(1)
            .sql();
 
-        assertEquals("select id, name from books limit 1", sql);
+        assertEquals("SELECT id, name FROM books LIMIT 1", sql);
     }
 
     @Test
@@ -223,7 +236,7 @@ class SelectImplTest extends BaseTest {
            .limit(1)
            .sql();
 
-        assertEquals("select id, name from books group by id limit 1", sql);
+        assertEquals("SELECT id, name FROM books GROUP BY id LIMIT 1", sql);
     }
 
     @Test
@@ -234,7 +247,7 @@ class SelectImplTest extends BaseTest {
            .and("id2", "=", "2")
            .offset(3)
            .sql();
-        assertEquals("select id, name from books where id = 1 and id2 = 2 offset 3", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2 OFFSET 3", sql);
     }
 
     @Test
@@ -247,6 +260,6 @@ class SelectImplTest extends BaseTest {
            .offset(3)
            .sql();
 
-        assertEquals("select id, name from books where id = 1 and id2 = 2 limit 3 offset 3", sql);
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2 LIMIT 3 OFFSET 3", sql);
     }
 }

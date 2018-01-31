@@ -14,9 +14,17 @@ import org.queryman.builder.command.Conditions;
 public interface SelectWhereStep extends SelectWhereManySteps {
     SelectWhereStep and(String left, String operator, String right);
 
+    SelectWhereStep andNot(String left, String operator, String right);
+
     SelectWhereStep or(String left, String operator, String right);
+
+    SelectWhereStep orNot(String left, String operator, String right);
 
     SelectWhereStep and(Conditions conditions);
 
+    SelectWhereStep andNot(Conditions conditions);
+
     SelectWhereStep or(Conditions conditions);
+
+    SelectWhereStep orNot(Conditions conditions);
 }

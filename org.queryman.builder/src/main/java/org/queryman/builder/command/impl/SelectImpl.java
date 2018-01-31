@@ -26,7 +26,9 @@ import java.util.List;
 
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.ast.NodesMetadata.AND;
+import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.OR;
+import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 
 /**
@@ -156,6 +158,20 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
+    public SelectWhereStep andNot(String left, String operator, String right) {
+        andNot(condition(left, operator, right));
+
+        return this;
+    }
+
+    @Override
+    public SelectWhereStep andNot(Conditions conditions) {
+        WHERE.add(new ConditionsImpl(AND_NOT, conditions));
+
+        return this;
+    }
+
+    @Override
     public final SelectImpl or(String left, String operator, String right) {
         or(condition(left, operator, right));
 
@@ -167,6 +183,19 @@ public class SelectImpl extends AbstractQuery implements
         WHERE.add(new ConditionsImpl(OR, conditions));
 
         return this;
+    }
+
+    @Override
+    public SelectWhereStep orNot(String left, String operator, String right) {
+        orNot(condition(left, operator, right));
+
+        return this;
+    }
+
+    @Override
+    public SelectWhereStep orNot(Conditions conditions) {
+        WHERE.add(new ConditionsImpl(OR_NOT, conditions));
+        return null;
     }
 
     //--

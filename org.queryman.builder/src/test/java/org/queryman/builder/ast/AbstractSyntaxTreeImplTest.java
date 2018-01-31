@@ -36,7 +36,7 @@ public class AbstractSyntaxTreeImplTest {
 
         tree.endNode();
 
-        assertEquals("select id, name, phone, date, email from table1 table2 where id=id", tree.toString());
+        assertEquals("SELECT id, name, phone, date, email FROM table1 table2 WHERE id=id", tree.toString());
 
         Field field = tree.getClass().getDeclaredField("NODES");
         field.setAccessible(true);
