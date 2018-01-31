@@ -67,11 +67,26 @@ class SelectImplTest extends BaseTest {
            .where(condition("name", "=", "timur")
               .and("phone", "is", "null")
               .or("email", "=", "'timur@shaidullin.net'")
+              .and(condition("id", "!=", "3")
+                 .and("name", "is not", "max")
+              )
            )
            .or("id", "=", "1")
            .sql();
 
-        assertEquals("SELECT id, name FROM user WHERE (name = timur AND phone is null OR email = 'timur@shaidullin.net') OR id = 1", sql);
+        assertEquals("SELECT id, name FROM user WHERE (name = timur AND phone is null OR email = 'timur@shaidullin.net' AND (id != 3 AND name is not max)) OR id = 1", sql);
+
+        sql = select.from("user")
+           .where(condition("name", "=", "timur")
+              .and("phone", "is", "null")
+           )
+           .or("id", "=", "1")
+           .and(condition("id", "!=", "3")
+              .and("name", "is not", "max")
+           )
+           .sql();
+
+        assertEquals("SELECT id, name FROM user WHERE (name = timur AND phone is null) OR id = 1 AND (id != 3 AND name is not max)", sql);
     }
 
     @Test

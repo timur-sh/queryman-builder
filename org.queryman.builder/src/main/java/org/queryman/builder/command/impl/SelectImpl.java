@@ -9,6 +9,7 @@ package org.queryman.builder.command.impl;
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
+import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
@@ -18,16 +19,12 @@ import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
-import org.queryman.builder.command.Conditions;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.ast.NodesMetadata.AND;
-import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
-import static org.queryman.builder.ast.NodesMetadata.OR;
-import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 
 /**
@@ -44,13 +41,15 @@ public class SelectImpl extends AbstractQuery implements
    SelectOffsetStep,
    SelectFinalStep {
 
-    private final String[] COLUMNS_SELECTED;
-    private final List<String>     FROM     = new LinkedList<>();
-    private final List<String>     GROUP_BY = new LinkedList<>();
-    private final List<Conditions> WHERE    = new LinkedList<>();
-    private final List<OrderBy>    ORDER_BY = new LinkedList<>();
-    private Long limit;
-    private Long offset;
+    private final List<String>  FROM     = new LinkedList<>();
+    private final List<String>  GROUP_BY = new LinkedList<>();
+    private final List<OrderBy> ORDER_BY = new LinkedList<>();
+
+    private final String[]   COLUMNS_SELECTED;
+
+    private       Conditions conditions;
+    private       Long       limit;
+    private       Long       offset;
 
 
     public SelectImpl(
@@ -66,27 +65,20 @@ public class SelectImpl extends AbstractQuery implements
         tree.startNode(SELECT, ", ")
            .addLeaves(COLUMNS_SELECTED);
 
-        if (!FROM.isEmpty()) {
+        if (!FROM.isEmpty())
             tree.startNode(NodesMetadata.FROM, ", ")
                .addLeaves(FROM)
                .endNode();
-        }
 
-        if (!WHERE.isEmpty()) {
-            tree.startNode(NodesMetadata.WHERE);
+        if (conditions != null)
+            tree.startNode(NodesMetadata.WHERE)
+               .peek(conditions)
+               .endNode();
 
-            for (Conditions condition : WHERE) {
-                tree.peek(condition);
-            }
-
-            tree.endNode();
-        }
-
-        if (!GROUP_BY.isEmpty()) {
+        if (!GROUP_BY.isEmpty())
             tree.startNode(NodesMetadata.GROUP_BY, ", ")
                .addLeaves(GROUP_BY)
                .endNode();
-        }
 
         if (!ORDER_BY.isEmpty()) {
             tree.startNode(NodesMetadata.ORDER_BY, ", ");
@@ -100,13 +92,13 @@ public class SelectImpl extends AbstractQuery implements
 
         if (limit != null)
             tree.startNode(NodesMetadata.LIMIT)
-                .addLeaf(String.valueOf(limit))
-                .endNode();
+               .addLeaf(String.valueOf(limit))
+               .endNode();
 
         if (offset != null)
             tree.startNode(NodesMetadata.OFFSET)
-                .addLeaf(String.valueOf(offset))
-                .endNode();
+               .addLeaf(String.valueOf(offset))
+               .endNode();
 
         tree.endNode();
     }
@@ -135,8 +127,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectImpl where(Conditions conditions) {
-        WHERE.clear();
-        WHERE.add(conditions);
+        this.conditions = new ConditionsImpl(EMPTY, conditions);
 
         return this;
     }
@@ -150,7 +141,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectImpl and(Conditions conditions) {
-        WHERE.add(new ConditionsImpl(AND, conditions));
+        this.conditions.and(conditions);
 
         return this;
     }
@@ -164,7 +155,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectWhereStep andNot(Conditions conditions) {
-        WHERE.add(new ConditionsImpl(AND_NOT, conditions));
+        this.conditions.andNot(conditions);
 
         return this;
     }
@@ -178,7 +169,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectImpl or(Conditions conditions) {
-        WHERE.add(new ConditionsImpl(OR, conditions));
+        this.conditions.or(conditions);
 
         return this;
     }
@@ -192,7 +183,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectWhereStep orNot(Conditions conditions) {
-        WHERE.add(new ConditionsImpl(OR_NOT, conditions));
+        this.conditions.orNot(conditions);
         return null;
     }
 

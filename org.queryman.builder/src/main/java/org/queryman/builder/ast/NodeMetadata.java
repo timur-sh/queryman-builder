@@ -36,8 +36,17 @@ public class NodeMetadata {
         return name;
     }
 
+    public void setParentheses(boolean parentheses) {
+        this.parentheses = parentheses;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     public boolean isParentheses() {
         return parentheses;
+
     }
 
     public int getPosition() {
