@@ -15,6 +15,7 @@ import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
 import org.queryman.builder.command.select.SelectLimitStep;
+import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
@@ -39,6 +40,7 @@ public class SelectImpl extends AbstractQuery implements
    SelectGroupByStep,
    SelectOrderByStep,
    SelectLimitStep,
+   SelectOffsetStep,
    SelectFinalStep,
    Select {
 
@@ -48,6 +50,7 @@ public class SelectImpl extends AbstractQuery implements
     private final List<Conditions> WHERE    = new LinkedList<>();
     private final List<OrderBy>    ORDER_BY = new LinkedList<>();
     private Long limit;
+    private Long offset;
 
 
     public SelectImpl(
@@ -98,6 +101,11 @@ public class SelectImpl extends AbstractQuery implements
         if (limit != null)
             tree.startNode(NodesMetadata.LIMIT)
                 .addLeaf(String.valueOf(limit))
+                .endNode();
+
+        if (offset != null)
+            tree.startNode(NodesMetadata.OFFSET)
+                .addLeaf(String.valueOf(offset))
                 .endNode();
 
         tree.endNode();
@@ -197,6 +205,12 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public SelectImpl limit(long limit) {
         this.limit = limit;
+        return this;
+    }
+
+    @Override
+    public SelectImpl offset(long offset) {
+        this.offset = offset;
         return this;
     }
 }

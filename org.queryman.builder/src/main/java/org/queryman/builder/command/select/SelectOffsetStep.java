@@ -9,6 +9,6 @@ package org.queryman.builder.command.select;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectLimitStep extends SelectOffsetStep {
-    SelectOffsetStep limit(long limit);
+public interface SelectOffsetStep extends SelectFinalStep {
+    SelectFinalStep offset(long offset);
 }
