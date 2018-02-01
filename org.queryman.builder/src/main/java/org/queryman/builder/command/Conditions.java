@@ -14,10 +14,22 @@ import org.queryman.builder.ast.AstVisitor;
  * {@link Conditions} must be used only as a part of query: {@code SELECT},
  * {@code UPDATE} etc.
  *
+ * Example:
+ * <p><code>
+ * PostgreSQL.conditions("id", "=", "1")
+ *    .and("name", "=", "Alan")
+ *    .and(condition("age", ">", "29")
+ *       .and("gender", "!=", "male")
+ *       .or("", "=", "3")
+ *    )
+ * </code></p>
+ *
  * @author Timur Shaidullin
  */
 public interface Conditions extends AstVisitor {
     /**
+     * {@code AND} condition.
+     *
      * Example:
      * <p>
      * conditions.and("id", "=", "1")
@@ -27,10 +39,11 @@ public interface Conditions extends AstVisitor {
     Conditions and(String leftValue, String operator, String rightValue);
 
     /**
+     * {@code AND} condition.
+     *
      * Example:
      * <p>
-     * conditions.and("id", "=", "1")
-     *  .and(condition("id", "=", "2")
+     * conditions.and(condition("id", "=", "2")
      *      .and("id", "=", "3")
      *      .or("id", "=", "3")
      *  )
@@ -40,6 +53,8 @@ public interface Conditions extends AstVisitor {
     Conditions and(Conditions conditions);
 
     /**
+     * {@code AND NOT} condition.
+     *
      * Example:
      * <p>
      * conditions.andNot("id", "=", "1")
@@ -48,9 +63,23 @@ public interface Conditions extends AstVisitor {
      */
     Conditions andNot(String leftValue, String operator, String rightValue);
 
+    /**
+     * {@code AND NOT} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.andNot(condition("id", "=", "2")
+     *      .and("id", "=", "3")
+     *      .or("id", "=", "3")
+     *  )
+     * ...
+     * </p>
+     */
     Conditions andNot(Conditions conditions);
 
     /**
+     * {@code OR} condition.
+     *
      * Example:
      * <p>
      * conditions.or("id", "=", "1")
@@ -59,16 +88,42 @@ public interface Conditions extends AstVisitor {
      */
     Conditions or(String leftValue, String operator, String rightValue);
 
+    /**
+     * {@code OR} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.or(condition("id", "=", "2")
+     *      .and("id", "=", "3")
+     *      .or("id", "=", "3")
+     *  )
+     * ...
+     * </p>
+     */
     Conditions or(Conditions conditions);
 
     /**
+     * {@code OR NOT} condition.
+     *
      * Example:
      * <p>
-     * conditions.orNot("id", "=", "1")
+     * conditions.or("id", "=", "1")
      * ...
      * </p>
      */
     Conditions orNot(String leftValue, String operator, String rightValue);
 
+    /**
+     * {@code OR NOT} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.orNot(condition("id", "=", "2")
+     *      .and("id", "=", "3")
+     *      .or("id", "=", "3")
+     *  )
+     * ...
+     * </p>
+     */
     Conditions orNot(Conditions conditions);
 }
