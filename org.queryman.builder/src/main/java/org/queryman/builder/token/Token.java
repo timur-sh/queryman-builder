@@ -6,12 +6,31 @@
  */
 package org.queryman.builder.token;
 
+import org.queryman.builder.ast.AstVisitor;
+
 /**
- * PostgreSQL token is sequence of key words, identifiers, constants.
- * Any of above tokens must be based on this interface.
+ * PostgreSQL token can be a key word, an identifier(that is splitted on unqualifiedName
+ * and qualifiedName), a constant, an operator. Any of above tokens must be based
+ * on this interface.
+ *
+ * @see Field
+ * @see Keyword
+ * @see Operator
+ * @see UnquialifiedName
+ * @see QualifiedName
  *
  * @author Timur Shaidullin
  */
-public interface Token {
-    String getName();
+public interface Token extends AstVisitor {
+
 }
+
+/*
+token
+    field
+        unqualifiedName
+        qualifiedName
+        constant
+    identifier
+    operator
+ */

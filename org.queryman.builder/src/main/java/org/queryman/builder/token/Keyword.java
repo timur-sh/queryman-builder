@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.token;
 
+import org.queryman.builder.ast.AbstractSyntaxTree;
+
 /**
  * @author Timur Shaidullin
  */
@@ -18,5 +20,10 @@ public class Keyword extends AbstractToken {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void assemble(AbstractSyntaxTree tree) {
+
     }
 }

@@ -20,7 +20,7 @@ import org.queryman.builder.ast.AstVisitor;
  *    .and("name", "=", "Alan")
  *    .and(condition("age", ">", "29")
  *       .and("gender", "!=", "male")
- *       .or("", "=", "3")
+ *       .or("code", "=", "3")
  *    )
  * </code></p>
  *
@@ -39,13 +39,13 @@ public interface Conditions extends AstVisitor {
     Conditions and(String leftValue, String operator, String rightValue);
 
     /**
-     * {@code AND} condition.
+     * {@code AND} condition. This is useful to group expressions.
      *
      * Example:
      * <p>
-     * conditions.and(condition("id", "=", "2")
-     *      .and("id", "=", "3")
-     *      .or("id", "=", "3")
+     * conditions.and(condition("id", "=", "1")
+     *      .and("id2", "=", "3")
+     *      .or("id3", "=", "2")
      *  )
      * ...
      * </p>
@@ -64,13 +64,13 @@ public interface Conditions extends AstVisitor {
     Conditions andNot(String leftValue, String operator, String rightValue);
 
     /**
-     * {@code AND NOT} condition.
+     * {@code AND NOT} condition. This is useful to group expressions.
      *
      * Example:
      * <p>
-     * conditions.andNot(condition("id", "=", "2")
-     *      .and("id", "=", "3")
-     *      .or("id", "=", "3")
+     * conditions.andNot(condition("id", "=", "1")
+     *      .and("id2", "=", "2")
+     *      .or("id3", "=", "3")
      *  )
      * ...
      * </p>
@@ -89,13 +89,13 @@ public interface Conditions extends AstVisitor {
     Conditions or(String leftValue, String operator, String rightValue);
 
     /**
-     * {@code OR} condition.
+     * {@code OR} condition. This is useful to group expressions.
      *
      * Example:
      * <p>
      * conditions.or(condition("id", "=", "2")
-     *      .and("id", "=", "3")
-     *      .or("id", "=", "3")
+     *      .and("id2", "=", "2")
+     *      .or("id3", "=", "3")
      *  )
      * ...
      * </p>
@@ -114,13 +114,13 @@ public interface Conditions extends AstVisitor {
     Conditions orNot(String leftValue, String operator, String rightValue);
 
     /**
-     * {@code OR NOT} condition.
+     * {@code OR NOT} condition. This is useful to group expressions.
      *
      * Example:
      * <p>
-     * conditions.orNot(condition("id", "=", "2")
-     *      .and("id", "=", "3")
-     *      .or("id", "=", "3")
+     * conditions.orNot(condition("id", "=", "1")
+     *      .and("id2", "=", "2")
+     *      .or("id3", "=", "3")
      *  )
      * ...
      * </p>
