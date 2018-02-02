@@ -3,12 +3,17 @@ package org.queryman.builder.command.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.BaseTest;
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.constant;
+import static org.queryman.builder.PostgreSQL.expression;
+import static org.queryman.builder.PostgreSQL.qualifiedName;
+import static org.queryman.builder.PostgreSQL.unqualifiedName;
 
 class SelectImplTest extends BaseTest {
     private AbstractSyntaxTree ast;
@@ -20,17 +25,20 @@ class SelectImplTest extends BaseTest {
 
     @Test
     void select() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name", "min(price) as min");
-        assertEquals("SELECT id, name, min(price) as min", select.sql());
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        assertEquals("SELECT \"id\", \"name\"", select.sql());
+
+        SelectFromStep select2 = new SelectImpl(ast, unqualifiedName("id"), qualifiedName("name"), expression("min(price) as min"));
+        assertEquals("SELECT \"id\", \"name\", min(price) as min", select2.sql());
     }
 
     @Test
     void selectFrom() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 
-        assertEquals("SELECT id, name FROM books", select.from("books").sql());
+        assertEquals("SELECT \"id\", \"name\" FROM \"books\"", select.from("books").sql());
 
-        assertEquals("SELECT id, name FROM table1, table2", select.from("table1", "table2").sql());
+        assertEquals("SELECT \"id, \"name\" FROM \"table1\", \"table2\"", select.from("table1", "table2").sql());
     }
 
     //---
@@ -44,20 +52,20 @@ class SelectImplTest extends BaseTest {
            .where("id", "=", "1")
            .and("id2", "=", "2")
            .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2", sql);
+        assertEquals("SELECT \"id\", \"name\" FROM \"books\" WHERE \"id\" = 1 AND \"id2\" = 2", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
            .andNot("id2", "=", "2")
            .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT id2 = 2", sql);
+        assertEquals("SELECT \"id\", name FROM books WHERE \"id\" = 1 AND NOT \"id2\" = 2", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
            .orNot("id3", "=", "3")
            .andNot("id2", "=", "2")
            .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
+        assertEquals("SELECT \"id\", \"name\" FROM books WHERE \"id\" = 1 OR NOT \"id3\" = 3 AND NOT \"id2\" = 2", sql);
     }
 
     @Test
@@ -74,7 +82,7 @@ class SelectImplTest extends BaseTest {
            .or("id", "=", "1")
            .sql();
 
-        assertEquals("SELECT id, name FROM user WHERE (name = timur AND phone is null OR email = 'timur@shaidullin.net' AND (id != 3 AND name is not max)) OR id = 1", sql);
+        assertEquals("SELECT id, name FROM user WHERE (name = timur AND \"phone\" is \"null\" OR \"email\" = 'timur@shaidullin.net' AND (\"id\" != 3 AND \"name\" is not 'max')) OR \"id\" = 1", sql);
 
         sql = select.from("user")
            .where(condition("name", "=", "timur")

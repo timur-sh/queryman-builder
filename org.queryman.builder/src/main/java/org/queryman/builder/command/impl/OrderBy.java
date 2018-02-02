@@ -34,15 +34,15 @@ final class OrderBy implements AstVisitor {
 
     @Override
     public void assemble(AbstractSyntaxTree tree) {
-        tree.startNode(NodesMetadata.EMPTY)
-           .addLeaf(name);
-
-        if (sorting != null)
-            tree.addLeaf(sorting);
-
-        if (nulls != null)
-            tree.addLeaf(nulls);
-
-        tree.endNode();
+//        tree.startNode(NodesMetadata.EMPTY)
+//           .addLeaf(name);
+//
+//        if (sorting != null)
+//            tree.addLeaf(sorting);
+//
+//        if (nulls != null)
+//            tree.addLeaf(nulls);
+//
+//        tree.endNode();
     }
 }

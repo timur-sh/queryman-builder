@@ -1,8 +1,12 @@
 package org.queryman.builder.ast;
 
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.PostgreSQL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.PostgreSQL.keyword;
+import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.PostgreSQL.qualifiedName;
 import static org.queryman.builder.ast.NodeUtil.node;
 
 class NodeImplTest {
@@ -10,27 +14,27 @@ class NodeImplTest {
     void simpleTree() {
         Node node = node(NodesMetadata.SELECT).setDelimiter(",");
 
-        node.addLeaf("id")
-           .addLeaf("name")
+        node.addLeaf(qualifiedName("id"))
+           .addLeaf(qualifiedName("name"))
            .setDelimiter(", ")
            .addChildNode(
-              node("from")
-                 .addLeaf("table1")
+              node(keyword("from"))
+                 .addLeaf(qualifiedName("table1"))
                  .addChildNode(
-                    node("left join")
-                       .addLeaf("table2")
-                       .addChildNode(node("on")
-                          .addLeaf("id")
-                          .addLeaf("=")
-                          .addLeaf("id")
+                    node(keyword("left join"))
+                       .addLeaf(qualifiedName("table2"))
+                       .addChildNode(node(keyword("on"))
+                          .addLeaf(qualifiedName("id"))
+                          .addLeaf(operator("="))
+                          .addLeaf(qualifiedName("id"))
                           .setDelimiter("")
                        )
                  )
            )
-           .addChildNode(node("condition")
-              .addLeaf("id")
-              .addLeaf("=")
-              .addLeaf("id")
+           .addChildNode(node(keyword("condition"))
+              .addLeaf(qualifiedName("id"))
+              .addLeaf(operator("="))
+              .addLeaf(qualifiedName("id"))
            );
 
         TreeFormatter formatter = new TreeFormatter();

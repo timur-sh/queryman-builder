@@ -9,11 +9,16 @@ package org.queryman.builder.command.impl;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.token.Field;
+import org.queryman.builder.token.Operator;
+import org.queryman.builder.token.Token;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.PostgreSQL.qualifiedName;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
@@ -29,13 +34,17 @@ public final class ConditionsImpl implements
    Conditions {
 
     private NodeMetadata metadata;
-    private String       leftValue;
-    private String       operator;
-    private String       rightValue;
+    private Token        leftValue;
+    private Operator     operator;
+    private Token        rightValue;
 
     private final List<Conditions> CONDITIONS = new LinkedList<>();
 
     public ConditionsImpl(String leftValue, String operator, String rightValue) {
+        this(qualifiedName(leftValue), operator(operator), qualifiedName(leftValue));
+    }
+
+    public ConditionsImpl(Field leftValue, Operator operator, Field rightValue) {
         this.leftValue = leftValue;
         this.operator = operator;
         this.rightValue = rightValue;
@@ -108,7 +117,9 @@ public final class ConditionsImpl implements
             tree.startNode(EMPTY);
 
         if (!absentOperatorAndOperands())
-            tree.addLeaves(leftValue, operator, rightValue);
+            tree.startNode(new NodeMetadata(operator))
+               .addLeaves(leftValue, rightValue)
+               .endNode();
 
         if (CONDITIONS.size() == 1)
             tree.peek(CONDITIONS.get(0));

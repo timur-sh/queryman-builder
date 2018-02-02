@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.token.Token;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
  */
 public final class NodeImpl implements Node {
     private final NodeMetadata nodeName;
-    private final List<String> leaves = new LinkedList<>();
+    private final List<Token> leaves = new LinkedList<>();
     private final List<Node>   nodes  = new LinkedList<>();
 
     private String separator = " ";
@@ -32,8 +34,8 @@ public final class NodeImpl implements Node {
     }
 
     @Override
-    public Node addLeaf(String name) {
-        leaves.add(name);
+    public Node addLeaf(Token token) {
+        leaves.add(token);
         return this;
     }
 
@@ -49,7 +51,7 @@ public final class NodeImpl implements Node {
     }
 
     @Override
-    public List<String> getLeaves() {
+    public List<Token> getLeaves() {
         return leaves;
     }
 

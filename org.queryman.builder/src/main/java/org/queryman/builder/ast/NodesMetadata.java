@@ -6,35 +6,41 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.Keywords;
+import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.token.Keyword;
+
+import static org.queryman.builder.PostgreSQL.keyword;
+
 /**
  * List of all configured {@link Node Metadata} objects.
  *
  * @author Timur Shaidullin
  */
 public final class NodesMetadata {
-    public static final NodeMetadata SELECT             = new NodeMetadata("SELECT");
-    public static final NodeMetadata SELECT_DISTINCT    = new NodeMetadata("SELECT DISTINCT");
-    public static final NodeMetadata SELECT_DISTINCT_ON = new NodeMetadata("SELECT DISTINCT ON");
+    public static final NodeMetadata SELECT             = new NodeMetadata(Keywords.SELECT);
+    public static final NodeMetadata SELECT_DISTINCT    = new NodeMetadata(new Keyword("SELECT DISTINCT"));
+    public static final NodeMetadata SELECT_DISTINCT_ON = new NodeMetadata(new Keyword("SELECT DISTINCT ON"));
 
-    public static final NodeMetadata FROM = new NodeMetadata("FROM");
+    public static final NodeMetadata FROM = new NodeMetadata(Keywords.FROM);
 
-    public static final NodeMetadata GROUP_BY = new NodeMetadata("GROUP BY");
+    public static final NodeMetadata GROUP_BY = new NodeMetadata(Keywords.GROUP_BY);
 
-    public static final NodeMetadata ORDER_BY = new NodeMetadata("ORDER BY");
+    public static final NodeMetadata ORDER_BY = new NodeMetadata(Keywords.ORDER_BY);
 
-    public static final NodeMetadata WHERE = new NodeMetadata("WHERE");
+    public static final NodeMetadata WHERE = new NodeMetadata(Keywords.WHERE);
 
-    public static final NodeMetadata LIMIT = new NodeMetadata("LIMIT");
-    public static final NodeMetadata OFFSET = new NodeMetadata("OFFSET");
+    public static final NodeMetadata LIMIT = new NodeMetadata(Keywords.LIMIT);
+    public static final NodeMetadata OFFSET = new NodeMetadata(Keywords.OFFSET);
 
 
-    public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata("", 0, true);
-    public static final NodeMetadata EMPTY         = new NodeMetadata("");
+    public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata(keyword(""), 0, true);
+    public static final NodeMetadata EMPTY         = new NodeMetadata(keyword(""));
 
-    public static final NodeMetadata AND = new NodeMetadata("AND");
-    public static final NodeMetadata AND_NOT = new NodeMetadata("AND NOT");
-    public static final NodeMetadata OR  = new NodeMetadata("OR");
-    public static final NodeMetadata OR_NOT  = new NodeMetadata("OR NOT");
+    public static final NodeMetadata AND = new NodeMetadata(Keywords.AND);
+    public static final NodeMetadata AND_NOT = new NodeMetadata(Keywords.AND_NOT);
+    public static final NodeMetadata OR = new NodeMetadata(Keywords.OR);
+    public static final NodeMetadata OR_NOT = new NodeMetadata(Keywords.OR_NOT);
 
 
 }

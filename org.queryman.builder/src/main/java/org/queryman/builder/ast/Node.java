@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.token.Token;
+
 import java.util.List;
 
 /**
@@ -22,12 +24,12 @@ public interface Node {
     /**
      * Add leaf.
      */
-    Node addLeaf(String value);
+    Node addLeaf(Token value);
 
     /**
      * Get leaves.
      */
-    List<String> getLeaves();
+    List<Token> getLeaves();
 
     /**
      * Get children nodes.

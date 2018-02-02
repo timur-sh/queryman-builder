@@ -19,10 +19,19 @@ import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
+import org.queryman.builder.token.Constant;
+import org.queryman.builder.token.Field;
+import org.queryman.builder.token.Name;
+import org.queryman.builder.token.QualifiedName;
+import org.queryman.builder.token.Token;
+import org.queryman.builder.utils.Tools;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
@@ -41,21 +50,30 @@ public class SelectImpl extends AbstractQuery implements
    SelectOffsetStep,
    SelectFinalStep {
 
-    private final List<String>  FROM     = new LinkedList<>();
-    private final List<String>  GROUP_BY = new LinkedList<>();
+    private final List<Token>   FROM     = new LinkedList<>();
+    private final List<Token>   GROUP_BY = new LinkedList<>();
     private final List<OrderBy> ORDER_BY = new LinkedList<>();
 
-    private final String[]   COLUMNS_SELECTED;
+    private final Token[] COLUMNS_SELECTED;
 
-    private       Conditions conditions;
-    private       Long       limit;
-    private       Long       offset;
+    private Conditions conditions;
+    private Constant   limit;
+    private Constant   offset;
 
+    public SelectImpl(AbstractSyntaxTree ast, String... columnsSelected) {
+        this(
+           ast,
+           Arrays.stream(columnsSelected)
+              .map(QualifiedName::new)
+              .collect(Collectors.toList())
+        );
+    }
 
-    public SelectImpl(
-       AbstractSyntaxTree ast,
-       String... columnsSelected
-    ) {
+    public SelectImpl(AbstractSyntaxTree ast, List<Field> names) {
+        this(ast, names.toArray(Tools.EMPTY_FIELD));
+    }
+
+    public SelectImpl(AbstractSyntaxTree ast, Field... columnsSelected) {
         super(ast);
         this.COLUMNS_SELECTED = columnsSelected;
     }
@@ -83,21 +101,20 @@ public class SelectImpl extends AbstractQuery implements
         if (!ORDER_BY.isEmpty()) {
             tree.startNode(NodesMetadata.ORDER_BY, ", ");
 
-            for (OrderBy orderBy : ORDER_BY) {
+            for (OrderBy orderBy : ORDER_BY)
                 tree.peek(orderBy);
-            }
 
             tree.endNode();
         }
 
         if (limit != null)
             tree.startNode(NodesMetadata.LIMIT)
-               .addLeaf(String.valueOf(limit))
+               .addLeaf(limit)
                .endNode();
 
         if (offset != null)
             tree.startNode(NodesMetadata.OFFSET)
-               .addLeaf(String.valueOf(offset))
+               .addLeaf(offset)
                .endNode();
 
         tree.endNode();
@@ -110,7 +127,11 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl from(String... tables) {
         FROM.clear();
-        FROM.addAll(List.of(tables));
+        FROM.addAll(
+           Arrays.stream(tables)
+              .map(QualifiedName::new)
+              .collect(Collectors.toList())
+        );
         return this;
     }
 
@@ -193,7 +214,11 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectImpl groupBy(String... expressions) {
-        GROUP_BY.addAll(List.of(expressions));
+        GROUP_BY.addAll(
+           Arrays.stream(expressions)
+              .map(QualifiedName::new)
+              .collect(Collectors.toList())
+        );
         return this;
     }
 
@@ -222,13 +247,13 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public SelectImpl limit(long limit) {
-        this.limit = limit;
+        this.limit = asNumber(limit);
         return this;
     }
 
     @Override
     public SelectImpl offset(long offset) {
-        this.offset = offset;
+        this.offset = asNumber(offset);
         return this;
     }
 }

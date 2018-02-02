@@ -9,5 +9,5 @@ package org.queryman.builder.token;
 /**
  * @author Timur Shaidullin
  */
-public class Field {
+public interface Field extends Token {
 }

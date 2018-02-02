@@ -9,5 +9,5 @@ package org.queryman.builder.token;
 /**
  * @author Timur Shaidullin
  */
-public class UnquialifiedName {
+public interface Name extends Field {
 }

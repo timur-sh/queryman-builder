@@ -6,26 +6,32 @@
  */
 package org.queryman.builder.ast;
 
-import org.queryman.builder.utils.StringUtils;
+import org.queryman.builder.token.Token;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Timur Shaidullin
  */
 final class TreeFormatter {
     String treeToString(Node node) {
-        List<String> leaves = node.getLeaves();
+        List<String> leaves = node.getLeaves()
+           .stream()
+           .map(Token::getName)
+           .collect(Collectors.toList());
 
-        List<String> list = new ArrayList<>(leaves.subList(0, node.getNodeMetadata().getPosition()));
+        NodeMetadata metadata = node.getNodeMetadata();
 
-        if (node.getNodeMetadata().getName().length() > 0) {
-            list.add(node.getNodeMetadata().getName());
+        List<String> list = new ArrayList<>(leaves.subList(0, metadata.getPosition()));
+
+        if (metadata.getToken().isNonEmpty()) {
+            list.add(metadata.getToken().getName());
         }
 
         if (leaves.size() > 0) {
-            List<String> tmp = leaves.subList(node.getNodeMetadata().getPosition(), leaves.size());
+            List<String> tmp = leaves.subList(metadata.getPosition(), leaves.size());
             list.add(String.join(node.getDelimiter(), tmp));
         }
 
@@ -35,7 +41,7 @@ final class TreeFormatter {
             }
         }
 
-        return new Pipeline(node.getNodeMetadata())
+        return new Pipeline(metadata)
            .process(list);
     }
 

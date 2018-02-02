@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.queryman.builder.PostgreSQL.qualifiedName;
 import static org.queryman.builder.ast.NodesMetadata.*;
 
 public class AbstractSyntaxTreeImplTest {
@@ -16,20 +17,20 @@ public class AbstractSyntaxTreeImplTest {
         AbstractSyntaxTree tree = new AbstractSyntaxTreeImpl();
 
         tree.startNode(SELECT, ", ");
-        tree.addLeaf("id");
-        tree.addLeaf("name");
-        tree.addLeaf("phone");
+        tree.addLeaf(qualifiedName("id"));
+        tree.addLeaf(qualifiedName("name"));
+        tree.addLeaf(qualifiedName("phone"));
 
-        tree.addLeaves("date", "email");
+        tree.addLeaves(qualifiedName("date"), qualifiedName("email"));
 
         tree.startNode(FROM);
-        tree.addLeaf("table1").addLeaf("table2").setDelimiter(" ");
+        tree.addLeaf(qualifiedName("table1")).addLeaf(qualifiedName("table2")).setDelimiter(" ");
         tree.endNode();
 
         tree.startNode(WHERE, "")
-           .addLeaf("id")
-           .addLeaf("=")
-           .addLeaf("id")
+           .addLeaf(qualifiedName("id"))
+           .addLeaf(qualifiedName("="))
+           .addLeaf(qualifiedName("id"))
            .endNode();
 
         assertThrows(BrokenTreeException.class, () -> tree.toString());

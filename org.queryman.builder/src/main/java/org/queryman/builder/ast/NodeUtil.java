@@ -6,11 +6,13 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.token.Keyword;
+
 /**
  * @author Timur Shaidullin
  */
 class NodeUtil {
-    static Node node(String name) {
+    static Node node(Keyword name) {
         return new NodeImpl(new NodeMetadata(name));
     }
 

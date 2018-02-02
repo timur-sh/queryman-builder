@@ -9,7 +9,6 @@ package org.queryman.builder;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.select.SelectFinalStep;
-import org.queryman.builder.token.Identifier;
 
 /**
  * This {@code class} represents entry point of sql commands of PostgreSQL.
@@ -27,9 +26,9 @@ public class Command {
     //---
     // SELECT API
     //---
-    public SelectFinalStep select(Identifier... columns) {
-        return new SelectImpl(ast);
-    }
+//    public SelectFinalStep select(Identifier... columns) {
+//        return new SelectImpl(ast);
+//    }
 
 
 //    public static

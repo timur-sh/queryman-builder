@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.utils;
 
+import org.queryman.builder.token.Token;
+
 import java.util.Objects;
 
 /**
@@ -14,5 +16,9 @@ import java.util.Objects;
 public class StringUtils {
     public static boolean isEmpty(String string) {
         return string == null || Objects.equals(string, "");
+    }
+
+    public static boolean isEmpty(Token token) {
+        return token == null || isEmpty(token.getName());
     }
 }

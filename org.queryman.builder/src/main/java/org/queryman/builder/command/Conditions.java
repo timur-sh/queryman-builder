@@ -7,6 +7,10 @@
 package org.queryman.builder.command;
 
 import org.queryman.builder.ast.AstVisitor;
+import org.queryman.builder.token.Field;
+import org.queryman.builder.token.Name;
+import org.queryman.builder.token.Operator;
+import org.queryman.builder.token.Token;
 
 /**
  * A search condition.
@@ -36,7 +40,23 @@ public interface Conditions extends AstVisitor {
      * ...
      * </p>
      */
-    Conditions and(String leftValue, String operator, String rightValue);
+    Conditions and(String leftField, String operator, String rightField);
+//
+//    /**
+//     * {@code AND} condition.
+//     *
+//     * Example:
+//     * <p>
+//     * conditions.and("id", "=", "1")
+//     * ...
+//     * </p>
+//     *
+//     * @see org.queryman.builder.PostgreSQL#unqualifiedName(String)
+//     * @see org.queryman.builder.PostgreSQL#qualifiedName(String)
+//     *
+//     * @see org.queryman.builder.PostgreSQL (constants)
+//     */
+//    Conditions and(Field leftField, Operator operator, Field rightField);
 
     /**
      * {@code AND} condition. This is useful to group expressions.
@@ -61,7 +81,7 @@ public interface Conditions extends AstVisitor {
      * ...
      * </p>
      */
-    Conditions andNot(String leftValue, String operator, String rightValue);
+    Conditions andNot(String leftField, String operator, String rightField);
 
     /**
      * {@code AND NOT} condition. This is useful to group expressions.
@@ -86,7 +106,7 @@ public interface Conditions extends AstVisitor {
      * ...
      * </p>
      */
-    Conditions or(String leftValue, String operator, String rightValue);
+    Conditions or(String leftField, String operator, String rightField);
 
     /**
      * {@code OR} condition. This is useful to group expressions.
@@ -111,7 +131,7 @@ public interface Conditions extends AstVisitor {
      * ...
      * </p>
      */
-    Conditions orNot(String leftValue, String operator, String rightValue);
+    Conditions orNot(String leftField, String operator, String rightField);
 
     /**
      * {@code OR NOT} condition. This is useful to group expressions.

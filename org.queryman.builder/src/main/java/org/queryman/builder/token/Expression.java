@@ -1,7 +1,7 @@
 /*
  *  Queryman. Java tools for working with queries of PostgreSQL database.
  *
- *  License: MIT License.
+ *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
 package org.queryman.builder.token;
@@ -9,8 +9,8 @@ package org.queryman.builder.token;
 /**
  * @author Timur Shaidullin
  */
-public class Operator extends Keyword {
-    public Operator(String name) {
-        super(name);
+public class Expression extends AbstractToken implements Field {
+    public Expression(String constant) {
+        super(constant);
     }
 }

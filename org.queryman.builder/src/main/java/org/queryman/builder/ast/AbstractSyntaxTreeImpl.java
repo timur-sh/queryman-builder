@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.token.Token;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -65,22 +67,22 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     }
 
     @Override
-    public AbstractSyntaxTree addLeaf(String leaf) {
-        NODES.peek().addLeaf(leaf);
+    public AbstractSyntaxTree addLeaf(Token token) {
+        NODES.peek().addLeaf(token);
 
         return this;
     }
 
     @Override
-    public AbstractSyntaxTree addLeaves(String... leaves) {
-        NODES.peek().getLeaves().addAll(Arrays.asList(leaves));
+    public AbstractSyntaxTree addLeaves(Token... tokens) {
+        NODES.peek().getLeaves().addAll(Arrays.asList(tokens));
 
         return this;
     }
 
     @Override
-    public AbstractSyntaxTree addLeaves(List<String> leaves) {
-        NODES.peek().getLeaves().addAll(leaves);
+    public AbstractSyntaxTree addLeaves(List<Token> tokens) {
+        NODES.peek().getLeaves().addAll(tokens);
 
         return this;
     }

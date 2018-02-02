@@ -6,33 +6,35 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.token.Token;
+
 /**
  * NodeMetadata contains configuration of particular node.
  *
  * @author Timur Shaidullin
  */
 public class NodeMetadata {
-    private final String name;
+    private final Token name;
     private boolean parentheses;
 
     // position in a condition, where operator is appeared
     private int position;
 
-    public NodeMetadata(String name) {
+    public NodeMetadata(Token name) {
         this(name, 0, false);
     }
 
-    public NodeMetadata(String name, int position) {
+    public NodeMetadata(Token name, int position) {
         this(name, position, false);
     }
 
-    public NodeMetadata(String name, int position, boolean parentheses) {
+    public NodeMetadata(Token name, int position, boolean parentheses) {
         this.name = name;
         this.position = position;
         this.parentheses = parentheses;
     }
 
-    public String getName() {
+    public Token getToken() {
         return name;
     }
 
@@ -55,6 +57,6 @@ public class NodeMetadata {
 
     @Override
     public String toString() {
-        return name;
+        return name.getName();
     }
 }
