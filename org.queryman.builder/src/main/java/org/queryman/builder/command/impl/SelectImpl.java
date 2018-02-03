@@ -7,6 +7,7 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
@@ -19,10 +20,8 @@ import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
-import org.queryman.builder.token.Constant;
+import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Field;
-import org.queryman.builder.token.Name;
-import org.queryman.builder.token.QualifiedName;
 import org.queryman.builder.token.Token;
 import org.queryman.builder.utils.Tools;
 
@@ -57,14 +56,14 @@ public class SelectImpl extends AbstractQuery implements
     private final Token[] COLUMNS_SELECTED;
 
     private Conditions conditions;
-    private Constant   limit;
-    private Constant   offset;
+    private Expression limit;
+    private Expression   offset;
 
     public SelectImpl(AbstractSyntaxTree ast, String... columnsSelected) {
         this(
            ast,
            Arrays.stream(columnsSelected)
-              .map(QualifiedName::new)
+              .map(PostgreSQL::asName)
               .collect(Collectors.toList())
         );
     }
@@ -129,7 +128,7 @@ public class SelectImpl extends AbstractQuery implements
         FROM.clear();
         FROM.addAll(
            Arrays.stream(tables)
-              .map(QualifiedName::new)
+              .map(PostgreSQL::asName)
               .collect(Collectors.toList())
         );
         return this;
@@ -216,7 +215,7 @@ public class SelectImpl extends AbstractQuery implements
     public SelectImpl groupBy(String... expressions) {
         GROUP_BY.addAll(
            Arrays.stream(expressions)
-              .map(QualifiedName::new)
+              .map(PostgreSQL::asName)
               .collect(Collectors.toList())
         );
         return this;

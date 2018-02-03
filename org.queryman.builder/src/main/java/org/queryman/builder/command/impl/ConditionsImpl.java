@@ -16,9 +16,9 @@ import org.queryman.builder.token.Token;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.operator;
-import static org.queryman.builder.PostgreSQL.qualifiedName;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
@@ -41,7 +41,7 @@ public final class ConditionsImpl implements
     private final List<Conditions> CONDITIONS = new LinkedList<>();
 
     public ConditionsImpl(String leftValue, String operator, String rightValue) {
-        this(qualifiedName(leftValue), operator(operator), qualifiedName(leftValue));
+        this(asConstant(leftValue), operator(operator), asConstant(leftValue));
     }
 
     public ConditionsImpl(Field leftValue, Operator operator, Field rightValue) {

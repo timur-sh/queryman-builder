@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.keyword;
 import static org.queryman.builder.PostgreSQL.operator;
-import static org.queryman.builder.PostgreSQL.qualifiedName;
 import static org.queryman.builder.ast.NodeUtil.node;
 
 class NodeImplTest {
@@ -14,27 +14,27 @@ class NodeImplTest {
     void simpleTree() {
         Node node = node(NodesMetadata.SELECT).setDelimiter(",");
 
-        node.addLeaf(qualifiedName("id"))
-           .addLeaf(qualifiedName("name"))
+        node.addLeaf(asConstant("id"))
+           .addLeaf(asConstant("name"))
            .setDelimiter(", ")
            .addChildNode(
               node(keyword("from"))
-                 .addLeaf(qualifiedName("table1"))
+                 .addLeaf(asConstant("table1"))
                  .addChildNode(
                     node(keyword("left join"))
-                       .addLeaf(qualifiedName("table2"))
+                       .addLeaf(asConstant("table2"))
                        .addChildNode(node(keyword("on"))
-                          .addLeaf(qualifiedName("id"))
+                          .addLeaf(asConstant("id"))
                           .addLeaf(operator("="))
-                          .addLeaf(qualifiedName("id"))
+                          .addLeaf(asConstant("id"))
                           .setDelimiter("")
                        )
                  )
            )
            .addChildNode(node(keyword("condition"))
-              .addLeaf(qualifiedName("id"))
+              .addLeaf(asConstant("id"))
               .addLeaf(operator("="))
-              .addLeaf(qualifiedName("id"))
+              .addLeaf(asConstant("id"))
            );
 
         TreeFormatter formatter = new TreeFormatter();

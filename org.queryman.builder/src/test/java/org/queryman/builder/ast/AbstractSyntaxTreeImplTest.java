@@ -8,7 +8,7 @@ import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.queryman.builder.PostgreSQL.qualifiedName;
+import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.ast.NodesMetadata.*;
 
 public class AbstractSyntaxTreeImplTest {
@@ -17,20 +17,20 @@ public class AbstractSyntaxTreeImplTest {
         AbstractSyntaxTree tree = new AbstractSyntaxTreeImpl();
 
         tree.startNode(SELECT, ", ");
-        tree.addLeaf(qualifiedName("id"));
-        tree.addLeaf(qualifiedName("name"));
-        tree.addLeaf(qualifiedName("phone"));
+        tree.addLeaf(asName("id"));
+        tree.addLeaf(asName("name"));
+        tree.addLeaf(asName("phone"));
 
-        tree.addLeaves(qualifiedName("date"), qualifiedName("email"));
+        tree.addLeaves(asName("date"), asName("email"));
 
         tree.startNode(FROM);
-        tree.addLeaf(qualifiedName("table1")).addLeaf(qualifiedName("table2")).setDelimiter(" ");
+        tree.addLeaf(asName("table1")).addLeaf(asName("table2")).setDelimiter(" ");
         tree.endNode();
 
         tree.startNode(WHERE, "")
-           .addLeaf(qualifiedName("id"))
-           .addLeaf(qualifiedName("="))
-           .addLeaf(qualifiedName("id"))
+           .addLeaf(asName("id"))
+           .addLeaf(asName("="))
+           .addLeaf(asName("id"))
            .endNode();
 
         assertThrows(BrokenTreeException.class, () -> tree.toString());
