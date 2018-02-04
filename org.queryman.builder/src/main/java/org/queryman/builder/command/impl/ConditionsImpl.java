@@ -57,74 +57,99 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public ConditionsImpl and(String leftValue, String operator, String rightValue) {
+    public final Conditions and(String leftValue, String operator, String rightValue) {
         and(asConstant(leftValue), operator, asConstant(rightValue));
         return this;
     }
 
     @Override
-    public Conditions and(Expression leftField, String operator, Expression rightField) {
-        and(condition(leftField, operator(operator), rightField));
+    public final Conditions and(Expression leftField, String operator, Expression rightField) {
+        and(leftField, operator(operator), rightField);
         return this;
     }
 
     @Override
-    public Conditions and(Conditions conditions) {
+    public final Conditions and(Expression leftField, Operator operator, Expression rightField) {
+        and(condition(leftField, operator, rightField));
+        return this;
+    }
+
+    @Override
+    public final Conditions and(Conditions conditions) {
         CONDITIONS.add(new ConditionsImpl(AND, conditions));
         return this;
     }
 
     @Override
-    public ConditionsImpl andNot(String leftValue, String operator, String rightValue) {
+    public final Conditions andNot(String leftValue, String operator, String rightValue) {
         andNot(asConstant(leftValue), operator, asConstant(rightValue));
         return this;
     }
 
     @Override
-    public Conditions andNot(Expression leftField, String operator, Expression rightField) {
-        andNot(condition(leftField, operator(operator), rightField));
+    public final Conditions andNot(Expression leftField, String operator, Expression rightField) {
+        andNot(leftField, operator(operator), rightField);
         return this;
     }
 
     @Override
-    public Conditions andNot(Conditions conditions) {
+    public final Conditions andNot(Expression leftField, Operator operator, Expression rightField) {
+        andNot(condition(leftField, operator, rightField));
+        return this;
+    }
+
+    @Override
+    public final Conditions andNot(Conditions conditions) {
         CONDITIONS.add(new ConditionsImpl(AND_NOT, conditions));
         return this;
     }
 
     @Override
-    public ConditionsImpl or(String leftValue, String operator, String rightValue) {
+    public final Conditions or(String leftValue, String operator, String rightValue) {
         or(asConstant(leftValue), operator, asConstant(rightValue));
         return this;
     }
 
     @Override
-    public Conditions or(Expression leftField, String operator, Expression rightField) {
-        or(condition(leftField, operator(operator), rightField));
+    public final Conditions or(Expression leftField, String operator, Expression rightField) {
+        or(leftField, operator(operator), rightField);
 
         return this;
     }
 
     @Override
-    public Conditions or(Conditions conditions) {
+    public final Conditions or(Expression leftField, Operator operator, Expression rightField) {
+        or(condition(leftField, operator, rightField));
+
+        return this;
+    }
+
+    @Override
+    public final Conditions or(Conditions conditions) {
         CONDITIONS.add(new ConditionsImpl(OR, conditions));
         return this;
     }
 
     @Override
-    public ConditionsImpl orNot(String leftValue, String operator, String rightValue) {
+    public final Conditions orNot(String leftValue, String operator, String rightValue) {
         orNot(asConstant(leftValue), operator, asConstant(rightValue));
         return this;
     }
 
     @Override
-    public Conditions orNot(Expression leftField, String operator, Expression rightField) {
-        orNot(condition(leftField, operator(operator), rightField));
+    public final Conditions orNot(Expression leftField, String operator, Expression rightField) {
+        orNot(leftField, operator(operator), rightField);
         return this;
     }
 
     @Override
-    public Conditions orNot(Conditions conditions) {
+    public final Conditions orNot(Expression leftField, Operator operator, Expression rightField) {
+        orNot(condition(leftField, operator, rightField));
+        return this;
+    }
+
+    @Override
+    public final Conditions orNot(Conditions conditions) {
         CONDITIONS.add(new ConditionsImpl(OR_NOT, conditions));
         return this;
     }

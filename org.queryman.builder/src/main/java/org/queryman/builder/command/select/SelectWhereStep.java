@@ -8,6 +8,7 @@ package org.queryman.builder.command.select;
 
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.Operator;
 
 /**
  * @author Timur Shaidullin
@@ -17,11 +18,15 @@ public interface SelectWhereStep extends SelectWhereManySteps {
 
     SelectWhereStep and(Expression left, String operator, Expression right);
 
+    SelectWhereStep and(Expression left, Operator operator, Expression right);
+
     SelectWhereStep and(Conditions conditions);
 
     SelectWhereStep andNot(String left, String operator, String right);
 
     SelectWhereStep andNot(Expression left, String operator, Expression right);
+
+    SelectWhereStep andNot(Expression left, Operator operator, Expression right);
 
     SelectWhereStep andNot(Conditions conditions);
 
@@ -29,11 +34,15 @@ public interface SelectWhereStep extends SelectWhereManySteps {
 
     SelectWhereStep or(Expression left, String operator, Expression right);
 
+    SelectWhereStep or(Expression left, Operator operator, Expression right);
+
     SelectWhereStep or(Conditions conditions);
 
     SelectWhereStep orNot(Conditions conditions);
 
+    SelectWhereStep orNot(String left, String operator, String right);
+
     SelectWhereStep orNot(Expression left, String operator, Expression right);
 
-    SelectWhereStep orNot(String left, String operator, String right);
+    SelectWhereStep orNot(Expression left, Operator operator, Expression right);
 }

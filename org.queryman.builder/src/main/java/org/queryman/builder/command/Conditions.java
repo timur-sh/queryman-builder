@@ -58,11 +58,22 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
-     * conditions.and(asName("id"), operator("="), asNumber("1"))
+     * conditions.and(asName("id"), "=", asNumber("1"))
      * ...
      * </p>
      */
     Conditions and(Expression leftField, String operator, Expression rightField);
+
+    /**
+     * {@code AND} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.and(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions and(Expression leftField, Operator operator, Expression rightField);
 
     /**
      * {@code AND} condition. This is useful to group expressions.
@@ -83,11 +94,22 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
-     * conditions.andNot(asName("id"), operator("="), asNumber("1"))
+     * conditions.andNot(asName("id"), "=", asNumber("1"))
      * ...
      * </p>
      */
     Conditions andNot(Expression leftField, String operator, Expression rightField);
+
+    /**
+     * {@code AND NOT} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.andNot(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions andNot(Expression leftField, Operator operator, Expression rightField);
 
     /**
      * {@code AND NOT} condition.
@@ -119,6 +141,17 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
+     * conditions.or("id", "=", "1")
+     * ...
+     * </p>
+     */
+    Conditions or(String leftField, String operator, String rightField);
+
+    /**
+     * {@code OR} condition.
+     *
+     * Example:
+     * <p>
      * conditions.or(asName("id"), operator("="), asNumber("1"))
      * ...
      * </p>
@@ -130,11 +163,11 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
-     * conditions.or("id", "=", "1")
+     * conditions.or(asName("id"), operator("="), asNumber("1"))
      * ...
      * </p>
      */
-    Conditions or(String leftField, String operator, String rightField);
+    Conditions or(Expression leftField, Operator operator, Expression rightField);
 
     /**
      * {@code OR} condition. This is useful to group expressions.
@@ -155,11 +188,22 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
-     * conditions.orNot(asName("id"), operator("="), asNumber("1"))
+     * conditions.orNot(asName("id"), "=", asNumber("1"))
      * ...
      * </p>
      */
     Conditions orNot(Expression leftField, String operator, Expression rightField);
+
+    /**
+     * {@code OR} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.orNot(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions orNot(Expression leftField, Operator operator, Expression rightField);
 
     /**
      * {@code OR NOT} condition.

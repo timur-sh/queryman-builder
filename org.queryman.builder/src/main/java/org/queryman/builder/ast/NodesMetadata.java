@@ -38,10 +38,10 @@ public final class NodesMetadata {
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata(keyword(""), 0, true);
     public static final NodeMetadata EMPTY         = new NodeMetadata(keyword(""));
 
-    public static final NodeMetadata AND = new NodeMetadata(Operators.AND, 0);
-    public static final NodeMetadata AND_NOT = new NodeMetadata(Operators.AND_NOT, 0);
-    public static final NodeMetadata OR = new NodeMetadata(Operators.OR, 0);
-    public static final NodeMetadata OR_NOT = new NodeMetadata(Operators.OR_NOT, 0);
+    public static final NodeMetadata AND = new NodeMetadata(Operators.AND);
+    public static final NodeMetadata AND_NOT = new NodeMetadata(Operators.AND_NOT);
+    public static final NodeMetadata OR = new NodeMetadata(Operators.OR);
+    public static final NodeMetadata OR_NOT = new NodeMetadata(Operators.OR_NOT);
 
 
 }

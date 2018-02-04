@@ -29,6 +29,10 @@ public class PostgreSQL {
         return new ConditionsImpl(leftValue, operator, rightValue);
     }
 
+    public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
+        return new ConditionsImpl(leftValue, operator(operator), rightValue);
+    }
+
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
         return new ConditionsImpl(leftValue, operator, rightValue);
     }

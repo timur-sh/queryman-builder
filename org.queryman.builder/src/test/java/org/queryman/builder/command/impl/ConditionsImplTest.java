@@ -13,6 +13,11 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.Conditions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.Operators.GT;
+import static org.queryman.builder.Operators.GTE;
+import static org.queryman.builder.Operators.LT;
+import static org.queryman.builder.Operators.LTE;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
@@ -49,6 +54,39 @@ public class ConditionsImplTest {
         conditions.and("id2", "=", "2");
         conditions.assemble(ast);
         assertEquals("(id = 3 AND id2 = 2)", ast.toString());
+
+        conditions.and(asName("id3"), "!=", asConstant("3"));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND id2 = 2 AND id3 != 3)", ast.toString());
+
+        conditions.and(asName("id4"), GT, asConstant("4"));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND id2 = 2 AND id3 != 3 AND id4 > 4)", ast.toString());
+
+        conditions.and(condition(asName("id5"), GTE, asConstant("5")));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND id2 = 2 AND id3 != 3 AND id4 > 4 AND id5 >= 5)", ast.toString());
+    }
+
+    @Test
+    void andNot() {
+        Conditions conditions = new ConditionsImpl("id", "=", "3");
+
+        conditions.andNot("id2", "=", "2");
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND NOT id2 = 2)", ast.toString());
+
+        conditions.andNot(asName("id3"), "!=", asConstant("3"));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND NOT id2 = 2 AND NOT id3 != 3)", ast.toString());
+
+        conditions.andNot(asName("id4"), LT, asConstant("4"));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND NOT id2 = 2 AND NOT id3 != 3 AND NOT id4 < 4)", ast.toString());
+
+        conditions.andNot(condition(asName("id5"), LTE, asConstant("5")));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 AND NOT id2 = 2 AND NOT id3 != 3 AND NOT id4 < 4 AND NOT id5 <= 5)", ast.toString());
     }
 
     @Test
@@ -84,11 +122,44 @@ public class ConditionsImplTest {
 
     @Test
     void or() {
+        Conditions conditions = new ConditionsImpl("id", "<>", "3");
+
+        conditions.or("id2", "<>", "2");
+        conditions.assemble(ast);
+        assertEquals("(id <> 3 OR id2 <> 2)", ast.toString());
+
+        conditions.or(asName("id3"), "!=", asConstant("3"));
+        conditions.assemble(ast);
+        assertEquals("(id <> 3 OR id2 <> 2 OR id3 != 3)", ast.toString());
+
+        conditions.or(asName("id4"), GT, asConstant("4"));
+        conditions.assemble(ast);
+        assertEquals("(id <> 3 OR id2 <> 2 OR id3 != 3 OR id4 > 4)", ast.toString());
+
+        conditions.or(condition(asName("id5"), GTE, asConstant("5")));
+        conditions.assemble(ast);
+        assertEquals("(id <> 3 OR id2 <> 2 OR id3 != 3 OR id4 > 4 OR id5 >= 5)", ast.toString());
+    }
+
+    @Test
+    void orNot() {
         Conditions conditions = new ConditionsImpl("id", "=", "3");
 
-        conditions.or("id2", "=", "2");
+        conditions.orNot("id2", "=", "2");
         conditions.assemble(ast);
-        assertEquals("(id = 3 OR id2 = 2)", ast.toString());
+        assertEquals("(id = 3 OR NOT id2 = 2)", ast.toString());
+
+        conditions.orNot(asName("id3"), "!=", asConstant("3"));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 OR NOT id2 = 2 OR NOT id3 != 3)", ast.toString());
+
+        conditions.orNot(asName("id4"), LT, asConstant("4"));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 OR NOT id2 = 2 OR NOT id3 != 3 OR NOT id4 < 4)", ast.toString());
+
+        conditions.orNot(condition(asName("id5"), LTE, asConstant("5")));
+        conditions.assemble(ast);
+        assertEquals("(id = 3 OR NOT id2 = 2 OR NOT id3 != 3 OR NOT id4 < 4 OR NOT id5 <= 5)", ast.toString());
     }
 
     @Test

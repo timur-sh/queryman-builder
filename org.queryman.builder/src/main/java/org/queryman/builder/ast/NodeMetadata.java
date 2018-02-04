@@ -24,7 +24,7 @@ public class NodeMetadata {
     public NodeMetadata(Token token) {
         this.token = token;
         if (token instanceof Operator)
-            position = 1;
+            position = ((Operator)token).getPosition();
     }
 
     public NodeMetadata(Token token, int position) {

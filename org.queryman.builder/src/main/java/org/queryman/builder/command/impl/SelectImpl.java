@@ -155,7 +155,14 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl where(Expression left, String operator, Expression right) {
-        where(condition(left, operator(operator), right));
+        where(left, operator(operator), right);
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl where(Expression left, Operator operator, Expression right) {
+        where(condition(left, operator, right));
 
         return this;
     }
@@ -176,7 +183,14 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl and(Expression left, String operator, Expression right) {
-        and(condition(left, operator(operator), right));
+        and(left, operator(operator), right);
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl and(Expression left, Operator operator, Expression right) {
+        and(condition(left, operator, right));
 
         return this;
     }
@@ -197,7 +211,14 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl andNot(Expression left, String operator, Expression right) {
-        andNot(condition(left, operator(operator), right));
+        andNot(left, operator(operator), right);
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl andNot(Expression left, Operator operator, Expression right) {
+        andNot(condition(left, operator, right));
 
         return this;
     }
@@ -218,7 +239,14 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl or(Expression left, String operator, Expression right) {
-        or(condition(left, operator(operator), right));
+        or(left, operator(operator), right);
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl or(Expression left, Operator operator, Expression right) {
+        or(condition(left, operator, right));
 
         return this;
     }
@@ -240,12 +268,19 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl orNot(Conditions conditions) {
         this.conditions.orNot(conditions);
-        return null;
+        return this;
     }
 
     @Override
     public final SelectImpl orNot(Expression left, String operator, Expression right) {
-        orNot(condition(left, operator(operator), right));
+        orNot(left, operator(operator), right);
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl orNot(Expression left, Operator operator, Expression right) {
+        orNot(condition(left, operator, right));
 
         return this;
     }

@@ -8,6 +8,9 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.Operators.EQUAL;
+import static org.queryman.builder.Operators.LT;
+import static org.queryman.builder.Operators.NE2;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
@@ -61,6 +64,16 @@ class SelectImplTest extends BaseTest {
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2", sql);
 
         sql = select.from("books")
+           .where(asQuotedName("id"), "=", asNumber(1))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE \"id\" = 1", sql);
+
+        sql = select.from("books")
+           .where(asQuotedName("id"), EQUAL, asNumber(1))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE \"id\" = 1", sql);
+
+        sql = select.from("books")
            .where("id", "=", "1")
            .andNot("id2", "=", "2")
            .sql();
@@ -81,6 +94,118 @@ class SelectImplTest extends BaseTest {
            .andNot(asQuotedName("id5"), "=", asNumber(5))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
+    }
+
+    @Test
+    void selectFromWhereAnd() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .and("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .and(asQuotedName("id2"), "=", asNumber(2))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .and(asQuotedName("id2"), EQUAL, asNumber(3))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" = 3", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .and(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" = 4", sql);
+    }
+
+    @Test
+    void selectFromWhereAndNot() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .andNot("id2", "!=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT id2 != 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andNot(asQuotedName("id2"), "<=", asNumber(2))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" <= 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andNot(asQuotedName("id2"), EQUAL, asNumber(3))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" = 3", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" = 4", sql);
+    }
+
+    @Test
+    void selectFromWhereOr() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .or("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR id2 = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .or(asQuotedName("id2"), "=", asNumber(2))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR \"id2\" = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "<>", "1")
+           .or(asQuotedName("id2"), NE2, asNumber(3))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id <> 1 OR \"id2\" <> 3", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .or(condition(asQuotedName("id2"), LT, asNumber(4)))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR \"id2\" < 4", sql);
+    }
+
+    @Test
+    void selectFromWhereOrNot() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .orNot("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT id2 = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orNot(asQuotedName("id2"), "=", asNumber(2))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" = 2", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orNot(asQuotedName("id2"), EQUAL, asNumber(3))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" = 3", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" = 4", sql);
     }
 
     @Test
