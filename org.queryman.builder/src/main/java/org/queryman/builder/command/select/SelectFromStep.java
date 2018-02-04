@@ -7,6 +7,7 @@
 package org.queryman.builder.command.select;
 
 import org.queryman.builder.Query;
+import org.queryman.builder.token.Expression;
 
 /**
  * {@code FROM} clause is a part of {@code SELECT} statement.
@@ -22,4 +23,10 @@ public interface SelectFromStep extends Query {
      * provided, they will be cross-joined together.
      */
     SelectFromManySteps from(String... tables);
+
+    /**
+     * Specify table name that be used to retrieve rows. If several names are
+     * provided, they will be cross-joined together.
+     */
+    SelectFromManySteps from(Expression... tables);
 }

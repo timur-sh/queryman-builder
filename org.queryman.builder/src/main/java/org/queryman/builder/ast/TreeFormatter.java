@@ -26,10 +26,7 @@ final class TreeFormatter {
            .collect(Collectors.toList());
 
         NodeMetadata metadata = node.getNodeMetadata();
-
         List<String> list = new ArrayList<>(leaves.subList(0, metadata.getPosition()));
-//
-//        list.add();
 
         Token token = metadata.getToken();
         if (token.isNonEmpty()) {
@@ -39,10 +36,8 @@ final class TreeFormatter {
                 list.add(token.getName());
         }
 
-        if (leaves.size() > 0) {
-//            List<String> tmp = leaves.subList(metadata.getPosition(), leaves.size());
+        if (leaves.size() > 0)
             list.add(String.join(node.getDelimiter(), leaves.subList(metadata.getPosition(), leaves.size())));
-        }
 
         if (!node.isEmpty()) {
             for (Node n : node.getNodes()) {

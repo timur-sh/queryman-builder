@@ -13,7 +13,12 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.Conditions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.PostgreSQL.asNumber;
+import static org.queryman.builder.PostgreSQL.asQuotedName;
+import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.operator;
 
 /**
  * @author Timur Shaidullin
@@ -55,6 +60,24 @@ public class ConditionsImplTest {
         assertEquals("(id = 3 AND id2 = 2)", ast.toString());
     }
 
+    @Test
+    void andGroupExpression() {
+        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+
+        conditions.and(asName("id2"), "=", asString("2"));
+        conditions.assemble(ast);
+        assertEquals("(\"id\" = 3 AND id2 = '2')", ast.toString());
+    }
+
+    @Test
+    void andNotGroupExpression() {
+        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+
+        conditions.andNot(asName("id2"), "=", asString("2"));
+        conditions.assemble(ast);
+        assertEquals("(\"id\" = 3 AND NOT id2 = '2')", ast.toString());
+    }
+
     //----
     // OR
     //----
@@ -75,6 +98,24 @@ public class ConditionsImplTest {
         conditions.or("id2", "=", "2");
         conditions.assemble(ast);
         assertEquals("(id = 3 OR id2 = 2)", ast.toString());
+    }
+
+    @Test
+    void orGroupExpression() {
+        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+
+        conditions.or(asName("id2"), "=", asString("2"));
+        conditions.assemble(ast);
+        assertEquals("(\"id\" = 3 OR id2 = '2')", ast.toString());
+    }
+
+    @Test
+    void orNotGroupExpression() {
+        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+
+        conditions.orNot(asName("id2"), "=", asString("2"));
+        conditions.assemble(ast);
+        assertEquals("(\"id\" = 3 OR NOT id2 = '2')", ast.toString());
     }
 
     @Test

@@ -6,14 +6,14 @@
  */
 package org.queryman.builder.utils;
 
-import org.queryman.builder.token.Field;
-import org.queryman.builder.token.Name;
+import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.Token;
 
 /**
  * @author Timur Shaidullin
  */
 public class Tools {
-    public static final String[] EMPTY      = {};
-    public static final Name[]   EMPTY_NAME = {};
-    public static final Field[] EMPTY_FIELD = {};
+    public static final String[]     EMPTY             = {};
+    public static final Token[]      EMPTY_TOKENS      = {};
+    public static final Expression[] EMPTY_EXPRESSIONS = {};
 }

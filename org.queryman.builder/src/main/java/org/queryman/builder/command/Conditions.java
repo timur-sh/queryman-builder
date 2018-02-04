@@ -7,13 +7,11 @@
 package org.queryman.builder.command;
 
 import org.queryman.builder.ast.AstVisitor;
-import org.queryman.builder.token.Field;
-import org.queryman.builder.token.Name;
+import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
-import org.queryman.builder.token.Token;
 
 /**
- * A search condition.
+ * It supplies a search condition.
  *
  * {@link Conditions} must be used only as a part of query: {@code SELECT},
  * {@code UPDATE} etc.
@@ -25,8 +23,21 @@ import org.queryman.builder.token.Token;
  *    .and(condition("age", ">", "29")
  *       .and("gender", "!=", "male")
  *       .or("code", "=", "3")
- *    )
+ *    );
+ *
+ * PostgreSQL.conditions(asQuotedName("id"), operator("="), asNumber("1"))
+ *    .and(asQualifiedName("users.name"), "=", asString("Alan"))
+ *    .and(condition(asQualifiedName("users.age"), ">", "29")
+ *       .and(asName("gender"), "!=", asString("male"))
+ *       .or(asName("code"), "=", asNumber("3"))
+ *    );
  * </code></p>
+ *
+ *
+ * @see org.queryman.builder.PostgreSQL#asName(String)
+ * @see org.queryman.builder.PostgreSQL#asConstant(String)
+ * @see org.queryman.builder.PostgreSQL#asQualifiedName(String)
+ * @see org.queryman.builder.PostgreSQL#asQuotedName(String)
  *
  * @author Timur Shaidullin
  */
@@ -41,22 +52,17 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions and(String leftField, String operator, String rightField);
-//
-//    /**
-//     * {@code AND} condition.
-//     *
-//     * Example:
-//     * <p>
-//     * conditions.and("id", "=", "1")
-//     * ...
-//     * </p>
-//     *
-//     * @see org.queryman.builder.PostgreSQL#unqualifiedName(String)
-//     * @see org.queryman.builder.PostgreSQL#qualifiedName(String)
-//     *
-//     * @see org.queryman.builder.PostgreSQL (constants)
-//     */
-//    Conditions and(Field leftField, Operator operator, Field rightField);
+
+    /**
+     * {@code AND} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.and(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions and(Expression leftField, String operator, Expression rightField);
 
     /**
      * {@code AND} condition. This is useful to group expressions.
@@ -71,6 +77,17 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions and(Conditions conditions);
+
+    /**
+     * {@code AND NOT} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.andNot(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions andNot(Expression leftField, String operator, Expression rightField);
 
     /**
      * {@code AND NOT} condition.
@@ -102,6 +119,17 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
+     * conditions.or(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions or(Expression leftField, String operator, Expression rightField);
+
+    /**
+     * {@code OR} condition.
+     *
+     * Example:
+     * <p>
      * conditions.or("id", "=", "1")
      * ...
      * </p>
@@ -121,6 +149,17 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions or(Conditions conditions);
+
+    /**
+     * {@code OR NOT} condition.
+     *
+     * Example:
+     * <p>
+     * conditions.orNot(asName("id"), operator("="), asNumber("1"))
+     * ...
+     * </p>
+     */
+    Conditions orNot(Expression leftField, String operator, Expression rightField);
 
     /**
      * {@code OR NOT} condition.

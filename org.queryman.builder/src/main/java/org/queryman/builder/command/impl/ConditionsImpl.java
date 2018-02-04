@@ -10,7 +10,7 @@ import org.queryman.builder.Operators;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
-import org.queryman.builder.token.Field;
+import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
 
@@ -45,7 +45,7 @@ public final class ConditionsImpl implements
         this(asConstant(leftValue), Operators.map(operator), asConstant(rightValue));
     }
 
-    public ConditionsImpl(Field leftValue, Operator operator, Field rightValue) {
+    public ConditionsImpl(Expression leftValue, Operator operator, Expression rightValue) {
         this.leftValue = leftValue;
         this.operator = operator;
         this.rightValue = rightValue;
@@ -58,19 +58,31 @@ public final class ConditionsImpl implements
 
     @Override
     public ConditionsImpl and(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(new ConditionsImpl(AND, condition(leftValue, operator, rightValue)));
+        and(asConstant(leftValue), operator, asConstant(rightValue));
         return this;
     }
 
     @Override
-    public ConditionsImpl andNot(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(new ConditionsImpl(AND_NOT, condition(leftValue, operator, rightValue)));
+    public Conditions and(Expression leftField, String operator, Expression rightField) {
+        and(condition(leftField, operator(operator), rightField));
         return this;
     }
 
     @Override
     public Conditions and(Conditions conditions) {
         CONDITIONS.add(new ConditionsImpl(AND, conditions));
+        return this;
+    }
+
+    @Override
+    public ConditionsImpl andNot(String leftValue, String operator, String rightValue) {
+        andNot(asConstant(leftValue), operator, asConstant(rightValue));
+        return this;
+    }
+
+    @Override
+    public Conditions andNot(Expression leftField, String operator, Expression rightField) {
+        andNot(condition(leftField, operator(operator), rightField));
         return this;
     }
 
@@ -82,19 +94,32 @@ public final class ConditionsImpl implements
 
     @Override
     public ConditionsImpl or(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(new ConditionsImpl(OR, condition(leftValue, operator, rightValue)));
+        or(asConstant(leftValue), operator, asConstant(rightValue));
         return this;
     }
 
     @Override
-    public ConditionsImpl orNot(String leftValue, String operator, String rightValue) {
-        CONDITIONS.add(new ConditionsImpl(OR_NOT, condition(leftValue, operator, rightValue)));
+    public Conditions or(Expression leftField, String operator, Expression rightField) {
+        or(condition(leftField, operator(operator), rightField));
+
         return this;
     }
 
     @Override
     public Conditions or(Conditions conditions) {
         CONDITIONS.add(new ConditionsImpl(OR, conditions));
+        return this;
+    }
+
+    @Override
+    public ConditionsImpl orNot(String leftValue, String operator, String rightValue) {
+        orNot(asConstant(leftValue), operator, asConstant(rightValue));
+        return this;
+    }
+
+    @Override
+    public Conditions orNot(Expression leftField, String operator, Expression rightField) {
+        orNot(condition(leftField, operator(operator), rightField));
         return this;
     }
 

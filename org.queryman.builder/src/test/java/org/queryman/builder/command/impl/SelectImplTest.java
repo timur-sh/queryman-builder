@@ -9,7 +9,11 @@ import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.PostgreSQL.asNumber;
+import static org.queryman.builder.PostgreSQL.asQualifiedName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
+import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
 
@@ -35,6 +39,10 @@ class SelectImplTest extends BaseTest {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 
         assertEquals("SELECT id, name FROM books", select.from("books").sql());
+
+        assertEquals("SELECT id, name FROM \"books\"", select.from(asQuotedName("books")).sql());
+
+        assertEquals("SELECT id, name FROM public.books", select.from(asQualifiedName("public.books")).sql());
 
         assertEquals("SELECT id, name FROM table1, table2", select.from("table1", "table2").sql());
     }
@@ -64,6 +72,15 @@ class SelectImplTest extends BaseTest {
            .andNot("id2", "=", "2")
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
+
+        sql = select.from("books")
+           .where(asName("id1"), "=", asString("1"))
+           .or(asQuotedName("id2"), "=", asNumber(2))
+           .orNot(asQualifiedName("table.id3"), "=", asNumber(3))
+           .and(asQuotedQualifiedName("table.id4"), "=", asNumber(4))
+           .andNot(asQuotedName("id5"), "=", asNumber(5))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
     }
 
     @Test

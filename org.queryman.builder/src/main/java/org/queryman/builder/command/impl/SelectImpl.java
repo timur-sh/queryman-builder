@@ -21,7 +21,7 @@ import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
 import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Field;
+import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
 import org.queryman.builder.utils.Tools;
 
@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 
@@ -68,11 +69,11 @@ public class SelectImpl extends AbstractQuery implements
         );
     }
 
-    public SelectImpl(AbstractSyntaxTree ast, List<Field> names) {
-        this(ast, names.toArray(Tools.EMPTY_FIELD));
+    public SelectImpl(AbstractSyntaxTree ast, List<Expression> names) {
+        this(ast, names.toArray(Tools.EMPTY_EXPRESSIONS));
     }
 
-    public SelectImpl(AbstractSyntaxTree ast, Field... columnsSelected) {
+    public SelectImpl(AbstractSyntaxTree ast, Expression... columnsSelected) {
         super(ast);
         this.COLUMNS_SELECTED = columnsSelected;
     }
@@ -134,6 +135,13 @@ public class SelectImpl extends AbstractQuery implements
         return this;
     }
 
+    @Override
+    public final SelectImpl from(Expression... tables) {
+        FROM.clear();
+        FROM.addAll(List.of(tables));
+        return this;
+    }
+
     //--
     // WHERE API
     //--
@@ -146,7 +154,14 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectImpl where(Conditions conditions) {
+    public final SelectImpl where(Expression left, String operator, Expression right) {
+        where(condition(left, operator(operator), right));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl where(Conditions conditions) {
         this.conditions = new ConditionsImpl(EMPTY, conditions);
 
         return this;
@@ -160,21 +175,35 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectImpl and(Conditions conditions) {
+    public final SelectImpl and(Expression left, String operator, Expression right) {
+        and(condition(left, operator(operator), right));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl and(Conditions conditions) {
         this.conditions.and(conditions);
 
         return this;
     }
 
     @Override
-    public SelectWhereStep andNot(String left, String operator, String right) {
+    public final SelectImpl andNot(String left, String operator, String right) {
         andNot(condition(left, operator, right));
 
         return this;
     }
 
     @Override
-    public SelectWhereStep andNot(Conditions conditions) {
+    public final SelectImpl andNot(Expression left, String operator, Expression right) {
+        andNot(condition(left, operator(operator), right));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl andNot(Conditions conditions) {
         this.conditions.andNot(conditions);
 
         return this;
@@ -188,23 +217,37 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectImpl or(Conditions conditions) {
+    public final SelectImpl or(Expression left, String operator, Expression right) {
+        or(condition(left, operator(operator), right));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl or(Conditions conditions) {
         this.conditions.or(conditions);
 
         return this;
     }
 
     @Override
-    public SelectWhereStep orNot(String left, String operator, String right) {
+    public final SelectImpl orNot(String left, String operator, String right) {
         orNot(condition(left, operator, right));
 
         return this;
     }
 
     @Override
-    public SelectWhereStep orNot(Conditions conditions) {
+    public final SelectImpl orNot(Conditions conditions) {
         this.conditions.orNot(conditions);
         return null;
+    }
+
+    @Override
+    public final SelectImpl orNot(Expression left, String operator, Expression right) {
+        orNot(condition(left, operator(operator), right));
+
+        return this;
     }
 
     //--
@@ -212,7 +255,7 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectImpl groupBy(String... expressions) {
+    public final SelectImpl groupBy(String... expressions) {
         GROUP_BY.addAll(
            Arrays.stream(expressions)
               .map(PostgreSQL::asName)
@@ -226,32 +269,32 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public SelectImpl orderBy(String column) {
+    public final SelectImpl orderBy(String column) {
         orderBy(column, null, null);
         return this;
     }
 
     @Override
-    public SelectImpl orderBy(String column, String sorting) {
+    public final SelectImpl orderBy(String column, String sorting) {
         orderBy(column, sorting, null);
         return this;
     }
 
     @Override
-    public SelectImpl orderBy(String column, String sorting, String nulls) {
+    public final SelectImpl orderBy(String column, String sorting, String nulls) {
         ORDER_BY.clear();
         ORDER_BY.add(new OrderBy(column, sorting, nulls));
         return this;
     }
 
     @Override
-    public SelectImpl limit(long limit) {
+    public final SelectImpl limit(long limit) {
         this.limit = asNumber(limit);
         return this;
     }
 
     @Override
-    public SelectImpl offset(long offset) {
+    public final SelectImpl offset(long offset) {
         this.offset = asNumber(offset);
         return this;
     }

@@ -34,7 +34,7 @@ import static org.queryman.builder.utils.Tools.EMPTY;
  *
  * @author Timur Shaidullin
  */
-public class Expression extends AbstractToken implements Field {
+public class Expression extends AbstractToken {
     private final ExpressionType type;
     private String tagName = "";
     private boolean quoted = false;
