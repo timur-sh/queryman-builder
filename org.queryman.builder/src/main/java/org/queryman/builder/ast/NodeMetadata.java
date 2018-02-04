@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
 
 /**
@@ -14,28 +15,31 @@ import org.queryman.builder.token.Token;
  * @author Timur Shaidullin
  */
 public class NodeMetadata {
-    private final Token name;
-    private boolean parentheses;
+    private final Token token;
+    private boolean parentheses = false;
 
     // position in a condition, where operator is appeared
-    private int position;
+    private int position = 0;
 
-    public NodeMetadata(Token name) {
-        this(name, 0, false);
+    public NodeMetadata(Token token) {
+        this.token = token;
+        if (token instanceof Operator)
+            position = 1;
     }
 
-    public NodeMetadata(Token name, int position) {
-        this(name, position, false);
+    public NodeMetadata(Token token, int position) {
+        this.token = token;
+        this.position = position;
     }
 
-    public NodeMetadata(Token name, int position, boolean parentheses) {
-        this.name = name;
+    public NodeMetadata(Token token, int position, boolean parentheses) {
+        this.token = token;
         this.position = position;
         this.parentheses = parentheses;
     }
 
     public Token getToken() {
-        return name;
+        return token;
     }
 
     public void setParentheses(boolean parentheses) {
@@ -57,6 +61,6 @@ public class NodeMetadata {
 
     @Override
     public String toString() {
-        return name.getName();
+        return token.getName();
     }
 }

@@ -24,10 +24,6 @@ public class Keywords {
     public static final Keyword WHERE = new Keyword("WHERE");
 
     public static final Keyword LIMIT  = new Keyword("LIMIT");
-    public static final Keyword OFFSET = new Keyword("OFFSET");
 
-    public static final Keyword AND     = new Keyword("AND");
-    public static final Keyword AND_NOT = new Keyword("AND NOT");
-    public static final Keyword OR      = new Keyword("OR");
-    public static final Keyword OR_NOT  = new Keyword("OR NOT");
+    public static final Keyword OFFSET = new Keyword("OFFSET");
 }

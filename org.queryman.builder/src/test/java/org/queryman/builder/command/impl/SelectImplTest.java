@@ -8,7 +8,9 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
+import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
 
 class SelectImplTest extends BaseTest {
@@ -24,8 +26,8 @@ class SelectImplTest extends BaseTest {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         assertEquals("SELECT id, name", select.sql());
 
-        SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id"), asQuotedName("name"), asQuotedName("min(price) as min"));
-        assertEquals("SELECT id, name, min(price) as min", select2.sql());
+        SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id"), asQuotedName("name"), asConstant("min(price) as min"));
+        assertEquals("SELECT \"id\", \"name\", min(price) as min", select2.sql());
     }
 
     @Test
@@ -70,9 +72,9 @@ class SelectImplTest extends BaseTest {
         String sql = select.from("user")
            .where(condition("name", "=", "timur")
               .and("phone", "is", "null")
-              .or("email", "=", "'timur@shaidullin.net'")
+              .or("email", "=", asString("timur@shaidullin.net").getName())
               .and(condition("id", "!=", "3")
-                 .and("name", "is not", "max")
+                 .and("name", "is not", asString("max").getName())
               )
            )
            .or("id", "=", "1")
@@ -116,9 +118,9 @@ class SelectImplTest extends BaseTest {
     void selectFromGroupBy() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
-           .groupBy("id")
+           .groupBy("id", "name")
            .sql();
-        assertEquals("SELECT id, name FROM books GROUP BY id", sql);
+        assertEquals("SELECT id, name FROM books GROUP BY id, name", sql);
     }
 
     @Test

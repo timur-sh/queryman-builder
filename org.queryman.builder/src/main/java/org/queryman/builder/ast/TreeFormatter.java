@@ -10,6 +10,7 @@ import org.queryman.builder.token.Token;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
  */
 final class TreeFormatter {
     String treeToString(Node node) {
+        Objects.requireNonNull(node);
+
         List<String> leaves = node.getLeaves()
            .stream()
            .map(Token::getName)
@@ -25,14 +28,20 @@ final class TreeFormatter {
         NodeMetadata metadata = node.getNodeMetadata();
 
         List<String> list = new ArrayList<>(leaves.subList(0, metadata.getPosition()));
+//
+//        list.add();
 
-        if (metadata.getToken().isNonEmpty()) {
-            list.add(metadata.getToken().getName());
+        Token token = metadata.getToken();
+        if (token.isNonEmpty()) {
+            if (list.size() > 0)
+                list.add(metadata.getPosition(), token.getName());
+            else
+                list.add(token.getName());
         }
 
         if (leaves.size() > 0) {
-            List<String> tmp = leaves.subList(metadata.getPosition(), leaves.size());
-            list.add(String.join(node.getDelimiter(), tmp));
+//            List<String> tmp = leaves.subList(metadata.getPosition(), leaves.size());
+            list.add(String.join(node.getDelimiter(), leaves.subList(metadata.getPosition(), leaves.size())));
         }
 
         if (!node.isEmpty()) {

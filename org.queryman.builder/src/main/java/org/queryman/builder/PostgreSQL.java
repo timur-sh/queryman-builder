@@ -21,10 +21,6 @@ import static org.queryman.builder.token.Expression.ExpressionType.STRING_CONSTA
  * @author Timur Shaidullin
  */
 public class PostgreSQL {
-    //----
-    // OPERATORS
-    //----
-
     public static Operator operator(String operator) {
         return new Operator(operator);
     }

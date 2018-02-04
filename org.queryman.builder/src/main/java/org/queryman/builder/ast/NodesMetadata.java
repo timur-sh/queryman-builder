@@ -7,6 +7,7 @@
 package org.queryman.builder.ast;
 
 import org.queryman.builder.Keywords;
+import org.queryman.builder.Operators;
 import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Keyword;
 
@@ -37,10 +38,10 @@ public final class NodesMetadata {
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata(keyword(""), 0, true);
     public static final NodeMetadata EMPTY         = new NodeMetadata(keyword(""));
 
-    public static final NodeMetadata AND = new NodeMetadata(Keywords.AND);
-    public static final NodeMetadata AND_NOT = new NodeMetadata(Keywords.AND_NOT);
-    public static final NodeMetadata OR = new NodeMetadata(Keywords.OR);
-    public static final NodeMetadata OR_NOT = new NodeMetadata(Keywords.OR_NOT);
+    public static final NodeMetadata AND = new NodeMetadata(Operators.AND, 0);
+    public static final NodeMetadata AND_NOT = new NodeMetadata(Operators.AND_NOT, 0);
+    public static final NodeMetadata OR = new NodeMetadata(Operators.OR, 0);
+    public static final NodeMetadata OR_NOT = new NodeMetadata(Operators.OR_NOT, 0);
 
 
 }

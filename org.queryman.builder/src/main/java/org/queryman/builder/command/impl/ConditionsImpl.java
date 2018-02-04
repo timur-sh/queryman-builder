@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.impl;
 
+import org.queryman.builder.Operators;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
@@ -41,7 +42,7 @@ public final class ConditionsImpl implements
     private final List<Conditions> CONDITIONS = new LinkedList<>();
 
     public ConditionsImpl(String leftValue, String operator, String rightValue) {
-        this(asConstant(leftValue), operator(operator), asConstant(leftValue));
+        this(asConstant(leftValue), Operators.map(operator), asConstant(rightValue));
     }
 
     public ConditionsImpl(Field leftValue, Operator operator, Field rightValue) {
