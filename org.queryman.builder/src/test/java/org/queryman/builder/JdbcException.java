@@ -1,7 +1,7 @@
 /*
  *  Queryman. Java tools for working with queries of PostgreSQL database.
  *
- *  License: MIT License.
+ *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
 package org.queryman.builder;
@@ -9,12 +9,8 @@ package org.queryman.builder;
 /**
  * @author Timur Shaidullin
  */
-public class BaseTest {
-    private static FlywayManager manager = new FlywayManager();
-
-    static {
-        manager.init();
-        manager.clean();
-        manager.migrate();
+public class JdbcException extends RuntimeException {
+    public JdbcException(String message) {
+        super(message);
     }
 }

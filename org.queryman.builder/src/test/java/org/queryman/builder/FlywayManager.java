@@ -17,32 +17,24 @@ import java.util.Properties;
  * @author Timur Shaidullin
  */
 public final class FlywayManager {
-    public  Flyway     flyway     = new Flyway();
-    private Properties properties = new Properties();
+    public Flyway flyway = new Flyway();
 
-    public FlywayManager() {
+    public void init() {
+        PropertiesLoader loader = new PropertiesLoader();
         try {
-            load();
+            loader.load();
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ResourceLoadException(e.getMessage());
         }
+
+        Properties properties = loader.getProperties();
 
         flyway.setDataSource(
            properties.getProperty("url"),
-           properties.getProperty("username"),
+           properties.getProperty("user"),
            properties.getProperty("password")
         );
-    }
-
-    private void load() throws IOException {
-        URL resources = this.getClass().getClassLoader().getResource("database.properties");
-
-        if (resources != null) {
-            properties.load(resources.openStream());
-            return;
-        }
-
-        throw new FileNotFoundException("File database.properties not found");
     }
 
     public void migrate() {
