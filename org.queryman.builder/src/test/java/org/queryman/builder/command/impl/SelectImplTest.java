@@ -7,7 +7,6 @@ import org.queryman.builder.JdbcException;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
-import org.queryman.builder.testing.Jdbc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +21,7 @@ import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.testing.Jdbc.inJdbcByDriverManager;
+import static org.queryman.builder.testing.JDBC.inJdbc;
 
 class SelectImplTest extends BaseTest {
     private AbstractSyntaxTree ast;
@@ -36,14 +35,14 @@ class SelectImplTest extends BaseTest {
     void select() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         assertEquals("SELECT id, name", select.sql());
-        assertThrows(JdbcException.class, () -> inJdbcByDriverManager(select), "ERROR: column \"id\" does not exist");
+        assertThrows(JdbcException.class, () -> inJdbc(select), "ERROR: column \"id\" does not exist");
 
         SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT \"id2\", \"name\", min(price) as min", select2.sql());
-        assertThrows(JdbcException.class, () -> inJdbcByDriverManager(select2), "ERROR: column \"id2\" does not exist");
+        assertThrows(JdbcException.class, () -> inJdbc(select2), "ERROR: column \"id2\" does not exist");
 
         SelectFromStep select3 = new SelectImpl(ast, asString("id"), asNumber(1));
-        inJdbcByDriverManager(select3);
+        inJdbc(select3);
     }
 
     @Test
@@ -103,6 +102,25 @@ class SelectImplTest extends BaseTest {
            .andNot(asQuotedName("id5"), "=", asNumber(5))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
+    }
+
+    @Test
+    void selectFromWhereBetween() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .whereBetween("id", "1", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id BETWEEN 1 AND 2", sql);
+
+        sql = select.from("books")
+           .whereBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
+
+        sql = select.from("books")
+           .whereBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
     }
 
     @Test

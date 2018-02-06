@@ -6,7 +6,6 @@
  */
 package org.queryman.builder.command.impl;
 
-import org.queryman.builder.Operators;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
@@ -19,6 +18,7 @@ import java.util.List;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.keyword;
 import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
@@ -37,18 +37,21 @@ public final class ConditionsImpl implements
     private NodeMetadata metadata;
     private Token        leftValue;
     private Operator     operator;
-    private Token        rightValue;
+    private Token        rightValue1;
+    private Token        rightValue2;
 
     private final List<Conditions> CONDITIONS = new LinkedList<>();
-
-    public ConditionsImpl(String leftValue, String operator, String rightValue) {
-        this(asConstant(leftValue), Operators.map(operator), asConstant(rightValue));
-    }
 
     public ConditionsImpl(Expression leftValue, Operator operator, Expression rightValue) {
         this.leftValue = leftValue;
         this.operator = operator;
-        this.rightValue = rightValue;
+        this.rightValue1 = rightValue;
+    }
+
+    public ConditionsImpl(NodeMetadata metadata, Expression field, Conditions conditions) {
+        CONDITIONS.add(conditions);
+        leftValue = field;
+        this.metadata = metadata;
     }
 
     ConditionsImpl(NodeMetadata metadata, Conditions conditions) {
@@ -154,23 +157,39 @@ public final class ConditionsImpl implements
         return this;
     }
 
-    private boolean absentOperatorAndOperands() {
-        return isEmpty(leftValue) && isEmpty(operator) && isEmpty(rightValue);
+    private boolean presenceOperatorAndOperands() {
+        return !(isEmpty(leftValue) && isEmpty(operator) && isEmpty(rightValue1));
+    }
+
+    private boolean presenceBetweenOperator() {
+        return !(isEmpty(leftValue) && isEmpty(rightValue1) && isEmpty(rightValue2));
     }
 
     @Override
     public void assemble(AbstractSyntaxTree tree) {
-        if (metadata != null)
+        //todo refactoring
+        if (operator != null)
+            tree.startNode(new NodeMetadata(operator));
+        else if (metadata != null)
             tree.startNode(metadata);
         else if (CONDITIONS.size() > 0)
             tree.startNode(EMPTY_GROUPED);
         else
             tree.startNode(EMPTY);
 
-        if (!absentOperatorAndOperands())
-            tree.startNode(new NodeMetadata(operator))
-               .addLeaves(leftValue, rightValue)
-               .endNode();
+        if (leftValue != null)
+            tree.addLeaf(leftValue);
+        if (rightValue1 != null)
+            tree.addLeaf(rightValue1);
+        if (rightValue2 != null)
+            tree.addLeaf(rightValue2);
+//        if (presenceOperatorAndOperands())
+//            tree.addLeaves(leftValue, rightValue1);
+//        else if (presenceBetweenOperator())
+//            tree.addLeaf(leftValue)
+//               .startNode(new NodeMetadata(keyword("AND")))
+//               .addLeaves(rightValue1, rightValue2)
+//               .endNode();
 
         if (CONDITIONS.size() == 1)
             tree.peek(CONDITIONS.get(0));

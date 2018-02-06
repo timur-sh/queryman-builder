@@ -11,6 +11,7 @@ import org.queryman.builder.Operators;
 import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Keyword;
 
+import static org.queryman.builder.Operators.BETWEEN;
 import static org.queryman.builder.PostgreSQL.keyword;
 
 /**
@@ -37,6 +38,8 @@ public final class NodesMetadata {
 
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata(keyword(""), 0, true);
     public static final NodeMetadata EMPTY         = new NodeMetadata(keyword(""));
+
+    public static final NodeMetadata BETWEEN         = new NodeMetadata(Operators.BETWEEN);
 
     public static final NodeMetadata AND = new NodeMetadata(Operators.AND);
     public static final NodeMetadata AND_NOT = new NodeMetadata(Operators.AND_NOT);

@@ -9,8 +9,8 @@ package org.queryman.builder;
 /**
  * @author Timur Shaidullin
  */
-public class ResourceLoadException extends RuntimeException {
-    public ResourceLoadException(String message) {
+public class JDBCException extends RuntimeException {
+    public JDBCException(String message) {
         super(message);
     }
 }

@@ -8,9 +8,9 @@ package org.queryman.builder;
 
 import org.flywaydb.core.Flyway;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Properties;
 
 /**
@@ -20,21 +20,10 @@ public final class FlywayManager {
     public Flyway flyway = new Flyway();
 
     public void init() {
-        PropertiesLoader loader = new PropertiesLoader();
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ResourceLoadException(e.getMessage());
-        }
+        Bootstrap bootstrap = new Bootstrap()
+           .init();
 
-        Properties properties = loader.getProperties();
-
-        flyway.setDataSource(
-           properties.getProperty("url"),
-           properties.getProperty("user"),
-           properties.getProperty("password")
-        );
+        flyway.setDataSource(bootstrap.getDataSource());
     }
 
     public void migrate() {

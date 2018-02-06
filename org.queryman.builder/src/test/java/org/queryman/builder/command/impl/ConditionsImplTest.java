@@ -8,6 +8,7 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.Conditions;
@@ -38,7 +39,7 @@ public class ConditionsImplTest {
 
     @Test
     void simple() {
-        Conditions conditions = new ConditionsImpl("id", "=", "3");
+        Conditions conditions = PostgreSQL.condition("id", "=", "3");
         conditions.assemble(ast);
         assertEquals("id = 3", ast.toString());
     }
@@ -49,7 +50,7 @@ public class ConditionsImplTest {
 
     @Test
     void and() {
-        Conditions conditions = new ConditionsImpl("id", "=", "3");
+        Conditions conditions = PostgreSQL.condition("id", "=", "3");
 
         conditions.and("id2", "=", "2");
         conditions.assemble(ast);
@@ -70,7 +71,7 @@ public class ConditionsImplTest {
 
     @Test
     void andNot() {
-        Conditions conditions = new ConditionsImpl("id", "=", "3");
+        Conditions conditions = PostgreSQL.condition("id", "=", "3");
 
         conditions.andNot("id2", "=", "2");
         conditions.assemble(ast);
@@ -91,7 +92,7 @@ public class ConditionsImplTest {
 
     @Test
     void andGroup() {
-        Conditions conditions = new ConditionsImpl("id", "=", "3");
+        Conditions conditions = PostgreSQL.condition("id", "=", "3");
 
         conditions.and("id2", "=", "2");
         conditions.assemble(ast);
@@ -100,7 +101,7 @@ public class ConditionsImplTest {
 
     @Test
     void andGroupExpression() {
-        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+        Conditions conditions = PostgreSQL.condition(asQuotedName("id"), operator("="), asNumber(3));
 
         conditions.and(asName("id2"), "=", asString("2"));
         conditions.assemble(ast);
@@ -109,7 +110,7 @@ public class ConditionsImplTest {
 
     @Test
     void andNotGroupExpression() {
-        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+        Conditions conditions = PostgreSQL.condition(asQuotedName("id"), operator("="), asNumber(3));
 
         conditions.andNot(asName("id2"), "=", asString("2"));
         conditions.assemble(ast);
@@ -122,7 +123,7 @@ public class ConditionsImplTest {
 
     @Test
     void or() {
-        Conditions conditions = new ConditionsImpl("id", "<>", "3");
+        Conditions conditions = PostgreSQL.condition("id", "<>", "3");
 
         conditions.or("id2", "<>", "2");
         conditions.assemble(ast);
@@ -143,7 +144,7 @@ public class ConditionsImplTest {
 
     @Test
     void orNot() {
-        Conditions conditions = new ConditionsImpl("id", "=", "3");
+        Conditions conditions = PostgreSQL.condition("id", "=", "3");
 
         conditions.orNot("id2", "=", "2");
         conditions.assemble(ast);
@@ -164,7 +165,7 @@ public class ConditionsImplTest {
 
     @Test
     void orGroup() {
-        Conditions conditions = new ConditionsImpl("id", "=", "3");
+        Conditions conditions = PostgreSQL.condition("id", "=", "3");
 
         conditions.or("id2", "=", "2");
         conditions.assemble(ast);
@@ -173,7 +174,7 @@ public class ConditionsImplTest {
 
     @Test
     void orGroupExpression() {
-        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+        Conditions conditions = PostgreSQL.condition(asQuotedName("id"), operator("="), asNumber(3));
 
         conditions.or(asName("id2"), "=", asString("2"));
         conditions.assemble(ast);
@@ -182,7 +183,7 @@ public class ConditionsImplTest {
 
     @Test
     void orNotGroupExpression() {
-        Conditions conditions = new ConditionsImpl(asQuotedName("id"), operator("="), asNumber(3));
+        Conditions conditions = PostgreSQL.condition(asQuotedName("id"), operator("="), asNumber(3));
 
         conditions.orNot(asName("id2"), "=", asString("2"));
         conditions.assemble(ast);
@@ -191,7 +192,7 @@ public class ConditionsImplTest {
 
     @Test
     void orGroupWithNestedGroup() {
-        Conditions conditions = new ConditionsImpl("id", "=", "1");
+        Conditions conditions = PostgreSQL.condition("id", "=", "1");
 
         conditions.or("id2", "=", "2")
            .or(condition("id3", "=", "3")

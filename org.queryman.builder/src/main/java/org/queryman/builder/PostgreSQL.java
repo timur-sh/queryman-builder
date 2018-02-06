@@ -6,6 +6,7 @@
  */
 package org.queryman.builder;
 
+import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.impl.ConditionsImpl;
 import org.queryman.builder.token.Expression;
@@ -26,7 +27,7 @@ public class PostgreSQL {
     }
 
     public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return new ConditionsImpl(leftValue, operator, rightValue);
+        return new ConditionsImpl(asName(leftValue), operator(operator), asName(rightValue));
     }
 
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
@@ -35,6 +36,20 @@ public class PostgreSQL {
 
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
         return new ConditionsImpl(leftValue, operator, rightValue);
+    }
+
+    /**
+     * WHERE .. BETWEEN .. AND .. condition.
+     */
+    public static Conditions conditionBetween(Expression field, Expression value1, Expression value2) {
+        return new ConditionsImpl(NodesMetadata.BETWEEN, field, condition(value1, operator("AND"), value2));
+    }
+
+    /**
+     * WHERE .. BETWEEN .. AND .. condition.
+     */
+    public static Conditions conditionBetween(String field, String value1, String value2) {
+        return conditionBetween(asName(field), asName(value1), asName(value2));
     }
 
     public static Keyword keyword(String keyword) {
