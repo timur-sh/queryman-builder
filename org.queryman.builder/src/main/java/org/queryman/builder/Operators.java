@@ -18,14 +18,20 @@ import static org.queryman.builder.PostgreSQL.operator;
  * @author Timur Shaidullin
  */
 public class Operators {
-    public static final Operator AND     = new Operator("AND");
-    public static final Operator NOT     = new Operator("NOT");
-    public static final Operator AND_NOT = new Operator("AND NOT");
-    public static final Operator OR      = new Operator("OR");
-    public static final Operator OR_NOT  = new Operator("OR NOT");
+    public static final Operator AND     = operator("AND");
+    public static final Operator NOT     = operator("NOT");
+    public static final Operator AND_NOT = operator("AND NOT");
+    public static final Operator OR      = operator("OR");
+    public static final Operator OR_NOT  = operator("OR NOT");
 
     public static final Operator BETWEEN     = operator("BETWEEN");
     public static final Operator NOT_BETWEEN = operator("NOT BETWEEN");
+
+    public static final Operator LIKE     = operator("LIKE");
+    public static final Operator NOT_LIKE = operator("NOT LIKE");
+
+    public static final Operator ILIKE     = operator("ILIKE");
+    public static final Operator NOT_ILIKE = operator("NOT ILIKE");
 
     public static final Operator IS_DISTINCT_FROM     = operator("IS DISTINCT FROM");
     public static final Operator IS_NOT_DISTINCT_FROM = operator("IS NOT DISTINCT FROM");
@@ -54,6 +60,11 @@ public class Operators {
            entry(AND_NOT.getName(), AND_NOT),
            entry(OR.getName(), OR),
            entry(OR_NOT.getName(), OR_NOT),
+
+           entry(LIKE.getName(), LIKE),
+           entry(NOT_LIKE.getName(), NOT_LIKE),
+           entry(ILIKE.getName(), ILIKE),
+           entry(NOT_ILIKE.getName(), NOT_ILIKE),
 
            entry(IS.getName(), IS),
            entry(IS_NOT.getName(), IS_NOT),

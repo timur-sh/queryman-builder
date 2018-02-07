@@ -17,8 +17,10 @@ import org.queryman.builder.command.Conditions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.Operators.GT;
 import static org.queryman.builder.Operators.GTE;
+import static org.queryman.builder.Operators.LIKE;
 import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.LTE;
+import static org.queryman.builder.Operators.NOT_LIKE;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
@@ -178,5 +180,16 @@ public class ConditionsImplTest {
 
         assembleAst(conditions);
         assertEquals("WHERE id = 1 OR id2 != 2 AND (id3 < 3 AND NOT id4 > 4 AND NOT (id5 > 4 OR NOT id6 <= 6))", ast.toString());
+    }
+
+    @Test
+    void like() {
+        Conditions conditions = condition(asName("id"), LIKE, asString("abc"));
+        assembleAst(conditions);
+        assertEquals("WHERE id LIKE 'abc'", ast.toString());
+
+        conditions.and(asQuotedName("str"), NOT_LIKE, asString("_d_"));
+        assembleAst(conditions);
+        assertEquals("WHERE id LIKE 'abc' AND \"str\" NOT LIKE '_d_'", ast.toString());
     }
 }
