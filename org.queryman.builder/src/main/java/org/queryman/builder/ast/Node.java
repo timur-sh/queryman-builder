@@ -42,6 +42,11 @@ public interface Node {
     boolean isEmpty();
 
     /**
+     * Return count of child nodes.
+     */
+    int count();
+
+    /**
      * Leaves is separated by delimiter.
      */
     Node setDelimiter(String c);
@@ -55,6 +60,11 @@ public interface Node {
      * Get node metadata.
      */
     NodeMetadata getNodeMetadata();
+
+    /**
+     * Set node metadata.
+     */
+    NodeMetadata setNodeMetadata(NodeMetadata nodeMetadata);
 
     /**
      * Delete all nodes and leaves.

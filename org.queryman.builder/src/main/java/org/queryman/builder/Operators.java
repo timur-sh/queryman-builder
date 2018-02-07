@@ -12,39 +12,40 @@ import org.queryman.builder.token.Operator;
 import java.util.Map;
 
 import static java.util.Map.entry;
+import static org.queryman.builder.PostgreSQL.operator;
 
 /**
  * @author Timur Shaidullin
  */
 public class Operators {
-    public static final Operator AND     = new Operator("AND").setPosition(0);
-    public static final Operator NOT     = new Operator("NOT").setPosition(0);
-    public static final Operator AND_NOT = new Operator("AND NOT").setPosition(0);
-    public static final Operator OR      = new Operator("OR").setPosition(0);
-    public static final Operator OR_NOT  = new Operator("OR NOT").setPosition(0);
+    public static final Operator AND     = new Operator("AND");
+    public static final Operator NOT     = new Operator("NOT");
+    public static final Operator AND_NOT = new Operator("AND NOT");
+    public static final Operator OR      = new Operator("OR");
+    public static final Operator OR_NOT  = new Operator("OR NOT");
 
-    public static final Operator BETWEEN     = new Operator("BETWEEN");
-    public static final Operator NOT_BETWEEN = new Operator("NOT BETWEEN");
+    public static final Operator BETWEEN     = operator("BETWEEN");
+    public static final Operator NOT_BETWEEN = operator("NOT BETWEEN");
 
-    public static final Operator IS_DISTINCT_FROM     = new Operator("IS DISTINCT FROM");
-    public static final Operator IS_NOT_DISTINCT_FROM = new Operator("IS NOT DISTINCT FROM");
+    public static final Operator IS_DISTINCT_FROM     = operator("IS DISTINCT FROM");
+    public static final Operator IS_NOT_DISTINCT_FROM = operator("IS NOT DISTINCT FROM");
 
-    public static final Operator BETWEEN_SYMMETRIC     = new Operator("BETWEEN SYMMETRIC");
-    public static final Operator NOT_BETWEEN_SYMMETRIC = new Operator("NOT BETWEEN SYMMETRIC");
+    public static final Operator BETWEEN_SYMMETRIC     = operator("BETWEEN SYMMETRIC");
+    public static final Operator NOT_BETWEEN_SYMMETRIC = operator("NOT BETWEEN SYMMETRIC");
 
-    public static final Operator IS     = new Operator("IS");
-    public static final Operator IS_NOT = new Operator("IS NOT");
+    public static final Operator IS     = operator("IS");
+    public static final Operator IS_NOT = operator("IS NOT");
 
-    public static final Operator ISNULL     = new Operator("ISNULL");
-    public static final Operator NOTNULL = new Operator("NOTNULL");
+    public static final Operator ISNULL     = operator("ISNULL");
+    public static final Operator NOTNULL = operator("NOTNULL");
 
-    public static final Operator LT    = new Operator("<");
-    public static final Operator LTE   = new Operator("<=");
-    public static final Operator GT    = new Operator(">");
-    public static final Operator GTE   = new Operator(">=");
-    public static final Operator EQUAL = new Operator("=");
-    public static final Operator NE    = new Operator("!=");
-    public static final Operator NE2   = new Operator("<>");
+    public static final Operator LT    = operator("<");
+    public static final Operator LTE   = operator("<=");
+    public static final Operator GT    = operator(">");
+    public static final Operator GTE   = operator(">=");
+    public static final Operator EQUAL = operator("=");
+    public static final Operator NE    = operator("!=");
+    public static final Operator NE2   = operator("<>");
 
     public static final Operator map(String operator) {
         Map<String, Operator> operators = Map.ofEntries(
@@ -74,6 +75,6 @@ public class Operators {
            entry(NE2.getName(), NE2)
         );
 
-        return operators.getOrDefault(operator.toUpperCase(), new Operator(operator));
+        return operators.getOrDefault(operator.toUpperCase(), operator(operator));
     }
 }

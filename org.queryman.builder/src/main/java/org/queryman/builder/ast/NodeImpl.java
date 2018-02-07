@@ -12,18 +12,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Standard implementation of {@link Node}.
+ * Standard implementation of {@link Node}. This is used by {@link AbstractSyntaxTree}.
  *
  * @author Timur Shaidullin
  */
-public final class NodeImpl implements Node {
-    private final NodeMetadata nodeName;
+public final class NodeImpl implements Node, Cloneable {
+    private NodeMetadata nodeName;
     private final List<Token> leaves = new LinkedList<>();
     private final List<Node>   nodes  = new LinkedList<>();
 
     private String separator = " ";
 
-    NodeImpl(NodeMetadata value) {
+    public NodeImpl(NodeMetadata value) {
         this.nodeName = value;
     }
 
@@ -45,6 +45,12 @@ public final class NodeImpl implements Node {
     }
 
     @Override
+    public NodeMetadata setNodeMetadata(NodeMetadata nodeMetadata) {
+        nodeName = nodeMetadata;
+        return nodeName;
+    }
+
+    @Override
     public void clear() {
         nodes.clear();
         leaves.clear();
@@ -62,7 +68,12 @@ public final class NodeImpl implements Node {
 
     @Override
     public boolean isEmpty() {
-        return nodes.size() == 0;
+        return count() == 0;
+    }
+
+    @Override
+    public int count() {
+        return nodes.size();
     }
 
     @Override
@@ -74,5 +85,10 @@ public final class NodeImpl implements Node {
     @Override
     public String getDelimiter() {
         return separator;
+    }
+
+    @Override
+    public Node clone() throws CloneNotSupportedException {
+        return (Node) super.clone();
     }
 }

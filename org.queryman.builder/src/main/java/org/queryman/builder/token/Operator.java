@@ -7,6 +7,8 @@
 package org.queryman.builder.token;
 
 /**
+ * Immutable object.
+ *
  * @author Timur Shaidullin
  */
 public class Operator extends Keyword {
@@ -16,13 +18,16 @@ public class Operator extends Keyword {
         super(name);
     }
 
+    public Operator(String name, int position) {
+        super(name);
+        this.position = position;
+    }
+
     public int getPosition() {
         return position;
     }
 
     public Operator setPosition(int position) {
-        this.position = position;
-
-        return this;
+        return new Operator(name, position);
     }
 }

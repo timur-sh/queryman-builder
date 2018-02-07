@@ -19,25 +19,20 @@ import java.util.stream.Collectors;
 final class TreeFormatter {
     String treeToString(Node node) {
         Objects.requireNonNull(node);
-
-        List<String> leaves = node.getLeaves()
-           .stream()
-           .map(Token::getName)
-           .collect(Collectors.toList());
-
         NodeMetadata metadata = node.getNodeMetadata();
-        List<String> list = new ArrayList<>(leaves.subList(0, metadata.getPosition()));
 
-        Token token = metadata.getToken();
-        if (token.isNonEmpty()) {
-            if (list.size() > 0)
-                list.add(metadata.getPosition(), token.getName());
-            else
-                list.add(token.getName());
+        List<String> list   = new ArrayList<>();
+        List<String> leaves = leavesToStrings(node);
+        Token        token  = metadata.getToken();
+
+        if (metadata.getPosition() == 0) {
+            list.add(token.getName());
+
+            if (node.getLeaves().size() > 0)
+                list.add(String.join(node.getDelimiter(), leaves));
+        } else if (leaves.size() != 0) {
+            list.addAll(leaves);
         }
-
-        if (leaves.size() > 0)
-            list.add(String.join(node.getDelimiter(), leaves.subList(metadata.getPosition(), leaves.size())));
 
         if (!node.isEmpty()) {
             for (Node n : node.getNodes()) {
@@ -45,8 +40,23 @@ final class TreeFormatter {
             }
         }
 
+        if (metadata.getPosition() != 0) {
+            if (list.size() == 0) {
+                list.add(metadata.getPosition(), token.getName());
+            } else {
+                list.add(metadata.getPosition(), token.getName());
+            }
+        }
+
         return new Pipeline(metadata)
            .process(list);
+    }
+
+    private List<String> leavesToStrings(Node node) {
+        return node.getLeaves()
+           .stream()
+           .map(Token::getName)
+           .collect(Collectors.toList());
     }
 
     private class Pipeline {

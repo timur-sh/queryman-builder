@@ -7,22 +7,18 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.Node;
+import org.queryman.builder.ast.NodeImpl;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
-import org.queryman.builder.token.Token;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
-import static org.queryman.builder.ast.NodesMetadata.EMPTY;
-import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
 
@@ -32,27 +28,33 @@ import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
 public final class ConditionsImpl implements
    Conditions {
 
-    private NodeMetadata metadata;
-    private Token        leftValue;
-    private Token        rightValue1;
-
-    private final List<Conditions> CONDITIONS = new LinkedList<>();
+    private Node node;
 
     public ConditionsImpl(Expression leftValue, NodeMetadata metadata, Expression rightValue) {
-        this.leftValue = leftValue;
-        this.metadata = metadata;
-        this.rightValue1 = rightValue;
+        node = new NodeImpl(metadata)
+           .addLeaf(leftValue)
+           .addLeaf(rightValue);
     }
 
+    /**
+     * Ordinarily this constructor is used by <code>BETWEEN .. AND ..</code>
+     * clause.
+     * <p>
+     * Where:
+     *
+     * @param metadata   - {@code BETWEEN}
+     * @param field      - field of between. Example: <code>id BETWEEN ..</code>
+     * @param conditions - condition of between. Example: <code>id BETWEEN 1 AND 20</code>
+     */
     public ConditionsImpl(NodeMetadata metadata, Expression field, Conditions conditions) {
-        CONDITIONS.add(conditions);
-        leftValue = field;
-        this.metadata = metadata;
+        node = new NodeImpl(metadata)
+           .addLeaf(field)
+           .addChildNode(conditions.getNode());
     }
 
     ConditionsImpl(NodeMetadata metadata, Conditions conditions) {
-        CONDITIONS.add(conditions);
-        this.metadata = metadata;
+        node = new NodeImpl(metadata)
+           .addChildNode(conditions.getNode());
     }
 
     @Override
@@ -75,7 +77,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions and(Conditions conditions) {
-        CONDITIONS.add(new ConditionsImpl(AND, conditions));
+        rebuildNode(AND, conditions);
         return this;
     }
 
@@ -99,7 +101,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions andNot(Conditions conditions) {
-        CONDITIONS.add(new ConditionsImpl(AND_NOT, conditions));
+        rebuildNode(AND_NOT, conditions);
         return this;
     }
 
@@ -125,7 +127,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions or(Conditions conditions) {
-        CONDITIONS.add(new ConditionsImpl(OR, conditions));
+        rebuildNode(OR, conditions);
         return this;
     }
 
@@ -149,46 +151,44 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions orNot(Conditions conditions) {
-        CONDITIONS.add(new ConditionsImpl(OR_NOT, conditions));
+        rebuildNode(OR_NOT, conditions);
         return this;
+    }
+
+    private void rebuildNode(NodeMetadata metadata, Conditions conditions) {
+        Node nodeAdjustment = conditions.getNode();
+
+        if (nodeAdjustment.count() == 2) {
+            NodeMetadata nodeMetadata = nodeAdjustment.getNodeMetadata().setParentheses(true);
+            nodeAdjustment.setNodeMetadata(nodeMetadata);
+        }
+
+        node = new NodeImpl(metadata)
+           .addChildNode(node)
+           .addChildNode(nodeAdjustment);
+    }
+
+    @Override
+    public Node getNode() {
+        return node;
     }
 
     @Override
     public void assemble(AbstractSyntaxTree tree) {
-        NodeMetadata metadata1 = metadata != null ? metadata : EMPTY;
+        Node node2;
 
-        if (CONDITIONS.size() > 1 || hasNestedConditions(CONDITIONS))
-            metadata1.setParentheses(true);
+        try {
+            node2 = ((NodeImpl) node).clone();
 
-        tree.startNode(metadata1);
+            if (node2.count() == 2) {
+                NodeMetadata nodeMetadata = node2.getNodeMetadata().setParentheses(true);
+                node2.setNodeMetadata(nodeMetadata);
+            }
 
-        if (leftValue != null)
-            tree.addLeaf(leftValue);
-        if (rightValue1 != null)
-            tree.addLeaf(rightValue1);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
-        if (CONDITIONS.size() == 1)
-            tree.peek(CONDITIONS.get(0));
-        else
-            for (Conditions condition : CONDITIONS)
-                tree.peek(condition);
-
-        tree.endNode();
-    }
-
-    private boolean hasNestedConditions(List<Conditions> conditions) {
-        if (conditions.isEmpty())
-            return false;
-
-        if (!(conditions.get(0) instanceof ConditionsImpl))
-            return false;
-
-        ConditionsImpl condition = (ConditionsImpl) conditions.get(0);
-
-
-        if (condition.CONDITIONS.size() > 0)
-            return true;
-
-        return false;
+        tree.addChildNode(node);
     }
 }

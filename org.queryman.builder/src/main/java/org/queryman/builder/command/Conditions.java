@@ -7,6 +7,7 @@
 package org.queryman.builder.command;
 
 import org.queryman.builder.ast.AstVisitor;
+import org.queryman.builder.ast.Node;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
@@ -229,4 +230,7 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions orNot(Conditions conditions);
+
+
+    Node getNode();
 }

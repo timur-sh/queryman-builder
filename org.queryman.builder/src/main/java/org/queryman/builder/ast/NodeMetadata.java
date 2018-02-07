@@ -10,6 +10,8 @@ import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
 
 /**
+ * Immutable object.
+ *
  * NodeMetadata contains configuration of particular node.
  *
  * @author Timur Shaidullin
@@ -42,12 +44,12 @@ public class NodeMetadata {
         return token;
     }
 
-    public void setParentheses(boolean parentheses) {
-        this.parentheses = parentheses;
+    public NodeMetadata setParentheses(boolean parentheses) {
+        return new NodeMetadata(token, position, parentheses);
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public NodeMetadata setPosition(int position) {
+        return new NodeMetadata(token, position, parentheses);
     }
 
     public boolean isParentheses() {

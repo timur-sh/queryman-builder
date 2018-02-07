@@ -100,7 +100,7 @@ public class SelectImpl extends AbstractQuery implements
                .endNode();
 
         if (!ORDER_BY.isEmpty()) {
-            tree.startNode(NodesMetadata.ORDER_BY, ", ");
+            tree.startNode(NodesMetadata.ORDER_BY);
 
             for (OrderBy orderBy : ORDER_BY)
                 tree.peek(orderBy);
@@ -170,7 +170,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl where(Conditions conditions) {
-        this.conditions = new ConditionsImpl(EMPTY, conditions);
+        this.conditions = conditions;
 
         return this;
     }
@@ -189,7 +189,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl whereBetween(Conditions conditions) {
-//        this.conditions = conditions;
+        this.conditions = conditions;
         where(conditions);
 
         return this;
