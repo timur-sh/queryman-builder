@@ -6,6 +6,7 @@
  */
 package org.queryman.builder;
 
+import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.impl.ConditionsImpl;
@@ -27,15 +28,15 @@ public class PostgreSQL {
     }
 
     public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return new ConditionsImpl(asName(leftValue), operator(operator), asName(rightValue));
+        return condition(asName(leftValue), operator(operator), asName(rightValue));
     }
 
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
-        return new ConditionsImpl(leftValue, operator(operator), rightValue);
+        return condition(leftValue, operator(operator), rightValue);
     }
 
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
-        return new ConditionsImpl(leftValue, operator, rightValue);
+        return new ConditionsImpl(leftValue, new NodeMetadata(operator), rightValue);
     }
 
     /**
