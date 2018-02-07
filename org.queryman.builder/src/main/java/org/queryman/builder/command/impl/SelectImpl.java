@@ -33,9 +33,7 @@ import java.util.stream.Collectors;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.operator;
-import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
-import static org.queryman.builder.ast.NodesMetadata.BETWEEN;
 
 /**
  * @author Timur Shaidullin
@@ -177,13 +175,13 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl whereBetween(String field, String value1, String value2) {
-        whereBetween(PostgreSQL.conditionBetween(field, value1, value2));
+        whereBetween(PostgreSQL.between(field, value1, value2));
         return this;
     }
 
     @Override
     public final SelectImpl whereBetween(Expression field, Expression value1, Expression value2) {
-        whereBetween(PostgreSQL.conditionBetween(field, value1, value2));
+        whereBetween(PostgreSQL.between(field, value1, value2));
         return this;
     }
 

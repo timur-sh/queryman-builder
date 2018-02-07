@@ -33,6 +33,9 @@ public class Operators {
     public static final Operator ILIKE     = operator("ILIKE");
     public static final Operator NOT_ILIKE = operator("NOT ILIKE");
 
+    public static final Operator SIMILAR_TO = operator("SIMILAR TO");
+    public static final Operator NOT_SIMILAR_TO     = operator("NOT SIMILAR TO");
+
     public static final Operator IS_DISTINCT_FROM     = operator("IS DISTINCT FROM");
     public static final Operator IS_NOT_DISTINCT_FROM = operator("IS NOT DISTINCT FROM");
 
@@ -63,8 +66,12 @@ public class Operators {
 
            entry(LIKE.getName(), LIKE),
            entry(NOT_LIKE.getName(), NOT_LIKE),
+
            entry(ILIKE.getName(), ILIKE),
            entry(NOT_ILIKE.getName(), NOT_ILIKE),
+
+           entry(NOT_SIMILAR_TO.getName(), NOT_SIMILAR_TO),
+           entry(SIMILAR_TO.getName(), SIMILAR_TO),
 
            entry(IS.getName(), IS),
            entry(IS_NOT.getName(), IS_NOT),

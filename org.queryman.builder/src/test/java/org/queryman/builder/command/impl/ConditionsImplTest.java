@@ -26,7 +26,6 @@ import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionBetween;
 
 /**
  * @author Timur Shaidullin
@@ -157,12 +156,12 @@ public class ConditionsImplTest {
 
     @Test
     void between() {
-        Conditions conditions = conditionBetween("id", "1", "3");
+        Conditions conditions = PostgreSQL.between("id", "1", "3");
         assembleAst(conditions);
         assertEquals("WHERE id BETWEEN 1 AND 3", ast.toString());
 
 
-        conditions.andNot(conditionBetween(asQuotedName("date"), asString("2018-03-01"), asString("2018-03-11")));
+        conditions.andNot(PostgreSQL.between(asQuotedName("date"), asString("2018-03-01"), asString("2018-03-11")));
         assembleAst(conditions);
         assertEquals("WHERE id BETWEEN 1 AND 3 AND NOT \"date\" BETWEEN '2018-03-01' AND '2018-03-11'", ast.toString());
     }
