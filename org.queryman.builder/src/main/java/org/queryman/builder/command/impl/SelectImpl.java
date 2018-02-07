@@ -168,7 +168,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl where(Conditions conditions) {
-        this.conditions = conditions;
+        this.conditions = new ConditionsImpl(conditions);
 
         return this;
     }
@@ -187,7 +187,6 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl whereBetween(Conditions conditions) {
-        this.conditions = conditions;
         where(conditions);
 
         return this;

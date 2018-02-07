@@ -20,6 +20,7 @@ import static org.queryman.builder.PostgreSQL.asQualifiedName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
+import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.testing.JDBC.inJdbc;
 
@@ -111,6 +112,14 @@ class SelectImplTest extends BaseTest {
            .whereBetween("id", "1", "2")
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id BETWEEN 1 AND 2", sql);
+
+        sql = select.from("books")
+           .whereBetween(between(asQuotedName("id"), asNumber(3), asNumber(4))
+              .and("phone", "is", "null")
+           )
+           .or("id", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE (\"id\" BETWEEN 3 AND 4 AND phone is null) OR id = 2", sql);
 
         sql = select.from("books")
            .whereBetween(asQuotedName("id"), asNumber(3), asNumber(4))

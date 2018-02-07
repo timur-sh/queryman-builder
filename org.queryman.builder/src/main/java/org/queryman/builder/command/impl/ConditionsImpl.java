@@ -52,9 +52,8 @@ public final class ConditionsImpl implements
            .addChildNode(conditions.getNode());
     }
 
-    ConditionsImpl(NodeMetadata metadata, Conditions conditions) {
-        node = new NodeImpl(metadata)
-           .addChildNode(conditions.getNode());
+    ConditionsImpl(Conditions conditions) {
+        node = rebuildNode(conditions);
     }
 
     @Override
@@ -156,6 +155,12 @@ public final class ConditionsImpl implements
     }
 
     private void rebuildNode(NodeMetadata metadata, Conditions conditions) {
+        node = new NodeImpl(metadata)
+           .addChildNode(node)
+           .addChildNode(rebuildNode(conditions));
+    }
+
+    private Node rebuildNode(Conditions conditions) {
         Node nodeAdjustment = conditions.getNode();
 
         if (nodeAdjustment.count() == 2) {
@@ -163,9 +168,7 @@ public final class ConditionsImpl implements
             nodeAdjustment.setNodeMetadata(nodeMetadata);
         }
 
-        node = new NodeImpl(metadata)
-           .addChildNode(node)
-           .addChildNode(nodeAdjustment);
+        return nodeAdjustment;
     }
 
     @Override
