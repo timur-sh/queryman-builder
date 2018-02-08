@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asDollarString;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
-import static org.queryman.builder.PostgreSQL.asQualifiedName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
@@ -49,7 +48,7 @@ class PostgreSQLTest {
 
     @Test
     void asQualifiedNameTest() {
-        assertEquals("table.column", asQualifiedName("table.column").getName());
+        assertEquals("table.column", asName("table.column").getName());
         assertEquals("\"table\".\"column\"", asQuotedQualifiedName("table.column").getName());
     }
 

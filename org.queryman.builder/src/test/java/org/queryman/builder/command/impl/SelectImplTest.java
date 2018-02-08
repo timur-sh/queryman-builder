@@ -16,7 +16,6 @@ import static org.queryman.builder.Operators.NE2;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
-import static org.queryman.builder.PostgreSQL.asQualifiedName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
@@ -54,7 +53,7 @@ class SelectImplTest extends BaseTest {
 
         assertEquals("SELECT id, name FROM \"books\"", select.from(asQuotedName("books")).sql());
 
-        assertEquals("SELECT id, name FROM public.books", select.from(asQualifiedName("public.books")).sql());
+        assertEquals("SELECT id, name FROM public.books", select.from(asName("public.books")).sql());
 
         assertEquals("SELECT id, name FROM table1, table2", select.from("table1", "table2").sql());
     }
@@ -98,7 +97,7 @@ class SelectImplTest extends BaseTest {
         sql = select.from("books")
            .where(asName("id1"), "=", asString("1"))
            .or(asQuotedName("id2"), "=", asNumber(2))
-           .orNot(asQualifiedName("table.id3"), "=", asNumber(3))
+           .orNot(asName("table.id3"), "=", asNumber(3))
            .and(asQuotedQualifiedName("table.id4"), "=", asNumber(4))
            .andNot(asQuotedName("id5"), "=", asNumber(5))
            .sql();

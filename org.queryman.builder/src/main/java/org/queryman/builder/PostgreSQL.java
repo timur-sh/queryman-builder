@@ -14,10 +14,17 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
 
+import java.util.List;
+
+import static org.queryman.builder.token.Expression.ExpressionType.ARRAY;
 import static org.queryman.builder.token.Expression.ExpressionType.COLUMN_REFERENCE;
 import static org.queryman.builder.token.Expression.ExpressionType.DEFAULT;
 import static org.queryman.builder.token.Expression.ExpressionType.DOLLAR_STRING;
+import static org.queryman.builder.token.Expression.ExpressionType.FUNC;
+import static org.queryman.builder.token.Expression.ExpressionType.LIST;
+import static org.queryman.builder.token.Expression.ExpressionType.STRING_ARRAY;
 import static org.queryman.builder.token.Expression.ExpressionType.STRING_CONSTANT;
+import static org.queryman.builder.token.Expression.ExpressionType.STRING_LIST;
 
 /**
  * @author Timur Shaidullin
@@ -58,42 +65,157 @@ public class PostgreSQL {
     }
 
     //----
-    // EXPRESSIONS
+    // COMMON EXPRESSIONS
     //----
 
+    /**
+     * @return a constant. e.g. 1, id, ARRAY[1] ...
+     */
     public static Expression asConstant(String constant) {
         return new Expression(constant, DEFAULT);
     }
 
+    /**
+     * @return a string surrounded by single quote string. e.g. 'string'
+     */
     public static Expression asString(String constant) {
         return new Expression(constant, STRING_CONSTANT);
     }
 
+    /**
+     * @return a string surrounded by dollar singes string. e.g. $$string$$
+     */
     public static Expression asDollarString(String constant) {
         return new Expression(constant, DOLLAR_STRING);
     }
 
+
+    /**
+     * @return a string surrounded by dollar singes string. e.g. $tag$string$tag$
+     *
+     * where {@code tag} is {@code tagName}
+     */
     public static Expression asDollarString(String constant, String tagName) {
         return new Expression(constant, DOLLAR_STRING).setTagName(tagName);
     }
 
+    /**
+     * It is synonym of {@link #asConstant(String)}
+     *
+     * @return number.
+     */
     public static Expression asNumber(Number constant) {
         return new Expression(constant, DEFAULT);
     }
 
+    /**
+     * @return a quoted name. e.g. id; table.phone
+     */
     public static Expression asName(String constant) {
         return new Expression(constant, COLUMN_REFERENCE);
     }
 
+    /**
+     * @return a quoted name. e.g. "id"; "table"."phone"
+     */
     public static Expression asQuotedName(String constant) {
         return new Expression(constant, COLUMN_REFERENCE).setQuoted(true);
     }
 
-    public static Expression asQualifiedName(String constant) {
-        return new Expression(constant, COLUMN_REFERENCE);
-    }
-
+    /**
+     * It is synonym of {@link #asQuotedName(String)}
+     *
+     * @return number.
+     */
     public static Expression asQuotedQualifiedName(String constant) {
         return new Expression(constant, COLUMN_REFERENCE).setQuoted(true);
+    }
+
+    //----
+    // LIST EXPRESSIONS
+    //----
+    /**
+     * @param constants - values of list
+     * @return (...), where {@code ...} is concatenated string of values by comma.
+     */
+    @SafeVarargs
+    public static <T> Expression asStringList(T... constants) {
+        return new Expression<T>(STRING_LIST, constants);
+    }
+
+    /**
+     * @return (...), where {@code ...} is concatenated string of values by comma.
+     *
+     * @see #asStringList(T...)
+     */
+    public static <T> Expression asStringList(List<T> constants) {
+        return asStringList(constants.toArray());
+    }
+
+    /**
+     * @param constants - values of list
+     * @return (...), where {@code ...} is concatenated string of values by comma.
+     */
+    @SafeVarargs
+    public static <T> Expression asList(T... constants) {
+        return new Expression<T>(LIST, constants);
+    }
+
+    /**
+     * @return (...), where {@code ...} is concatenated string of values by comma.
+     *
+     * @see #asList(T...)
+     */
+    public static <T> Expression asList(List<T> constants) {
+        return asList(constants.toArray());
+    }
+
+    //----
+    // ARRAY EXPRESSIONS
+    //----
+
+    /**
+     * @param arr - values of array
+     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     */
+    @SafeVarargs
+    public static <T> Expression asArray(T... arr) {
+        return new Expression<T>(ARRAY, arr);
+    }
+
+    /**
+     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     *
+     * @see #asArray(T...)
+     */
+    public static <T> Expression asArray(List<T> arr) {
+        return asArray(arr.toArray());
+    }
+
+    /**
+     * @param arr - string values of array
+     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     */
+    @SafeVarargs
+    public static <T> Expression asStringArray(T... arr) {
+        return new Expression<T>(STRING_ARRAY, arr);
+    }
+
+    /**
+     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     *
+     * @see #asStringArray(T...)
+     */
+    public static <T> Expression asStringArray(List<T> arr) {
+        return asStringArray(arr.toArray());
+    }
+
+
+
+    //----
+    // FUNCTION EXPRESSIONS
+    //----
+    public static Expression func(String name, Expression expression) {
+        return new Expression(name, FUNC, expression);
     }
 }

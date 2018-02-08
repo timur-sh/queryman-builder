@@ -45,6 +45,9 @@ public class Operators {
     public static final Operator IS     = operator("IS");
     public static final Operator IS_NOT = operator("IS NOT");
 
+    public static final Operator IN     = operator("IN");
+    public static final Operator NOT_IN = operator("NOT IN");
+
     public static final Operator ISNULL     = operator("ISNULL");
     public static final Operator NOTNULL = operator("NOTNULL");
 
@@ -72,6 +75,9 @@ public class Operators {
 
            entry(NOT_SIMILAR_TO.getName(), NOT_SIMILAR_TO),
            entry(SIMILAR_TO.getName(), SIMILAR_TO),
+
+           entry(IN.getName(), IN),
+           entry(NOT_IN.getName(), NOT_IN),
 
            entry(IS.getName(), IS),
            entry(IS_NOT.getName(), IS_NOT),

@@ -37,7 +37,6 @@ import org.queryman.builder.token.Operator;
  *
  * @see org.queryman.builder.PostgreSQL#asName(String)
  * @see org.queryman.builder.PostgreSQL#asConstant(String)
- * @see org.queryman.builder.PostgreSQL#asQualifiedName(String)
  * @see org.queryman.builder.PostgreSQL#asQuotedName(String)
  *
  * @author Timur Shaidullin

@@ -13,7 +13,8 @@ import org.queryman.builder.token.Token;
  * @author Timur Shaidullin
  */
 public class Tools {
-    public static final String[]     EMPTY             = {};
+    public static final String[]     EMPTY_STRING      = {};
+    public static final Number[]     EMPTY_NUMBER      = {};
     public static final Token[]      EMPTY_TOKENS      = {};
     public static final Expression[] EMPTY_EXPRESSIONS = {};
 }

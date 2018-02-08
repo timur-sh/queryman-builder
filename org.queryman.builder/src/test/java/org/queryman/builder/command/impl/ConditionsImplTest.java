@@ -14,18 +14,27 @@ import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.Operators.GT;
 import static org.queryman.builder.Operators.GTE;
+import static org.queryman.builder.Operators.IN;
 import static org.queryman.builder.Operators.LIKE;
 import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.LTE;
+import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.Operators.NOT_LIKE;
+import static org.queryman.builder.PostgreSQL.asArray;
 import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
+import static org.queryman.builder.PostgreSQL.asStringList;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.func;
 
 /**
  * @author Timur Shaidullin
@@ -174,7 +183,7 @@ public class ConditionsImplTest {
            .and(condition("id3", "<", "3")
               .andNot("id4", ">", "4")
               .andNot(condition("id5", ">", "4")
-                .orNot("id6", "<=", "6"))
+                 .orNot("id6", "<=", "6"))
            );
 
         assembleAst(conditions);
@@ -190,5 +199,33 @@ public class ConditionsImplTest {
         conditions.and(asQuotedName("str"), NOT_LIKE, asString("_d_"));
         assembleAst(conditions);
         assertEquals("WHERE id LIKE 'abc' AND \"str\" NOT LIKE '_d_'", ast.toString());
+    }
+
+    @Test
+    void conditionList() {
+        String[]   numbers    = { "one", "two", "three", "four", "five", "six" };
+        Conditions conditions = condition(asName("number"), IN, asStringList(numbers));
+        assembleAst(conditions);
+        assertEquals("WHERE number IN ('one', 'two', 'three', 'four', 'five', 'six')", ast.toString());
+
+        Conditions conditions2 = condition(asName("number"), IN, asList(numbers));
+        assembleAst(conditions2);
+        assertEquals("WHERE number IN (one, two, three, four, five, six)", ast.toString());
+
+        Conditions conditions3 = condition(asName("number"), NOT_IN, asList(List.of(1, 2)));
+        assembleAst(conditions3);
+        assertEquals("WHERE number NOT IN (1, 2)", ast.toString());
+
+    }
+
+    @Test
+    void conditionFunctionArray() {
+        Conditions conditions4 = condition(asName("number"), EQUAL, func("ALL", asArray(List.of(1, 2))));
+        assembleAst(conditions4);
+        assertEquals("WHERE number = ALL(ARRAY[1, 2])", ast.toString());
+
+        Conditions conditions5 = condition(asName("number"), "!=", func("SOME", asList(1, 2)));
+        assembleAst(conditions5);
+        assertEquals("WHERE number != SOME(1, 2)", ast.toString());
     }
 }
