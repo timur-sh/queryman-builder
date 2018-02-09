@@ -106,6 +106,14 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     }
 
     @Override
+    public Node getRootNode() {
+        if (root == null)
+            throw new BrokenTreeException();
+
+        return root;
+    }
+
+    @Override
     public String toString() {
         if (NODES.size() != 0) {
             throw new BrokenTreeException();

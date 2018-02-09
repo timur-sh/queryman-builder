@@ -6,8 +6,10 @@
  */
 package org.queryman.builder.command;
 
+import org.queryman.builder.Query;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.Node;
+import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
@@ -58,22 +60,24 @@ public interface Conditions extends AstVisitor {
      *
      * Example:
      * <p>
-     * conditions.and(asName("id"), "=", asNumber("1"))
-     * ...
-     * </p>
-     */
-    Conditions and(Expression leftField, String operator, Expression rightField);
-
-    /**
-     * {@code AND} condition.
-     *
-     * Example:
-     * <p>
      * conditions.and(asName("id"), operator("="), asNumber("1"))
      * ...
      * </p>
      */
     Conditions and(Expression leftField, Operator operator, Expression rightField);
+
+    /**
+     * Subquery condition. It is used primarily by {@code IN} expression:
+     * Example:
+     * AND name IN (select name from authors)
+     * conditions(asName("name"), Operators.IN, select("name").from("authors"))
+     *
+     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     */
+    Conditions and(Expression field, Operator operator, Query query);
+
+
+    Conditions andExists(Query query);
 
     /**
      * {@code AND} condition. This is useful to group expressions.
@@ -88,17 +92,6 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions and(Conditions conditions);
-
-    /**
-     * {@code AND NOT} condition.
-     *
-     * Example:
-     * <p>
-     * conditions.andNot(asName("id"), "=", asNumber("1"))
-     * ...
-     * </p>
-     */
-    Conditions andNot(Expression leftField, String operator, Expression rightField);
 
     /**
      * {@code AND NOT} condition.
@@ -121,6 +114,18 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions andNot(String leftField, String operator, String rightField);
+
+    /**
+     * Subquery condition. It is used primarily by {@code IN} expression:
+     * Example:
+     * andNot name IN (select name from authors)
+     * andNot(asName("name"), Operators.IN, select("name").from("authors"))
+     *
+     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     */
+    Conditions andNot(Expression field, Operator operator, Query query);
+
+    Conditions andNotExists(Query query);
 
     /**
      * {@code AND NOT} condition. This is useful to group expressions.
@@ -156,18 +161,20 @@ public interface Conditions extends AstVisitor {
      * ...
      * </p>
      */
-    Conditions or(Expression leftField, String operator, Expression rightField);
+    Conditions or(Expression leftField, Operator operator, Expression rightField);
 
     /**
-     * {@code OR} condition.
-     *
+     * Subquery condition. It is used primarily by {@code IN} expression:
      * Example:
-     * <p>
-     * conditions.or(asName("id"), operator("="), asNumber("1"))
-     * ...
-     * </p>
+     * OR NOT name IN (select name from authors)
+     * orNot(asName("name"), Operators.IN, select("name").from("authors"))
+     *
+     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     *
      */
-    Conditions or(Expression leftField, Operator operator, Expression rightField);
+    Conditions or(Expression field, Operator operator, Query query);
+
+    Conditions orExists(Query query);
 
     /**
      * {@code OR} condition. This is useful to group expressions.
@@ -182,17 +189,6 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions or(Conditions conditions);
-
-    /**
-     * {@code OR NOT} condition.
-     *
-     * Example:
-     * <p>
-     * conditions.orNot(asName("id"), "=", asNumber("1"))
-     * ...
-     * </p>
-     */
-    Conditions orNot(Expression leftField, String operator, Expression rightField);
 
     /**
      * {@code OR} condition.
@@ -215,6 +211,19 @@ public interface Conditions extends AstVisitor {
      * </p>
      */
     Conditions orNot(String leftField, String operator, String rightField);
+
+    /**
+     * Subquery condition. It is used primarily by {@code IN} expression:
+     * Example:
+     * OR NOT name IN (select name from authors)
+     * orNot(asName("name"), Operators.IN, select("name").from("authors"))
+     *
+     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     *
+     */
+    Conditions orNot(Expression field, Operator operator, Query query);
+
+    Conditions orNotExists(Query query);
 
     /**
      * {@code OR NOT} condition. This is useful to group expressions.

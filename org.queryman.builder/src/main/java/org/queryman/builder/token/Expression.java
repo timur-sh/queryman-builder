@@ -304,7 +304,6 @@ public class Expression<T> extends AbstractToken {
         return String.join(".", parts);
     }
 
-
     public enum ExpressionType {
         /**
          * Represent a default expression. It is not surrounded by quotes. It

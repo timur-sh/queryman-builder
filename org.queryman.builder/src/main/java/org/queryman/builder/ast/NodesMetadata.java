@@ -35,6 +35,10 @@ public final class NodesMetadata {
     public static final NodeMetadata LIMIT = new NodeMetadata(Keywords.LIMIT);
     public static final NodeMetadata OFFSET = new NodeMetadata(Keywords.OFFSET);
 
+    public static final NodeMetadata EXISTS = new NodeMetadata(Keywords.EXISTS);
+    public static final NodeMetadata ANY = new NodeMetadata(Keywords.ANY);
+    public static final NodeMetadata SOME = new NodeMetadata(Keywords.SOME);
+    public static final NodeMetadata ALL = new NodeMetadata(Keywords.ALL);
 
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata(keyword(""), 0, true);
     public static final NodeMetadata EMPTY         = new NodeMetadata(keyword(""));

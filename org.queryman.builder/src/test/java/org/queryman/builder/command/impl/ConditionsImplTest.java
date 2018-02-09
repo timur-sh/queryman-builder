@@ -9,6 +9,7 @@ package org.queryman.builder.command.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.ast.NodesMetadata;
@@ -34,7 +35,12 @@ import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asStringList;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.conditionAll;
+import static org.queryman.builder.PostgreSQL.conditionAny;
+import static org.queryman.builder.PostgreSQL.conditionExists;
+import static org.queryman.builder.PostgreSQL.conditionSome;
 import static org.queryman.builder.PostgreSQL.func;
+import static org.queryman.builder.PostgreSQL.operator;
 
 /**
  * @author Timur Shaidullin
@@ -55,7 +61,7 @@ public class ConditionsImplTest {
 
     @Test
     void simple() {
-        Conditions conditions = PostgreSQL.condition("id", "=", "3");
+        Conditions conditions = condition("id", "=", "3");
         assembleAst(conditions);
         assertEquals("WHERE id = 3", ast.toString());
     }
@@ -66,44 +72,36 @@ public class ConditionsImplTest {
 
     @Test
     void and() {
-        Conditions conditions = PostgreSQL.condition("id", "=", "3");
+        Conditions conditions = condition("id", "=", "3");
 
         conditions.and("id2", "=", "2");
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND id2 = 2", ast.toString());
 
-        conditions.and(asName("id3"), "!=", asConstant("3"));
-        assembleAst(conditions);
-        assertEquals("WHERE id = 3 AND id2 = 2 AND id3 != 3", ast.toString());
-
         conditions.and(asName("id4"), GT, asConstant("4"));
         assembleAst(conditions);
-        assertEquals("WHERE id = 3 AND id2 = 2 AND id3 != 3 AND id4 > 4", ast.toString());
+        assertEquals("WHERE id = 3 AND id2 = 2 AND id4 > 4", ast.toString());
 
         conditions.and(condition(asName("id5"), GTE, asConstant("5")));
         assembleAst(conditions);
-        assertEquals("WHERE id = 3 AND id2 = 2 AND id3 != 3 AND id4 > 4 AND id5 >= 5", ast.toString());
+        assertEquals("WHERE id = 3 AND id2 = 2 AND id4 > 4 AND id5 >= 5", ast.toString());
     }
 
     @Test
     void andNot() {
-        Conditions conditions = PostgreSQL.condition("id", "=", "3");
+        Conditions conditions = condition("id", "=", "3");
 
         conditions.andNot("id2", "=", "2");
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND NOT id2 = 2", ast.toString());
 
-        conditions.andNot(asName("id3"), "!=", asConstant("3"));
-        assembleAst(conditions);
-        assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id3 != 3", ast.toString());
-
         conditions.andNot(asName("id4"), LT, asConstant("4"));
         assembleAst(conditions);
-        assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id3 != 3 AND NOT id4 < 4", ast.toString());
+        assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id4 < 4", ast.toString());
 
         conditions.andNot(condition(asName("id5"), LTE, asConstant("5")));
         assembleAst(conditions);
-        assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id3 != 3 AND NOT id4 < 4 AND NOT id5 <= 5", ast.toString());
+        assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id4 < 4 AND NOT id5 <= 5", ast.toString());
     }
 
     //----
@@ -112,49 +110,41 @@ public class ConditionsImplTest {
 
     @Test
     void or() {
-        Conditions conditions = PostgreSQL.condition("id", "<>", "3");
+        Conditions conditions = condition("id", "<>", "3");
 
         conditions.or("id2", "<>", "2");
         assembleAst(conditions);
         assertEquals("WHERE id <> 3 OR id2 <> 2", ast.toString());
 
-        conditions.or(asName("id3"), "!=", asConstant("3"));
-        assembleAst(conditions);
-        assertEquals("WHERE id <> 3 OR id2 <> 2 OR id3 != 3", ast.toString());
-
         conditions.or(asName("id4"), GT, asConstant("4"));
         assembleAst(conditions);
-        assertEquals("WHERE id <> 3 OR id2 <> 2 OR id3 != 3 OR id4 > 4", ast.toString());
+        assertEquals("WHERE id <> 3 OR id2 <> 2 OR id4 > 4", ast.toString());
 
         conditions.or(condition(asName("id5"), GTE, asConstant("5")));
         assembleAst(conditions);
-        assertEquals("WHERE id <> 3 OR id2 <> 2 OR id3 != 3 OR id4 > 4 OR id5 >= 5", ast.toString());
+        assertEquals("WHERE id <> 3 OR id2 <> 2 OR id4 > 4 OR id5 >= 5", ast.toString());
     }
 
     @Test
     void orNot() {
-        Conditions conditions = PostgreSQL.condition("id", "=", "3");
+        Conditions conditions = condition("id", "=", "3");
 
         conditions.orNot("id2", "=", "2");
         assembleAst(conditions);
         assertEquals("WHERE id = 3 OR NOT id2 = 2", ast.toString());
 
-        conditions.orNot(asName("id3"), "!=", asConstant("3"));
-        assembleAst(conditions);
-        assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id3 != 3", ast.toString());
-
         conditions.orNot(asName("id4"), LT, asConstant("4"));
         assembleAst(conditions);
-        assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id3 != 3 OR NOT id4 < 4", ast.toString());
+        assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id4 < 4", ast.toString());
 
         conditions.orNot(condition(asName("id5"), LTE, asConstant("5")));
         assembleAst(conditions);
-        assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id3 != 3 OR NOT id4 < 4 OR NOT id5 <= 5", ast.toString());
+        assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id4 < 4 OR NOT id5 <= 5", ast.toString());
     }
 
     @Test
     void orGroupWithNestedGroup() {
-        Conditions conditions = PostgreSQL.condition("id", "=", "1");
+        Conditions conditions = condition("id", "=", "1");
 
         conditions.or("id2", "!=", "2")
            .and(condition("id3", "<", "3").andNot("id4", ">", "4"));
@@ -177,7 +167,7 @@ public class ConditionsImplTest {
 
     @Test
     void orGroupWithNested2Group() {
-        Conditions conditions = PostgreSQL.condition("id", "=", "1");
+        Conditions conditions = condition("id", "=", "1");
 
         conditions.or("id2", "!=", "2")
            .and(condition("id3", "<", "3")
@@ -227,5 +217,108 @@ public class ConditionsImplTest {
         Conditions conditions5 = condition(asName("number"), "!=", func("SOME", asList(1, 2)));
         assembleAst(conditions5);
         assertEquals("WHERE number != SOME(1, 2)", ast.toString());
+    }
+
+    @Test
+    void conditionExistsTest() {
+        Conditions conditions = conditionExists(new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT 1, 2)", ast.toString());
+
+        conditions.andExists(new SelectImpl(ast, "id", "name")
+           .from("user")
+           .where("id", "=", "1"));
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT 1, 2) AND EXISTS (SELECT id, name FROM user WHERE id = 1)", ast.toString());
+
+        conditions = conditionExists(new SelectImpl(ast, "1", "2"))
+           .andNotExists(new SelectImpl(ast, "id", "name").from("user"));
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT 1, 2) AND NOT EXISTS (SELECT id, name FROM user)", ast.toString());
+
+        conditions = conditionExists(new SelectImpl(ast, "1", "2"))
+           .orExists(new SelectImpl(ast, "id", "name").from("user"));
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT 1, 2) OR EXISTS (SELECT id, name FROM user)", ast.toString());
+
+        conditions = conditionExists(new SelectImpl(ast, "1", "2"))
+           .orNotExists(new SelectImpl(ast, "id", "name").from("user"));
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT 1, 2) OR NOT EXISTS (SELECT id, name FROM user)", ast.toString());
+
+
+        Query select = new SelectImpl(ast, "id", "name").from("user")
+           .where("id", "=", "1")
+           .and(condition("name", "=", "timur")
+              .and("phone", "is", "null")
+              .or("email", "=", "'timur@shaidullin.net'")
+           )
+           .and("id2", "=", "2");
+
+        conditions = conditionExists(select);
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT id, name FROM user WHERE id = 1 AND (name = timur AND phone is null OR email = 'timur@shaidullin.net') AND id2 = 2)", ast.toString());
+    }
+
+    @Test
+    void conditionInSubquery() {
+        Conditions conditions = condition("name", "IN", new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE name IN (SELECT 1, 2)", ast.toString());
+
+        conditions = conditions
+           .and(asName("name"), IN, new SelectImpl(ast, "1", "2"))
+           .andNot(asName("name"), IN, new SelectImpl(ast, "1", "2"))
+           .or(asName("name"), IN, new SelectImpl(ast, "1", "2"))
+           .orNot(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE name IN (SELECT 1, 2) AND name IN (SELECT 1, 2) AND NOT name IN (SELECT 1, 2) OR name IN (SELECT 1, 2) OR NOT name NOT IN (SELECT 1, 2)", ast.toString());
+
+        conditions = condition(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE name NOT IN (SELECT 1, 2)", ast.toString());
+
+
+        conditions = conditions
+           .or(condition(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"))
+              .and(condition(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"))
+              )
+           );
+
+        assembleAst(conditions);
+        assertEquals("WHERE name NOT IN (SELECT 1, 2) OR (name NOT IN (SELECT 1, 2) AND name NOT IN (SELECT 1, 2))", ast.toString());
+    }
+
+    @Test
+    void conditionAnyTest() {
+        Conditions conditions = conditionAny("id", "=", new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE id = ANY (SELECT 1, 2)", ast.toString());
+
+        conditions.and(conditionAny(asName("id"), operator("="), new SelectImpl(ast, "id").from("user")));
+        assembleAst(conditions);
+        assertEquals("WHERE id = ANY (SELECT 1, 2) AND id = ANY (SELECT id FROM user)", ast.toString());
+    }
+
+    @Test
+    void conditionSomeTest() {
+        Conditions conditions = conditionSome("id", "=", new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE id = SOME (SELECT 1, 2)", ast.toString());
+
+        conditions.and(conditionSome(asName("id"), operator("="), new SelectImpl(ast, "id").from("user")));
+        assembleAst(conditions);
+        assertEquals("WHERE id = SOME (SELECT 1, 2) AND id = SOME (SELECT id FROM user)", ast.toString());
+    }
+
+    @Test
+    void conditionAllTest() {
+        Conditions conditions = conditionAll("id", "=", new SelectImpl(ast, "1", "2"));
+        assembleAst(conditions);
+        assertEquals("WHERE id = ALL (SELECT 1, 2)", ast.toString());
+
+        conditions.and(conditionAll(asName("id"), operator("="), new SelectImpl(ast, "id").from("user")));
+        assembleAst(conditions);
+        assertEquals("WHERE id = ALL (SELECT 1, 2) AND id = ALL (SELECT id FROM user)", ast.toString());
     }
 }

@@ -16,6 +16,10 @@ import org.queryman.builder.token.Operator;
 
 import java.util.List;
 
+import static org.queryman.builder.ast.NodesMetadata.ALL;
+import static org.queryman.builder.ast.NodesMetadata.ANY;
+import static org.queryman.builder.ast.NodesMetadata.EXISTS;
+import static org.queryman.builder.ast.NodesMetadata.SOME;
 import static org.queryman.builder.token.Expression.ExpressionType.ARRAY;
 import static org.queryman.builder.token.Expression.ExpressionType.COLUMN_REFERENCE;
 import static org.queryman.builder.token.Expression.ExpressionType.DEFAULT;
@@ -34,17 +38,25 @@ public class PostgreSQL {
         return new Operator(operator);
     }
 
+    //----
+    // COMMON CONDITIONS
+    //----
+
     public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return condition(asName(leftValue), operator(operator), asName(rightValue));
+        return condition(asName(leftValue), Operators.map(operator), asName(rightValue));
     }
 
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
-        return condition(leftValue, operator(operator), rightValue);
+        return condition(leftValue, Operators.map(operator), rightValue);
     }
 
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
         return new ConditionsImpl(leftValue, new NodeMetadata(operator), rightValue);
     }
+
+    //----
+    // BETWEEN CONDITIONS
+    //----
 
     /**
      * WHERE .. BETWEEN .. AND .. condition.
@@ -62,6 +74,60 @@ public class PostgreSQL {
 
     public static Keyword keyword(String keyword) {
         return new Keyword(keyword);
+    }
+
+    //----
+    // SUBQUERY CONDITIONS
+    //----
+
+    public static Conditions conditionExists(Query query) {
+        return new ConditionsImpl(EXISTS, query);
+    }
+
+    public static Conditions conditionSome(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(SOME, query));
+    }
+
+    public static Conditions conditionSome(String field, String operator, Query query) {
+        return conditionSome(asName(field), operator(operator), query);
+    }
+
+    public static Conditions conditionAny(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ANY, query));
+    }
+
+    public static Conditions conditionAny(String field, String operator, Query query) {
+        return conditionAny(asName(field), operator(operator), query);
+    }
+
+    public static Conditions conditionAll(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ALL, query));
+    }
+
+    public static Conditions conditionAll(String field, String operator, Query query) {
+        return conditionAll(asName(field), operator(operator), query);
+    }
+
+    /**
+     * Subquery condition. It is used primarily by {@code IN} expression:
+     *
+     * Example:
+     * name IN (select name from authors)
+     * condition(asName("name"), Operators.IN, select("name").from("authors"))
+     */
+    public static Conditions condition(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(field, new NodeMetadata(operator), query);
+    }
+
+    /**
+     * Subquery condition. It is used primarily by {@code IN} expression:
+     *
+     * Example:
+     * name IN (select name from authors)
+     * condition("name", "IN", select("name").from("authors"))
+     */
+    public static Conditions condition(String field, String operator, Query query) {
+        return condition(asName(field), Operators.map(operator), query);
     }
 
     //----
@@ -134,6 +200,7 @@ public class PostgreSQL {
     //----
     // LIST EXPRESSIONS
     //----
+
     /**
      * @param constants - values of list
      * @return (...), where {@code ...} is concatenated string of values by comma.
@@ -210,11 +277,10 @@ public class PostgreSQL {
         return asStringArray(arr.toArray());
     }
 
-
-
     //----
     // FUNCTION EXPRESSIONS
     //----
+
     public static Expression func(String name, Expression expression) {
         return new Expression(name, FUNC, expression);
     }

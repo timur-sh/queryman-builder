@@ -106,4 +106,6 @@ public interface AbstractSyntaxTree {
      * is called.
      */
     AbstractSyntaxTree peek(AstVisitor node);
+
+    Node getRootNode();
 }

@@ -23,7 +23,12 @@ public class Keywords {
 
     public static final Keyword WHERE = new Keyword("WHERE");
 
-    public static final Keyword LIMIT  = new Keyword("LIMIT");
+    public static final Keyword LIMIT = new Keyword("LIMIT");
 
     public static final Keyword OFFSET = new Keyword("OFFSET");
+
+    public static final Keyword EXISTS = new Keyword("EXISTS");
+    public static final Keyword ANY    = new Keyword("ANY");
+    public static final Keyword SOME   = new Keyword("SOME");
+    public static final Keyword ALL    = new Keyword("ALL");
 }

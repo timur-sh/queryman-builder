@@ -8,6 +8,7 @@ package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 
 /**
@@ -153,13 +154,6 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl where(Expression left, String operator, Expression right) {
-        where(left, operator(operator), right);
-
-        return this;
-    }
-
-    @Override
     public final SelectImpl where(Expression left, Operator operator, Expression right) {
         where(condition(left, operator, right));
 
@@ -167,8 +161,21 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
+    public final SelectImpl where(Expression field, Operator operator, Query query) {
+        this.conditions = condition(field, operator, query);
+        return this;
+    }
+
+    @Override
     public final SelectImpl where(Conditions conditions) {
         this.conditions = new ConditionsImpl(conditions);
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl whereExists(Query query) {
+        this.conditions = conditionExists(query);
 
         return this;
     }
@@ -200,16 +207,15 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl and(Expression left, String operator, Expression right) {
-        and(left, operator(operator), right);
+    public final SelectImpl and(Expression left, Operator operator, Expression right) {
+        and(condition(left, operator, right));
 
         return this;
     }
 
     @Override
-    public final SelectImpl and(Expression left, Operator operator, Expression right) {
-        and(condition(left, operator, right));
-
+    public final SelectImpl and(Expression field, Operator operator, Query query) {
+        conditions.and(field, operator, query);
         return this;
     }
 
@@ -221,15 +227,14 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl andNot(String left, String operator, String right) {
-        andNot(condition(left, operator, right));
-
+    public final SelectImpl andExists(Query query) {
+        conditions.andExists(query);
         return this;
     }
 
     @Override
-    public final SelectImpl andNot(Expression left, String operator, Expression right) {
-        andNot(left, operator(operator), right);
+    public final SelectImpl andNot(String left, String operator, String right) {
+        andNot(condition(left, operator, right));
 
         return this;
     }
@@ -242,6 +247,12 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
+    public SelectWhereStep andNot(Expression field, Operator operator, Query query) {
+        conditions.andNot(field, operator, query);
+        return this;
+    }
+
+    @Override
     public final SelectImpl andNot(Conditions conditions) {
         this.conditions.andNot(conditions);
 
@@ -249,15 +260,14 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl or(String left, String operator, String right) {
-        or(condition(left, operator, right));
-
+    public SelectWhereStep andNotExists(Query query) {
+        conditions.andNotExists(query);
         return this;
     }
 
     @Override
-    public final SelectImpl or(Expression left, String operator, Expression right) {
-        or(left, operator(operator), right);
+    public final SelectImpl or(String left, String operator, String right) {
+        or(condition(left, operator, right));
 
         return this;
     }
@@ -270,9 +280,21 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
+    public SelectWhereStep or(Expression field, Operator operator, Query query) {
+        conditions.or(field, operator, query);
+        return this;
+    }
+
+    @Override
     public final SelectImpl or(Conditions conditions) {
         this.conditions.or(conditions);
 
+        return this;
+    }
+
+    @Override
+    public SelectWhereStep orExists(Query query) {
+        conditions.orExists(query);
         return this;
     }
 
@@ -290,9 +312,8 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl orNot(Expression left, String operator, Expression right) {
-        orNot(left, operator(operator), right);
-
+    public SelectWhereStep orNotExists(Query query) {
+        conditions.orNotExists(query);
         return this;
     }
 
@@ -300,6 +321,12 @@ public class SelectImpl extends AbstractQuery implements
     public final SelectImpl orNot(Expression left, Operator operator, Expression right) {
         orNot(condition(left, operator, right));
 
+        return this;
+    }
+
+    @Override
+    public SelectWhereStep orNot(Expression field, Operator operator, Query query) {
+        conditions.orNot(field, operator, query);
         return this;
     }
 

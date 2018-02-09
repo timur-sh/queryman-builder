@@ -2,17 +2,16 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.BaseTest;
-import org.queryman.builder.JdbcException;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.queryman.builder.Operators.EQUAL;
+import static org.queryman.builder.Operators.IN;
 import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.NE2;
+import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
@@ -21,9 +20,8 @@ import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.testing.JDBC.inJdbc;
 
-class SelectImplTest extends BaseTest {
+class SelectImplTest {
     private AbstractSyntaxTree ast;
 
     @BeforeEach
@@ -35,14 +33,9 @@ class SelectImplTest extends BaseTest {
     void select() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         assertEquals("SELECT id, name", select.sql());
-        assertThrows(JdbcException.class, () -> inJdbc(select), "ERROR: column \"id\" does not exist");
 
         SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT \"id2\", \"name\", min(price) as min", select2.sql());
-        assertThrows(JdbcException.class, () -> inJdbc(select2), "ERROR: column \"id2\" does not exist");
-
-        SelectFromStep select3 = new SelectImpl(ast, asString("id"), asNumber(1));
-        inJdbc(select3);
     }
 
     @Test
@@ -72,14 +65,19 @@ class SelectImplTest extends BaseTest {
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2", sql);
 
         sql = select.from("books")
-           .where(asQuotedName("id"), "=", asNumber(1))
+           .where(asQuotedName("id"), EQUAL, asNumber(1))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE \"id\" = 1", sql);
 
         sql = select.from("books")
-           .where(asQuotedName("id"), EQUAL, asNumber(1))
+           .where(asName("id"), IN, new SelectImpl(ast, "1", "2"))
            .sql();
-        assertEquals("SELECT id, name FROM books WHERE \"id\" = 1", sql);
+        assertEquals("SELECT id, name FROM books WHERE id IN (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .whereExists(new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE EXISTS (SELECT 1, 2)", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
@@ -95,11 +93,11 @@ class SelectImplTest extends BaseTest {
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
 
         sql = select.from("books")
-           .where(asName("id1"), "=", asString("1"))
-           .or(asQuotedName("id2"), "=", asNumber(2))
-           .orNot(asName("table.id3"), "=", asNumber(3))
-           .and(asQuotedQualifiedName("table.id4"), "=", asNumber(4))
-           .andNot(asQuotedName("id5"), "=", asNumber(5))
+           .where(asName("id1"), EQUAL, asString("1"))
+           .or(asQuotedName("id2"), EQUAL, asNumber(2))
+           .orNot(asName("table.id3"), EQUAL, asNumber(3))
+           .and(asQuotedQualifiedName("table.id4"), EQUAL, asNumber(4))
+           .andNot(asQuotedName("id5"), EQUAL, asNumber(5))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
     }
@@ -142,21 +140,27 @@ class SelectImplTest extends BaseTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .and(asQuotedName("id2"), "=", asNumber(2))
+           .and(asQuotedName("id2"), EQUAL, asNumber(2))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" = 2", sql);
-
-        sql = select.from("books")
-           .where("id", "=", "1")
-           .and(asQuotedName("id2"), EQUAL, asNumber(3))
-           .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" = 3", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
            .and(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" = 4", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .and(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" NOT IN (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andExists(new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
@@ -170,12 +174,6 @@ class SelectImplTest extends BaseTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .andNot(asQuotedName("id2"), "<=", asNumber(2))
-           .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" <= 2", sql);
-
-        sql = select.from("books")
-           .where("id", "=", "1")
            .andNot(asQuotedName("id2"), EQUAL, asNumber(3))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" = 3", sql);
@@ -185,6 +183,18 @@ class SelectImplTest extends BaseTest {
            .andNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" = 4", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andNot(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .andNotExists(new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
@@ -197,12 +207,6 @@ class SelectImplTest extends BaseTest {
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR id2 = 2", sql);
 
         sql = select.from("books")
-           .where("id", "=", "1")
-           .or(asQuotedName("id2"), "=", asNumber(2))
-           .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 OR \"id2\" = 2", sql);
-
-        sql = select.from("books")
            .where("id", "<>", "1")
            .or(asQuotedName("id2"), NE2, asNumber(3))
            .sql();
@@ -213,6 +217,18 @@ class SelectImplTest extends BaseTest {
            .or(condition(asQuotedName("id2"), LT, asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR \"id2\" < 4", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .or(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR \"id2\" NOT IN (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orExists(new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
@@ -226,12 +242,6 @@ class SelectImplTest extends BaseTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .orNot(asQuotedName("id2"), "=", asNumber(2))
-           .sql();
-        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" = 2", sql);
-
-        sql = select.from("books")
-           .where("id", "=", "1")
            .orNot(asQuotedName("id2"), EQUAL, asNumber(3))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" = 3", sql);
@@ -241,6 +251,18 @@ class SelectImplTest extends BaseTest {
            .orNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" = 4", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orNot(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .where("id", "=", "1")
+           .orNotExists(new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test

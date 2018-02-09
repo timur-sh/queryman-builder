@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.Query;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
@@ -16,33 +17,44 @@ import org.queryman.builder.token.Operator;
 public interface SelectWhereStep extends SelectWhereManySteps {
     SelectWhereStep and(String left, String operator, String right);
 
-    SelectWhereStep and(Expression left, String operator, Expression right);
-
     SelectWhereStep and(Expression left, Operator operator, Expression right);
+
+    SelectWhereStep and(Expression field, Operator operator, Query query);
 
     SelectWhereStep and(Conditions conditions);
 
-    SelectWhereStep andNot(String left, String operator, String right);
+    SelectWhereStep andExists(Query query);
 
-    SelectWhereStep andNot(Expression left, String operator, Expression right);
+
+    SelectWhereStep andNot(String left, String operator, String right);
 
     SelectWhereStep andNot(Expression left, Operator operator, Expression right);
 
+    SelectWhereStep andNot(Expression field, Operator operator, Query query);
+
     SelectWhereStep andNot(Conditions conditions);
+
+    SelectWhereStep andNotExists(Query query);
+
 
     SelectWhereStep or(String left, String operator, String right);
 
-    SelectWhereStep or(Expression left, String operator, Expression right);
-
     SelectWhereStep or(Expression left, Operator operator, Expression right);
+
+    SelectWhereStep or(Expression field, Operator operator, Query query);
 
     SelectWhereStep or(Conditions conditions);
 
-    SelectWhereStep orNot(Conditions conditions);
+    SelectWhereStep orExists(Query query);
+
 
     SelectWhereStep orNot(String left, String operator, String right);
 
-    SelectWhereStep orNot(Expression left, String operator, Expression right);
-
     SelectWhereStep orNot(Expression left, Operator operator, Expression right);
+
+    SelectWhereStep orNot(Expression field, Operator operator, Query query);
+
+    SelectWhereStep orNot(Conditions conditions);
+
+    SelectWhereStep orNotExists(Query query);
 }

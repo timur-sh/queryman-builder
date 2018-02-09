@@ -17,11 +17,13 @@ import org.queryman.builder.token.Operator;
 public interface SelectWhereFirstStep extends Query {
     SelectWhereStep where(String left, String operator, String right);
 
-    SelectWhereStep where(Expression left, String operator, Expression right);
-
     SelectWhereStep where(Expression left, Operator operator, Expression right);
 
+    SelectWhereStep where(Expression field, Operator operator, Query query);
+
     SelectWhereStep where(Conditions conditions);
+
+    SelectWhereStep whereExists(Query query);
 
     SelectWhereStep whereBetween(String field, String value1, String value2);
 

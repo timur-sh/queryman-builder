@@ -6,7 +6,9 @@
  */
 package org.queryman.builder.command.impl;
 
+import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.ast.Node;
 import org.queryman.builder.ast.NodeImpl;
 import org.queryman.builder.ast.NodeMetadata;
@@ -16,6 +18,7 @@ import org.queryman.builder.token.Operator;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
@@ -42,7 +45,7 @@ public final class ConditionsImpl implements
      * <p>
      * Where:
      *
-     * @param metadata   - {@code BETWEEN}
+     * @param metadata   - {@code BETWEEN} node metadata.
      * @param field      - field of between. Example: <code>id BETWEEN ..</code>
      * @param conditions - condition of between. Example: <code>id BETWEEN 1 AND 20</code>
      */
@@ -52,19 +55,71 @@ public final class ConditionsImpl implements
            .addChildNode(conditions.getNode());
     }
 
-    ConditionsImpl(Conditions conditions) {
-        node = rebuildNode(conditions);
+    public ConditionsImpl(Conditions conditions) {
+        node = rebuildNodeMetadata(conditions.getNode(), false);
     }
+
+    /**
+     * It is used
+     *
+     * @param query
+     */
+    public ConditionsImpl(NodeMetadata metadata, Query query) {
+        node = new NodeImpl(metadata)
+           .addChildNode(queryToNode(query));
+    }
+
+    public ConditionsImpl(Expression field, NodeMetadata metadata, Query query) {
+        node = new NodeImpl(metadata)
+           .addLeaf(field)
+           .addChildNode(queryToNode(query));
+    }
+
+    /**
+     * The {@code query} is turned into node.
+     */
+    private Node queryToNode(Query query) {
+        AbstractSyntaxTree tree = new AbstractSyntaxTreeImpl();
+        query.assemble(tree);
+        return rebuildNodeMetadata(tree.getRootNode(), true);
+    }
+
+    /**
+     * Instantiate a new {@link #node} with {@code metadata}, that contains
+     * the previous {@link #node} value as first child node and the {@code conditions}
+     * as second child node.
+     * <p>
+     * The second node is derived out of {@code conditions} and its metadata
+     * is rebuilt if it is needed.
+     *
+     * @see #rebuildNodeMetadata(Node, boolean)
+     */
+    private void rebuildNode(NodeMetadata metadata, Node node1) {
+        node = new NodeImpl(metadata)
+           .addChildNode(node)
+           .addChildNode(rebuildNodeMetadata(node1, false));
+    }
+
+    /**
+     * If the node has two child nodes or {@code force} is true,
+     * a {@code metadata} parentheses is set up.
+     */
+    private Node rebuildNodeMetadata(Node node1, boolean force) {
+        if (force || node1.count() == 2) {
+            NodeMetadata nodeMetadata = node1.getNodeMetadata().setParentheses(true);
+            node1.setNodeMetadata(nodeMetadata);
+        }
+
+        return node1;
+    }
+
+    //----
+    // API
+    //----
 
     @Override
     public final Conditions and(String leftValue, String operator, String rightValue) {
-        and(asConstant(leftValue), operator, asConstant(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions and(Expression leftField, String operator, Expression rightField) {
-        and(leftField, operator(operator), rightField);
+        and(asConstant(leftValue), operator(operator), asConstant(rightValue));
         return this;
     }
 
@@ -76,19 +131,25 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions and(Conditions conditions) {
-        rebuildNode(AND, conditions);
+        rebuildNode(AND, conditions.getNode());
+        return this;
+    }
+
+    @Override
+    public Conditions and(Expression field, Operator operator, Query query) {
+        and(condition(field, operator, query));
+        return this;
+    }
+
+    @Override
+    public final Conditions andExists(Query query) {
+        and(conditionExists(query));
         return this;
     }
 
     @Override
     public final Conditions andNot(String leftValue, String operator, String rightValue) {
-        andNot(asConstant(leftValue), operator, asConstant(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions andNot(Expression leftField, String operator, Expression rightField) {
-        andNot(leftField, operator(operator), rightField);
+        andNot(asConstant(leftValue), operator(operator), asConstant(rightValue));
         return this;
     }
 
@@ -100,20 +161,25 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions andNot(Conditions conditions) {
-        rebuildNode(AND_NOT, conditions);
+        rebuildNode(AND_NOT, conditions.getNode());
+        return this;
+    }
+
+    @Override
+    public final Conditions andNot(Expression field, Operator operator, Query query) {
+        andNot(condition(field, operator, query));
+        return this;
+    }
+
+    @Override
+    public final Conditions andNotExists(Query query) {
+        andNot(conditionExists(query));
         return this;
     }
 
     @Override
     public final Conditions or(String leftValue, String operator, String rightValue) {
-        or(asConstant(leftValue), operator, asConstant(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions or(Expression leftField, String operator, Expression rightField) {
-        or(leftField, operator(operator), rightField);
-
+        or(asConstant(leftValue), operator(operator), asConstant(rightValue));
         return this;
     }
 
@@ -126,19 +192,25 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions or(Conditions conditions) {
-        rebuildNode(OR, conditions);
+        rebuildNode(OR, conditions.getNode());
+        return this;
+    }
+
+    @Override
+    public final Conditions orExists(Query query) {
+        or(conditionExists(query));
+        return this;
+    }
+
+    @Override
+    public final Conditions or(Expression field, Operator operator, Query query) {
+        or(condition(field, operator, query));
         return this;
     }
 
     @Override
     public final Conditions orNot(String leftValue, String operator, String rightValue) {
-        orNot(asConstant(leftValue), operator, asConstant(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions orNot(Expression leftField, String operator, Expression rightField) {
-        orNot(leftField, operator(operator), rightField);
+        orNot(asConstant(leftValue), operator(operator), asConstant(rightValue));
         return this;
     }
 
@@ -150,25 +222,20 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions orNot(Conditions conditions) {
-        rebuildNode(OR_NOT, conditions);
+        rebuildNode(OR_NOT, conditions.getNode());
         return this;
     }
 
-    private void rebuildNode(NodeMetadata metadata, Conditions conditions) {
-        node = new NodeImpl(metadata)
-           .addChildNode(node)
-           .addChildNode(rebuildNode(conditions));
+    @Override
+    public final Conditions orNot(Expression field, Operator operator, Query query) {
+        orNot(condition(field, operator, query));
+        return this;
     }
 
-    private Node rebuildNode(Conditions conditions) {
-        Node nodeAdjustment = conditions.getNode();
-
-        if (nodeAdjustment.count() == 2) {
-            NodeMetadata nodeMetadata = nodeAdjustment.getNodeMetadata().setParentheses(true);
-            nodeAdjustment.setNodeMetadata(nodeMetadata);
-        }
-
-        return nodeAdjustment;
+    @Override
+    public final Conditions orNotExists(Query query) {
+        orNot(conditionExists(query));
+        return this;
     }
 
     @Override
