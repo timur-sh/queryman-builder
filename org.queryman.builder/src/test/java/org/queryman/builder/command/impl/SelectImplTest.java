@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
+import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
+import org.queryman.builder.command.select.SelectJoinStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.Operators.EQUAL;
@@ -20,6 +22,7 @@ import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.conditionExists;
 
 class SelectImplTest {
     private AbstractSyntaxTree ast;
@@ -44,11 +47,107 @@ class SelectImplTest {
 
         assertEquals("SELECT id, name FROM books", select.from("books").sql());
 
+        assertEquals("SELECT id, name FROM books as b(1,2)", select.from("books as b(1,2)").sql());
+
         assertEquals("SELECT id, name FROM \"books\"", select.from(asQuotedName("books")).sql());
 
         assertEquals("SELECT id, name FROM public.books", select.from(asName("public.books")).sql());
 
         assertEquals("SELECT id, name FROM table1, table2", select.from("table1", "table2").sql());
+    }
+
+    @Test
+    void selectFromJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+
+        assertEquals("SELECT id, name FROM books JOIN author ON (true)", select.join("author").on(true).sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books JOIN author USING (id)", select.join("author").using("id").sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books JOIN author USING (id, name)", select.join("author").using("id", "name").sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books JOIN author ON id = author_id", select.join("author").on("id", "=", "author_id").sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").andExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT id, name FROM books JOIN author ON id = author_id AND EXISTS (SELECT 1, 2)", select.sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").and(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT id, name FROM books JOIN author ON id = author_id AND id IN (SELECT 1, 2)", select.sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").andNot(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT id, name FROM books JOIN author ON id = author_id AND NOT id IN (SELECT 1, 2)", select.sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").or(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT id, name FROM books JOIN author ON id = author_id OR id IN (SELECT 1, 2)", select.sql());
+
+        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").orNot(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT id, name FROM books JOIN author ON id = author_id OR NOT id IN (SELECT 1, 2)", select.sql());
+
+        select = new SelectImpl(ast, "*").from("books");
+        assertEquals("SELECT * FROM books JOIN author ON EXISTS (SELECT 1, 2)", select.join("author").onExists(new SelectImpl(ast, "1", "2")).sql());
+
+        select = new SelectImpl(ast, "*").from("books").join("author").on(true).innerJoin("sales").onExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT * FROM books JOIN author ON (true) INNER JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+    }
+
+    @Test
+    void selectFromInnerJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+
+        assertEquals("SELECT id, name FROM books INNER JOIN author ON (true)", select.innerJoin("author").on(true).sql());
+
+        select = new SelectImpl(ast, "*").from("books").innerJoin("author").on(true).join("sales").onExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT * FROM books INNER JOIN author ON (true) JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+    }
+
+    @Test
+    void selectFromLeftJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books LEFT JOIN author ON (true)", select.leftJoin("author").on(true).sql());
+
+        select = new SelectImpl(ast, "*").from("books").leftJoin("author").on(true).innerJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT * FROM books LEFT JOIN author ON (true) INNER JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+    }
+
+    @Test
+    void selectFromRightJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books RIGHT JOIN author ON (true)", select.rightJoin("author").on(true).sql());
+
+        select = new SelectImpl(ast, "*").from("books").rightJoin("author").on(true).leftJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT * FROM books RIGHT JOIN author ON (true) LEFT JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+    }
+
+    @Test
+    void selectFromFullJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books FULL JOIN author ON (true)", select.fullJoin("author").on(true).sql());
+
+        select = new SelectImpl(ast, "*").from("books").fullJoin("author").on(true).rightJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT * FROM books FULL JOIN author ON (true) RIGHT JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+    }
+
+    @Test
+    void selectFromCrossJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books CROSS JOIN author", select.crossJoin("author").sql());
+
+        SelectJoinStep select1 = new SelectImpl(ast, "*").from("books");
+        select1.crossJoin("author").fullJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        assertEquals("SELECT * FROM books CROSS JOIN author FULL JOIN sales ON EXISTS (SELECT 1, 2)", select1.sql());
+    }
+
+    @Test
+    void selectFromNaturalJoin() {
+        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        assertEquals("SELECT id, name FROM books NATURAL JOIN author", select.naturalJoin("author").sql());
+
+        SelectJoinStep select1 = new SelectImpl(ast, "*").from("books");
+        select1.crossJoin("author").naturalJoin(asName("sales")).crossJoin(asName("calls"));
+        assertEquals("SELECT * FROM books CROSS JOIN author NATURAL JOIN sales CROSS JOIN calls", select1.sql());
     }
 
     //---

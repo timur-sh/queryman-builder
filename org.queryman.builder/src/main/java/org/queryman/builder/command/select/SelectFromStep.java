@@ -10,10 +10,9 @@ import org.queryman.builder.Query;
 import org.queryman.builder.token.Expression;
 
 /**
- * {@code FROM} clause is a part of {@code SELECT} statement.
+ * This step is used to set table name or table names.
  *
- * Usual rows are derived from table, but it is possible to retrieve
- * rows from subselect or other virtual table, created {@code VIEW}, etc..
+ * {@code FROM} clause is a part of {@code SELECT} statement.
  *
  * @author Timur Shaidullin
  */
@@ -21,12 +20,24 @@ public interface SelectFromStep extends Query {
     /**
      * Specify table name that be used to retrieve rows. If several names are
      * provided, they will be cross-joined together.
+     *
+     * It you'd like to use an alias, it must be followed by table name:
+     * <code>select("id").from("books as b")</code>
+     * <code>select("id").from("books as b (id, name)")</code>
      */
-    SelectFromManySteps from(String... tables);
+    SelectJoinStep from(String... tables);
 
     /**
      * Specify table name that be used to retrieve rows. If several names are
      * provided, they will be cross-joined together.
+     *
+     * It you'd like to use an alias, it must be followed by table name:
+     * <code>
+     *     PostgreSQL.asName("books").as("b"); // books AS b
+     *     PostgreSQL.asName("books").as("b", "id", "name"); // books AS b(id, name)
+     * </code>
+     *
+     * @see Exception
      */
-    SelectFromManySteps from(Expression... tables);
+    SelectJoinStep from(Expression... tables);
 }

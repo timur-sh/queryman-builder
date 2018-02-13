@@ -17,6 +17,17 @@ public class Keywords {
 
     public static final Keyword FROM = new Keyword("FROM");
 
+    public static final Keyword ON = new Keyword("ON");
+    public static final Keyword USING = new Keyword("USING");
+
+    public static final Keyword JOIN = new Keyword("JOIN");
+    public static final Keyword INNER_JOIN = new Keyword("INNER JOIN");
+    public static final Keyword LEFT_JOIN = new Keyword("LEFT JOIN");
+    public static final Keyword RIGHT_JOIN = new Keyword("RIGHT JOIN");
+    public static final Keyword FULL_JOIN = new Keyword("FULL JOIN");
+    public static final Keyword CROSS_JOIN = new Keyword("CROSS JOIN");
+    public static final Keyword NATURAL_JOIN = new Keyword("NATURAL JOIN");
+
     public static final Keyword GROUP_BY = new Keyword("GROUP BY");
 
     public static final Keyword ORDER_BY = new Keyword("ORDER BY");

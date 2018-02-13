@@ -8,10 +8,8 @@ package org.queryman.builder.ast;
 
 import org.queryman.builder.Keywords;
 import org.queryman.builder.Operators;
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Keyword;
 
-import static org.queryman.builder.Operators.BETWEEN;
 import static org.queryman.builder.PostgreSQL.keyword;
 
 /**
@@ -25,6 +23,16 @@ public final class NodesMetadata {
     public static final NodeMetadata SELECT_DISTINCT_ON = new NodeMetadata(new Keyword("SELECT DISTINCT ON"));
 
     public static final NodeMetadata FROM = new NodeMetadata(Keywords.FROM);
+
+    public static final NodeMetadata ON = new NodeMetadata(Keywords.ON);
+    public static final NodeMetadata USING = new NodeMetadata(Keywords.USING);
+    public static final NodeMetadata JOIN = new NodeMetadata(Keywords.JOIN);
+    public static final NodeMetadata INNER_JOIN = new NodeMetadata(Keywords.INNER_JOIN);
+    public static final NodeMetadata LEFT_JOIN = new NodeMetadata(Keywords.LEFT_JOIN);
+    public static final NodeMetadata RIGHT_JOIN = new NodeMetadata(Keywords.RIGHT_JOIN);
+    public static final NodeMetadata FULL_JOIN = new NodeMetadata(Keywords.FULL_JOIN);
+    public static final NodeMetadata CROSS_JOIN = new NodeMetadata(Keywords.CROSS_JOIN);
+    public static final NodeMetadata NATURAL_JOIN = new NodeMetadata(Keywords.NATURAL_JOIN);
 
     public static final NodeMetadata GROUP_BY = new NodeMetadata(Keywords.GROUP_BY);
 

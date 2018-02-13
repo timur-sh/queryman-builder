@@ -16,6 +16,10 @@ import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
+import org.queryman.builder.command.select.SelectJoinManyStepsStep;
+import org.queryman.builder.command.select.SelectJoinOnStepsStep;
+import org.queryman.builder.command.select.SelectJoinOnStep;
+import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.command.select.SelectLimitStep;
 import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
@@ -29,8 +33,10 @@ import org.queryman.builder.utils.Tools;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
+import static org.queryman.builder.PostgreSQL.*;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
@@ -42,6 +48,9 @@ import static org.queryman.builder.ast.NodesMetadata.SELECT;
 public class SelectImpl extends AbstractQuery implements
    SelectFromStep,
    SelectFromManySteps,
+   SelectJoinStep,
+   SelectJoinOnStep,
+   SelectJoinOnStepsStep,
    SelectWhereStep,
    SelectWhereManySteps,
    SelectGroupByStep,
@@ -57,8 +66,13 @@ public class SelectImpl extends AbstractQuery implements
     private final Token[] COLUMNS_SELECTED;
 
     private Conditions conditions;
+    private Stack<Join> joins = new Stack<>();
+
+    private boolean where = true;
+    private boolean join = true;
+
     private Expression limit;
-    private Expression   offset;
+    private Expression offset;
 
     public SelectImpl(AbstractSyntaxTree ast, String... columnsSelected) {
         this(
@@ -87,6 +101,10 @@ public class SelectImpl extends AbstractQuery implements
             tree.startNode(NodesMetadata.FROM, ", ")
                .addLeaves(FROM)
                .endNode();
+
+        if (joins.size() > 0)
+            for (Join join1 : joins)
+                tree.peek(join1);
 
         if (conditions != null)
             tree.startNode(NodesMetadata.WHERE)
@@ -118,6 +136,16 @@ public class SelectImpl extends AbstractQuery implements
                .endNode();
 
         tree.endNode();
+    }
+
+    private void resetToWhere() {
+        where = true;
+        join = false;
+    }
+
+    private void resetToJoin() {
+        where = false;
+        join = true;
     }
 
     //--
@@ -162,12 +190,13 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl where(Expression field, Operator operator, Query query) {
-        this.conditions = condition(field, operator, query);
+        where(condition(field, operator, query));
         return this;
     }
 
     @Override
     public final SelectImpl where(Conditions conditions) {
+        resetToWhere();
         this.conditions = new ConditionsImpl(conditions);
 
         return this;
@@ -175,20 +204,20 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl whereExists(Query query) {
-        this.conditions = conditionExists(query);
+        where(conditionExists(query));
 
         return this;
     }
 
     @Override
     public final SelectImpl whereBetween(String field, String value1, String value2) {
-        whereBetween(PostgreSQL.between(field, value1, value2));
+        whereBetween(between(field, value1, value2));
         return this;
     }
 
     @Override
     public final SelectImpl whereBetween(Expression field, Expression value1, Expression value2) {
-        whereBetween(PostgreSQL.between(field, value1, value2));
+        whereBetween(between(field, value1, value2));
         return this;
     }
 
@@ -215,20 +244,23 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl and(Expression field, Operator operator, Query query) {
-        conditions.and(field, operator, query);
+        and(condition(field, operator, query));
         return this;
     }
 
     @Override
     public final SelectImpl and(Conditions conditions) {
-        this.conditions.and(conditions);
+        if (where)
+            this.conditions.and(conditions);
+        else if (join)
+            joins.peek().getConditions().and(conditions);
 
         return this;
     }
 
     @Override
     public final SelectImpl andExists(Query query) {
-        conditions.andExists(query);
+        and(conditionExists(query));
         return this;
     }
 
@@ -247,21 +279,24 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectWhereStep andNot(Expression field, Operator operator, Query query) {
-        conditions.andNot(field, operator, query);
+    public final SelectImpl andNot(Expression field, Operator operator, Query query) {
+        andNot(condition(field, operator, query));
         return this;
     }
 
     @Override
     public final SelectImpl andNot(Conditions conditions) {
-        this.conditions.andNot(conditions);
+        if (where)
+            this.conditions.andNot(conditions);
+        else if (join)
+            joins.peek().getConditions().andNot(conditions);
 
         return this;
     }
 
     @Override
-    public SelectWhereStep andNotExists(Query query) {
-        conditions.andNotExists(query);
+    public final SelectImpl andNotExists(Query query) {
+        andNot(conditionExists(query));
         return this;
     }
 
@@ -280,21 +315,24 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectWhereStep or(Expression field, Operator operator, Query query) {
-        conditions.or(field, operator, query);
+    public final SelectImpl or(Expression field, Operator operator, Query query) {
+        or(condition(field, operator, query));
         return this;
     }
 
     @Override
     public final SelectImpl or(Conditions conditions) {
-        this.conditions.or(conditions);
+        if (where)
+            this.conditions.or(conditions);
+        else if (join)
+            joins.peek().getConditions().or(conditions);
 
         return this;
     }
 
     @Override
-    public SelectWhereStep orExists(Query query) {
-        conditions.orExists(query);
+    public final SelectImpl orExists(Query query) {
+        or(conditionExists(query));
         return this;
     }
 
@@ -307,13 +345,17 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl orNot(Conditions conditions) {
-        this.conditions.orNot(conditions);
+        if (where)
+            this.conditions.orNot(conditions);
+        else if (join)
+            joins.peek().getConditions().orNot(conditions);
+
         return this;
     }
 
     @Override
-    public SelectWhereStep orNotExists(Query query) {
-        conditions.orNotExists(query);
+    public final SelectImpl orNotExists(Query query) {
+        orNot(conditionExists(query));
         return this;
     }
 
@@ -325,14 +367,14 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectWhereStep orNot(Expression field, Operator operator, Query query) {
-        conditions.orNot(field, operator, query);
+    public final SelectImpl orNot(Expression field, Operator operator, Query query) {
+        orNot(condition(field, operator, query));
         return this;
     }
 
-    //--
+    //----
     // GROUP BY API
-    //--
+    //----
 
     @Override
     public final SelectImpl groupBy(String... expressions) {
@@ -344,9 +386,9 @@ public class SelectImpl extends AbstractQuery implements
         return this;
     }
 
-    //--
+    //----
     // ORDER BY API
-    //--
+    //----
 
     @Override
     public final SelectImpl orderBy(String column) {
@@ -376,6 +418,149 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl offset(long offset) {
         this.offset = asNumber(offset);
+        return this;
+    }
+
+    //----
+    // JOIN API
+    //----
+
+    @Override
+    public final SelectImpl join(String name) {
+        join(asName(name));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl join(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.JOIN));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl innerJoin(String name) {
+        innerJoin(asName(name));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl innerJoin(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.INNER_JOIN));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl leftJoin(String name) {
+        return leftJoin(asName(name));
+    }
+
+    @Override
+    public final SelectImpl leftJoin(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.LEFT_JOIN));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl rightJoin(String name) {
+        return rightJoin(asName(name));
+    }
+
+    @Override
+    public final SelectImpl rightJoin(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.RIGHT_JOIN));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl fullJoin(String name) {
+        return fullJoin(asName(name));
+    }
+
+    @Override
+    public final SelectImpl fullJoin(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.FULL_JOIN));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl crossJoin(String name) {
+        return crossJoin(asName(name));
+    }
+
+    @Override
+    public final SelectImpl crossJoin(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.CROSS_JOIN));
+
+        return this;
+    }
+
+    @Override
+    public SelectJoinManyStepsStep naturalJoin(String name) {
+        return naturalJoin(asName(name));
+    }
+
+    @Override
+    public SelectJoinManyStepsStep naturalJoin(Expression name) {
+        resetToJoin();
+        joins.add(new Join(name, NodesMetadata.NATURAL_JOIN));
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl using(String... name) {
+        return using(Arrays.stream(name).map(PostgreSQL::asName).toArray(Expression[]::new));
+     }
+
+    @Override
+    public final SelectImpl using(Expression... columns) {
+        joins.peek().using(columns);
+        return this;
+    }
+
+    @Override
+    public final SelectImpl on(boolean conditions) {
+        resetToJoin();
+        joins.peek().setConditions(conditions);
+        return this;
+    }
+
+    @Override
+    public final SelectImpl on(String left, String operator, String right) {
+        return on(condition(left, operator, right));
+    }
+
+    @Override
+    public final SelectImpl on(Expression left, Operator operator, Expression right) {
+        return on(condition(left, operator, right));
+    }
+
+    @Override
+    public final SelectImpl on(Expression field, Operator operator, Query query) {
+        return on(condition(field, operator, query));
+    }
+
+    @Override
+    public final SelectImpl on(Conditions conditions) {
+        joins.peek().setConditions(conditions);
+        return this;
+    }
+
+    @Override
+    public final SelectImpl onExists(Query query) {
+        resetToJoin();
+        joins.peek().setConditions(conditionExists(query));
         return this;
     }
 }
