@@ -8,6 +8,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asArray;
 import static org.queryman.builder.PostgreSQL.asList;
+import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asStringArray;
 import static org.queryman.builder.PostgreSQL.asStringList;
 import static org.queryman.builder.PostgreSQL.func;
@@ -160,5 +161,11 @@ class ExpressionTest {
         assertEquals("ALL(ARRAY[1, 2])", func("ALL", asArray(1, 2)).getName());
         assertEquals("ALL()", func("ALL", asList()).getName());
         assertEquals("ALL(1, 2)", func("ALL", asList(1, 2)).getName());
+    }
+
+    @Test
+    void aliasTest() {
+        assertEquals("books AS b", asName("books").as("b").getName());
+        assertEquals("books AS b(id, name)", asName("books").as("b", "id", "name").getName());
     }
 }

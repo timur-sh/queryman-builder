@@ -281,6 +281,22 @@ public class PostgreSQL {
     // FUNCTION EXPRESSIONS
     //----
 
+    /**
+     * Examples:
+     * <code>
+     *     func("ALL", asArray(List.of(1, 2)));  // ALL(ARRAY[1, 2])
+     *     func("SOME", asList(1, 2)); // SOME(1, 2)
+     * </code>
+     *
+     * @param name - function or operator name, examples: <code>ALL, ANY ...</code>
+     * @param expression - list or array expression
+     * @return a combine of {@code name} and {@code expression} objects
+     *
+     * @see #asArray(Object[])
+     * @see #asStringArray(Object[])
+     * @see #asList(Object[])
+     * @see #asStringList(List)
+     */
     public static Expression func(String name, Expression expression) {
         return new Expression(name, FUNC, expression);
     }

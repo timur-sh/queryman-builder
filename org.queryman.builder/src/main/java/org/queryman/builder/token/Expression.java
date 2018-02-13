@@ -38,22 +38,50 @@ import static org.queryman.builder.utils.Tools.EMPTY_STRING;
  *  <li>{@link ExpressionType#FUNC} </li>
  * </ul>
  *
- * The above two {@link ExpressionType#COLUMN_REFERENCE} and {@link ExpressionType#FIELD_SELECTION}
- * may be surrounded by quotes:
- * Example
+ * Expression can have an alias:
  * <code>
- *
+ *     PostgreSQL.asName("books").as("b"); // books AS b
+ *     PostgreSQL.asName("books").as("b", "id", "name"); // books AS b(id, name)
  * </code>
  *
  * @author Timur Shaidullin
  */
 public class Expression<T> extends AbstractToken {
     private final ExpressionType type;
+
+    /**
+     * A tag name is used for dollar string constant.
+     */
     private String tagName = "";
+
+    /**
+     * Whether use quote or not.
+     */
     private boolean quoted = false;
 
+    /**
+     * As usual it is used to store {@link ExpressionType#ARRAY} or
+     * {@link ExpressionType#LIST} expressions
+     *
+     * @see Expression#Expression(String, ExpressionType, Expression)
+     * @see org.queryman.builder.PostgreSQL#func(String, Expression)
+     */
     private Expression expression;
+
+    /**
+     * Contains a variables for ARRAY and LIST expressions.
+     */
     private T[] arr;
+
+    /**
+     * Alias of expression.
+     */
+    private String alias;
+
+    /**
+     * Column aliases of derived table.
+     */
+    private String[] columns;
 
     public Expression(String constant, ExpressionType type) {
         super(constant);
@@ -98,6 +126,35 @@ public class Expression<T> extends AbstractToken {
 
     @Override
     public String getName() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(prepareName());
+
+        if (alias != null)
+            builder
+               .append(" ")
+               .append("AS")
+               .append(" ")
+               .append(alias)
+               ;
+
+        if (columns != null) {
+            if (columns.length == 0)
+                return "()";
+            else {
+                String[] result = new String[columns.length];
+
+                for (int i = 0; i < columns.length; i++) {
+                    result[i] = String.valueOf(columns[i]);
+                }
+
+                builder.append("(" + String.join(", ", result) + ")");
+            }
+        }
+
+        return builder.toString();
+    }
+
+    private String prepareName() {
         switch (type) {
             case DEFAULT:
                 return name;
@@ -129,7 +186,27 @@ public class Expression<T> extends AbstractToken {
         return StringUtils.isEmpty(name) && arr == null;
     }
 
-    public String func() {
+    //----
+    // API
+    //----
+
+    public final Expression as(String alias) {
+        this.alias = alias;
+        return this;
+    }
+
+    public final Expression as(String alias, String... columns) {
+        as(alias);
+
+        this.columns = columns;
+        return this;
+    }
+
+    //----
+    // FORMAT NAME
+    //----
+
+    private String func() {
         if (StringUtils.isEmpty(name)) {
             return null;
         }
@@ -146,7 +223,7 @@ public class Expression<T> extends AbstractToken {
     /**
      * @return an array of values e.g. ARRAY[1, 2 [,...]]
      */
-    public String arrayNames() {
+    private String arrayNames() {
         if (arr == null)
             return "ARRAY[]";
 
@@ -173,16 +250,6 @@ public class Expression<T> extends AbstractToken {
         }
 
         return "ARRAY[" + String.join(", ", result) + "]";
-    }
-
-    /**
-     * Wrap the {@code name} into single quotes
-     */
-    private String toPostgresqlString(String name) {
-        if (StringUtils.isEmpty(name))
-            return "";
-
-        return "'" + name.replaceAll("'", "''") + "'";
     }
 
     /**
@@ -303,6 +370,21 @@ public class Expression<T> extends AbstractToken {
 
         return String.join(".", parts);
     }
+
+    //----
+    // SERVICES METHODS
+    //----
+
+    /**
+     * Wrap the {@code name} into single quotes
+     */
+    private String toPostgresqlString(String name) {
+        if (StringUtils.isEmpty(name))
+            return "";
+
+        return "'" + name.replaceAll("'", "''") + "'";
+    }
+
 
     public enum ExpressionType {
         /**
