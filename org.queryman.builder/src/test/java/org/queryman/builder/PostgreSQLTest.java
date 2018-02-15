@@ -3,13 +3,12 @@ package org.queryman.builder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asDollarString;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
-import static org.queryman.builder.PostgreSQL.asConstant;
 
 class PostgreSQLTest {
     @Test
@@ -49,7 +48,7 @@ class PostgreSQLTest {
     @Test
     void asQualifiedNameTest() {
         assertEquals("table.column", asName("table.column").getName());
-        assertEquals("\"table\".\"column\"", asQuotedQualifiedName("table.column").getName());
+        assertEquals("\"table\".\"column\"", asQuotedName("table.column").getName());
     }
 
 }

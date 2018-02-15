@@ -13,6 +13,15 @@ import org.queryman.builder.command.impl.ConditionsImpl;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.token.expression.ArrayExpression;
+import org.queryman.builder.token.expression.ArrayStringExpression;
+import org.queryman.builder.token.expression.ColumnReferenceExpression;
+import org.queryman.builder.token.expression.ConstantExpression;
+import org.queryman.builder.token.expression.DollarStringExpression;
+import org.queryman.builder.token.expression.FuncExpression;
+import org.queryman.builder.token.expression.ListExpression;
+import org.queryman.builder.token.expression.ListStringExpression;
+import org.queryman.builder.token.expression.StringExpression;
 
 import java.util.List;
 
@@ -20,15 +29,6 @@ import static org.queryman.builder.ast.NodesMetadata.ALL;
 import static org.queryman.builder.ast.NodesMetadata.ANY;
 import static org.queryman.builder.ast.NodesMetadata.EXISTS;
 import static org.queryman.builder.ast.NodesMetadata.SOME;
-import static org.queryman.builder.token.Expression.ExpressionType.ARRAY;
-import static org.queryman.builder.token.Expression.ExpressionType.COLUMN_REFERENCE;
-import static org.queryman.builder.token.Expression.ExpressionType.DEFAULT;
-import static org.queryman.builder.token.Expression.ExpressionType.DOLLAR_STRING;
-import static org.queryman.builder.token.Expression.ExpressionType.FUNC;
-import static org.queryman.builder.token.Expression.ExpressionType.LIST;
-import static org.queryman.builder.token.Expression.ExpressionType.STRING_ARRAY;
-import static org.queryman.builder.token.Expression.ExpressionType.STRING_CONSTANT;
-import static org.queryman.builder.token.Expression.ExpressionType.STRING_LIST;
 
 /**
  * @author Timur Shaidullin
@@ -138,21 +138,21 @@ public class PostgreSQL {
      * @return a constant. e.g. 1, id, ARRAY[1] ...
      */
     public static Expression asConstant(String constant) {
-        return new Expression(constant, DEFAULT);
+        return new ConstantExpression(constant);
     }
 
     /**
      * @return a string surrounded by single quote string. e.g. 'string'
      */
     public static Expression asString(String constant) {
-        return new Expression(constant, STRING_CONSTANT);
+        return new StringExpression(constant);
     }
 
     /**
      * @return a string surrounded by dollar singes string. e.g. $$string$$
      */
     public static Expression asDollarString(String constant) {
-        return new Expression(constant, DOLLAR_STRING);
+        return new DollarStringExpression(constant, "");
     }
 
 
@@ -162,7 +162,7 @@ public class PostgreSQL {
      * where {@code tag} is {@code tagName}
      */
     public static Expression asDollarString(String constant, String tagName) {
-        return new Expression(constant, DOLLAR_STRING).setTagName(tagName);
+        return new DollarStringExpression(constant, tagName);
     }
 
     /**
@@ -171,30 +171,21 @@ public class PostgreSQL {
      * @return number.
      */
     public static Expression asNumber(Number constant) {
-        return new Expression(constant, DEFAULT);
+        return new ConstantExpression(constant);
     }
 
     /**
      * @return a quoted name. e.g. id; table.phone
      */
     public static Expression asName(String constant) {
-        return new Expression(constant, COLUMN_REFERENCE);
+        return new ColumnReferenceExpression(constant);
     }
 
     /**
      * @return a quoted name. e.g. "id"; "table"."phone"
      */
     public static Expression asQuotedName(String constant) {
-        return new Expression(constant, COLUMN_REFERENCE).setQuoted(true);
-    }
-
-    /**
-     * It is synonym of {@link #asQuotedName(String)}
-     *
-     * @return number.
-     */
-    public static Expression asQuotedQualifiedName(String constant) {
-        return new Expression(constant, COLUMN_REFERENCE).setQuoted(true);
+        return new ColumnReferenceExpression(constant, true);
     }
 
     //----
@@ -207,7 +198,7 @@ public class PostgreSQL {
      */
     @SafeVarargs
     public static <T> Expression asStringList(T... constants) {
-        return new Expression<T>(STRING_LIST, constants);
+        return new ListStringExpression<T>(constants);
     }
 
     /**
@@ -225,7 +216,7 @@ public class PostgreSQL {
      */
     @SafeVarargs
     public static <T> Expression asList(T... constants) {
-        return new Expression<T>(LIST, constants);
+        return new ListExpression<T>(constants);
     }
 
     /**
@@ -247,7 +238,7 @@ public class PostgreSQL {
      */
     @SafeVarargs
     public static <T> Expression asArray(T... arr) {
-        return new Expression<T>(ARRAY, arr);
+        return new ArrayExpression<T>(arr);
     }
 
     /**
@@ -265,7 +256,7 @@ public class PostgreSQL {
      */
     @SafeVarargs
     public static <T> Expression asStringArray(T... arr) {
-        return new Expression<T>(STRING_ARRAY, arr);
+        return new ArrayStringExpression<T>(arr);
     }
 
     /**
@@ -298,6 +289,6 @@ public class PostgreSQL {
      * @see #asStringList(List)
      */
     public static Expression func(String name, Expression expression) {
-        return new Expression(name, FUNC, expression);
+        return new FuncExpression(name, expression);
     }
 }

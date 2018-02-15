@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
-import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectJoinStep;
 
@@ -18,11 +17,9 @@ import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asQuotedQualifiedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionExists;
 
 class SelectImplTest {
     private AbstractSyntaxTree ast;
@@ -195,7 +192,7 @@ class SelectImplTest {
            .where(asName("id1"), EQUAL, asString("1"))
            .or(asQuotedName("id2"), EQUAL, asNumber(2))
            .orNot(asName("table.id3"), EQUAL, asNumber(3))
-           .and(asQuotedQualifiedName("table.id4"), EQUAL, asNumber(4))
+           .and(asQuotedName("table.id4"), EQUAL, asNumber(4))
            .andNot(asQuotedName("id5"), EQUAL, asNumber(5))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
