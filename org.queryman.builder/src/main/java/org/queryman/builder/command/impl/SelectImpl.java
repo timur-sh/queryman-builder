@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import static org.queryman.builder.Keywords.EXCEPT;
+import static org.queryman.builder.Keywords.EXCEPT_ALL;
+import static org.queryman.builder.Keywords.EXCEPT_DISTINCT;
 import static org.queryman.builder.Keywords.INTERSECT;
 import static org.queryman.builder.Keywords.INTERSECT_ALL;
 import static org.queryman.builder.Keywords.INTERSECT_DISTINCT;
@@ -620,6 +623,24 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public SelectCombiningQueryStep intersectDistinct(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(INTERSECT_DISTINCT, select));
+        return this;
+    }
+
+    @Override
+    public SelectCombiningQueryStep except(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(EXCEPT, select));
+        return this;
+    }
+
+    @Override
+    public SelectCombiningQueryStep exceptAll(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(EXCEPT_ALL, select));
+        return this;
+    }
+
+    @Override
+    public SelectCombiningQueryStep exceptDistinct(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(EXCEPT_DISTINCT, select));
         return this;
     }
 }

@@ -25,6 +25,10 @@ public class Keywords {
     public static final Keyword INTERSECT_ALL = new Keyword("INTERSECT ALL");
     public static final Keyword INTERSECT_DISTINCT = new Keyword("INTERSECT DISTINCT");
 
+    public static final Keyword EXCEPT = new Keyword("EXCEPT");
+    public static final Keyword EXCEPT_ALL = new Keyword("EXCEPT ALL");
+    public static final Keyword EXCEPT_DISTINCT = new Keyword("EXCEPT DISTINCT");
+
     public static final Keyword ON = new Keyword("ON");
     public static final Keyword USING = new Keyword("USING");
 

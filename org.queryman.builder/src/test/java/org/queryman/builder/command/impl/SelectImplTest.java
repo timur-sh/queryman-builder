@@ -695,5 +695,27 @@ class SelectImplTest {
         assertEquals("SELECT 1, 2 INTERSECT DISTINCT SELECT 2, 2", sql);
     }
 
+    //---
+    // EXCEPT
+    //---
+
+    @Test
+    void selectExcept() {
+        String sql = new SelectImpl(ast, "1", "2").except(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 EXCEPT SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectExceptAll() {
+        String sql = new SelectImpl(ast, "1", "2").exceptAll(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 EXCEPT ALL SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectExceptDistinct() {
+        String sql = new SelectImpl(ast, "1", "2").exceptDistinct(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 EXCEPT DISTINCT SELECT 2, 2", sql);
+    }
+
 
 }
