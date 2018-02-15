@@ -6,7 +6,6 @@
  */
 package org.queryman.builder.command.select;
 
-import org.queryman.builder.Query;
 import org.queryman.builder.token.Expression;
 
 /**
@@ -16,7 +15,7 @@ import org.queryman.builder.token.Expression;
  *
  * @author Timur Shaidullin
  */
-public interface SelectFromStep extends Query {
+public interface SelectFromStep extends SelectCombiningQueryStep {
     /**
      * Specify table name that be used to retrieve rows. If several names are
      * provided, they will be cross-joined together.

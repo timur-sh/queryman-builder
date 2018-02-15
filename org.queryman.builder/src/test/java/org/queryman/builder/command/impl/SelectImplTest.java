@@ -577,4 +577,99 @@ class SelectImplTest {
 
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND id2 = 2 LIMIT 3 OFFSET 3", sql);
     }
+
+    //---
+    // UNION
+    //---
+
+    @Test
+    void selectUnion() {
+        String sql = new SelectImpl(ast, "1", "2").union(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 UNION SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectFromUnion() {
+        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .union(new SelectImpl(ast, "2", "2"));
+        String sql = select.sql();
+        assertEquals("SELECT 1, 2 FROM books UNION SELECT 2, 2", sql);
+
+        select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .crossJoin("author")
+           .union(new SelectImpl(ast, "2", "2"));
+        sql = select.sql();
+        assertEquals("SELECT 1, 2 FROM books CROSS JOIN author UNION SELECT 2, 2", sql);
+
+        select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .join("author").on(true)
+           .union(new SelectImpl(ast, "2", "2"));
+        sql = select.sql();
+        assertEquals("SELECT 1, 2 FROM books JOIN author ON (true) UNION SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectFromWhereUnion() {
+        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .union(new SelectImpl(ast, "2", "2"));
+
+        assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
+
+        select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .and("name", "IS NOT", null)
+           .union(new SelectImpl(ast, "2", "2"));
+
+        assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 AND name IS NOT NULL UNION SELECT 2, 2", select.sql());
+    }
+
+    @Test
+    void selectFromWhereGroupByUnion() {
+        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .groupBy(asQuotedName("books.id"))
+           .union(new SelectImpl(ast, "2", "2"));
+
+        String sql = select.sql();
+        assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 GROUP BY \"books\".\"id\" UNION SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectFromWhereGroupByUnionOrderBy() {
+        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        select
+           .from("books")
+           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .groupBy(asQuotedName("books.id"))
+           .union(new SelectImpl(ast, "2", "2"))
+           .orderBy("id", "DESC");
+
+        String sql = select.sql();
+        assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 GROUP BY \"books\".\"id\" UNION SELECT 2, 2 ORDER BY id DESC", sql);
+    }
+
+    @Test
+    void selectUnionAll() {
+        String sql = new SelectImpl(ast, "1", "2").unionAll(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 UNION ALL SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectUnionDistinct() {
+        String sql = new SelectImpl(ast, "1", "2").unionDistinct(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 UNION DISTINCT SELECT 2, 2", sql);
+    }
 }

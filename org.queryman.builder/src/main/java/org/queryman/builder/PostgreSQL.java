@@ -43,7 +43,7 @@ public class PostgreSQL {
     //----
 
     public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return condition(asName(leftValue), Operators.map(operator), asName(rightValue));
+        return condition(asName(leftValue), Operators.map(operator), asConstant(rightValue));
     }
 
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {

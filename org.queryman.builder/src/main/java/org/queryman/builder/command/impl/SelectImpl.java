@@ -17,8 +17,8 @@ import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
 import org.queryman.builder.command.select.SelectJoinManyStepsStep;
-import org.queryman.builder.command.select.SelectJoinOnStepsStep;
 import org.queryman.builder.command.select.SelectJoinOnStep;
+import org.queryman.builder.command.select.SelectJoinOnStepsStep;
 import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.command.select.SelectLimitStep;
 import org.queryman.builder.command.select.SelectOffsetStep;
@@ -36,8 +36,12 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import static org.queryman.builder.PostgreSQL.*;
+import static org.queryman.builder.Keywords.UNION;
+import static org.queryman.builder.Keywords.UNION_ALL;
+import static org.queryman.builder.Keywords.UNION_DISTINCT;
+import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
+import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
@@ -63,13 +67,15 @@ public class SelectImpl extends AbstractQuery implements
     private final List<Token>   GROUP_BY = new LinkedList<>();
     private final List<OrderBy> ORDER_BY = new LinkedList<>();
 
+    private final List<CombiningQuery> COMBINING_QUERY = new LinkedList<>();
+
     private final Token[] COLUMNS_SELECTED;
 
     private Conditions conditions;
     private Stack<Join> joins = new Stack<>();
 
     private boolean where = true;
-    private boolean join = true;
+    private boolean join  = true;
 
     private Expression limit;
     private Expression offset;
@@ -78,7 +84,7 @@ public class SelectImpl extends AbstractQuery implements
         this(
            ast,
            Arrays.stream(columnsSelected)
-              .map(PostgreSQL::asName)
+              .map(PostgreSQL::asConstant)
               .collect(Collectors.toList())
         );
     }
@@ -115,6 +121,13 @@ public class SelectImpl extends AbstractQuery implements
             tree.startNode(NodesMetadata.GROUP_BY, ", ")
                .addLeaves(GROUP_BY)
                .endNode();
+
+        //todo having
+        //todo window
+
+        if (!COMBINING_QUERY.isEmpty())
+            for (CombiningQuery q : COMBINING_QUERY)
+                tree.peek(q);
 
         if (!ORDER_BY.isEmpty()) {
             tree.startNode(NodesMetadata.ORDER_BY);
@@ -378,11 +391,17 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl groupBy(String... expressions) {
-        GROUP_BY.addAll(
-           Arrays.stream(expressions)
-              .map(PostgreSQL::asName)
-              .collect(Collectors.toList())
-        );
+        Expression[] expr = Arrays.stream(expressions)
+           .map(PostgreSQL::asConstant)
+           .toArray(Expression[]::new);
+
+        return groupBy(expr);
+    }
+
+    @Override
+    public final SelectImpl groupBy(Expression... expressions) {
+        GROUP_BY.clear();
+        GROUP_BY.addAll(List.of(expressions));
         return this;
     }
 
@@ -520,8 +539,8 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl using(String... name) {
-        return using(Arrays.stream(name).map(PostgreSQL::asName).toArray(Expression[]::new));
-     }
+        return using(Arrays.stream(name).map(PostgreSQL::asConstant).toArray(Expression[]::new));
+    }
 
     @Override
     public final SelectImpl using(Expression... columns) {
@@ -561,6 +580,24 @@ public class SelectImpl extends AbstractQuery implements
     public final SelectImpl onExists(Query query) {
         resetToJoin();
         joins.peek().setConditions(conditionExists(query));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl union(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(UNION, select));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl unionAll(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(UNION_ALL, select));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl unionDistinct(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(UNION_DISTINCT, select));
         return this;
     }
 }

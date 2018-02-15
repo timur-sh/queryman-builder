@@ -34,10 +34,6 @@ public class ConstantExpression extends Expression {
 
     @Override
     protected String prepareName() {
-        if (isEmpty()) {
-            return null;
-        }
-
-        return name;
+        return name == null ? "NULL" : name;
     }
 }

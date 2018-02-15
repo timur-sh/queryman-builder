@@ -6,9 +6,13 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.token.Expression;
+
 /**
  * @author Timur Shaidullin
  */
 public interface SelectGroupByStep extends SelectOrderByStep {
-    SelectOrderByStep groupBy(String... expressions);
+    SelectCombiningQueryStep groupBy(String... expressions);
+
+    SelectCombiningQueryStep groupBy(Expression... expressions);
 }
