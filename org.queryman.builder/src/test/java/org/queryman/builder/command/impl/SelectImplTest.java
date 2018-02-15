@@ -672,4 +672,28 @@ class SelectImplTest {
         String sql = new SelectImpl(ast, "1", "2").unionDistinct(new SelectImpl(ast, "2", "2")).sql();
         assertEquals("SELECT 1, 2 UNION DISTINCT SELECT 2, 2", sql);
     }
+
+    //---
+    // INTERSECT
+    //---
+
+    @Test
+    void selectIntersect() {
+        String sql = new SelectImpl(ast, "1", "2").intersect(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 INTERSECT SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectIntersectAll() {
+        String sql = new SelectImpl(ast, "1", "2").intersectAll(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 INTERSECT ALL SELECT 2, 2", sql);
+    }
+
+    @Test
+    void selectIntersectDistinct() {
+        String sql = new SelectImpl(ast, "1", "2").intersectDistinct(new SelectImpl(ast, "2", "2")).sql();
+        assertEquals("SELECT 1, 2 INTERSECT DISTINCT SELECT 2, 2", sql);
+    }
+
+
 }

@@ -27,4 +27,19 @@ public interface SelectCombiningQueryStep extends SelectOrderByStep {
      * Combine main query with {@code select} query using UNION DISTINCT.
      */
     SelectCombiningQueryStep unionDistinct(SelectFinalStep select);
+
+    /**
+     * Combine main query with {@code select} query using INTERSECT.
+     */
+    SelectCombiningQueryStep intersect(SelectFinalStep select);
+
+    /**
+     * Combine main query with {@code select} query using INTERSECT ALL.
+     */
+    SelectCombiningQueryStep intersectAll(SelectFinalStep select);
+
+    /**
+     * Combine main query with {@code select} query using INTERSECT DISTINCT.
+     */
+    SelectCombiningQueryStep intersectDistinct(SelectFinalStep select);
 }

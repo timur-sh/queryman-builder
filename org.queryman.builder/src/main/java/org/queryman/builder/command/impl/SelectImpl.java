@@ -12,6 +12,7 @@ import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.select.SelectCombiningQueryStep;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
@@ -36,6 +37,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import static org.queryman.builder.Keywords.INTERSECT;
+import static org.queryman.builder.Keywords.INTERSECT_ALL;
+import static org.queryman.builder.Keywords.INTERSECT_DISTINCT;
 import static org.queryman.builder.Keywords.UNION;
 import static org.queryman.builder.Keywords.UNION_ALL;
 import static org.queryman.builder.Keywords.UNION_DISTINCT;
@@ -598,6 +602,24 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl unionDistinct(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(UNION_DISTINCT, select));
+        return this;
+    }
+
+    @Override
+    public SelectCombiningQueryStep intersect(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(INTERSECT, select));
+        return this;
+    }
+
+    @Override
+    public SelectCombiningQueryStep intersectAll(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(INTERSECT_ALL, select));
+        return this;
+    }
+
+    @Override
+    public SelectCombiningQueryStep intersectDistinct(SelectFinalStep select) {
+        COMBINING_QUERY.add(new CombiningQuery(INTERSECT_DISTINCT, select));
         return this;
     }
 }

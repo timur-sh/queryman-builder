@@ -21,6 +21,10 @@ public class Keywords {
     public static final Keyword UNION_ALL = new Keyword("UNION ALL");
     public static final Keyword UNION_DISTINCT = new Keyword("UNION DISTINCT");
 
+    public static final Keyword INTERSECT = new Keyword("INTERSECT");
+    public static final Keyword INTERSECT_ALL = new Keyword("INTERSECT ALL");
+    public static final Keyword INTERSECT_DISTINCT = new Keyword("INTERSECT DISTINCT");
+
     public static final Keyword ON = new Keyword("ON");
     public static final Keyword USING = new Keyword("USING");
 
