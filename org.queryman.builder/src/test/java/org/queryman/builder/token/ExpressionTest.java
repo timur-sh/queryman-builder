@@ -7,7 +7,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asArray;
-import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asDollarString;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
@@ -16,7 +15,7 @@ import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asStringArray;
 import static org.queryman.builder.PostgreSQL.asStringList;
-import static org.queryman.builder.PostgreSQL.func;
+import static org.queryman.builder.PostgreSQL.asFunc;
 
 class ExpressionTest {
     @Test
@@ -157,10 +156,10 @@ class ExpressionTest {
     void functionAll() {
         List<Integer> i = List.of(1, 2);
 
-        assertEquals("ALL(ARRAY[])", func("ALL", asArray()).getName());
-        assertEquals("ALL(ARRAY[1, 2])", func("ALL", asArray(1, 2)).getName());
-        assertEquals("ALL()", func("ALL", asList()).getName());
-        assertEquals("ALL(1, 2)", func("ALL", asList(1, 2)).getName());
+        assertEquals("ALL(ARRAY[])", asFunc("ALL", asArray()).getName());
+        assertEquals("ALL(ARRAY[1, 2])", asFunc("ALL", asArray(1, 2)).getName());
+        assertEquals("ALL()", asFunc("ALL", asList()).getName());
+        assertEquals("ALL(1, 2)", asFunc("ALL", asList(1, 2)).getName());
     }
 
     @Test

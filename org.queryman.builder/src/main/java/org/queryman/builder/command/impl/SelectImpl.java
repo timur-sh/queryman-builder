@@ -12,6 +12,7 @@ import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.from.From;
 import org.queryman.builder.command.select.SelectCombiningQueryStep;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromManySteps;
@@ -75,9 +76,9 @@ public class SelectImpl extends AbstractQuery implements
    SelectOffsetStep,
    SelectFinalStep {
 
-    private final List<Token>   FROM     = new LinkedList<>();
-    private final List<Token>   GROUP_BY = new LinkedList<>();
-    private final List<OrderBy> ORDER_BY = new LinkedList<>();
+    private final List<From> FROM     = new LinkedList<>();
+    private final List<Token>    GROUP_BY = new LinkedList<>();
+    private final List<OrderBy>  ORDER_BY = new LinkedList<>();
 
     private final List<CombiningQuery> COMBINING_QUERY = new LinkedList<>();
 
@@ -162,10 +163,14 @@ public class SelectImpl extends AbstractQuery implements
 
         tree.startNode(EMPTY, ", ").addLeaves(COLUMNS_SELECTED).endNode();
 
-        if (!FROM.isEmpty())
-            tree.startNode(NodesMetadata.FROM, ", ")
-               .addLeaves(FROM)
-               .endNode();
+        if (!FROM.isEmpty()) {
+            tree.startNode(NodesMetadata.FROM, ", ");
+
+            for (From from : FROM)
+                tree.peek(from);
+
+            tree.endNode();
+        }
 
         if (joins.size() > 0)
             for (Join join1 : joins)
@@ -226,17 +231,21 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl from(String... tables) {
-        FROM.clear();
-        FROM.addAll(
-           Arrays.stream(tables)
-              .map(PostgreSQL::asName)
-              .collect(Collectors.toList())
+        from(Arrays.stream(tables)
+           .map(PostgreSQL::asName)
+           .toArray(Expression[]::new)
         );
         return this;
     }
 
     @Override
     public final SelectImpl from(Expression... tables) {
+        from(Arrays.stream(tables).map(FromImpl::new).toArray(From[]::new));
+        return this;
+    }
+
+    @Override
+    public SelectJoinStep from(From... tables) {
         FROM.clear();
         FROM.addAll(List.of(tables));
         return this;

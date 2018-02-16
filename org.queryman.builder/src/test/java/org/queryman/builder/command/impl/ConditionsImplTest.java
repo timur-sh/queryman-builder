@@ -39,7 +39,7 @@ import static org.queryman.builder.PostgreSQL.conditionAll;
 import static org.queryman.builder.PostgreSQL.conditionAny;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.conditionSome;
-import static org.queryman.builder.PostgreSQL.func;
+import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.operator;
 
 /**
@@ -210,11 +210,11 @@ public class ConditionsImplTest {
 
     @Test
     void conditionFunctionArray() {
-        Conditions conditions4 = condition(asName("number"), EQUAL, func("ALL", asArray(List.of(1, 2))));
+        Conditions conditions4 = condition(asName("number"), EQUAL, asFunc("ALL", asArray(List.of(1, 2))));
         assembleAst(conditions4);
         assertEquals("WHERE number = ALL(ARRAY[1, 2])", ast.toString());
 
-        Conditions conditions5 = condition(asName("number"), "!=", func("SOME", asList(1, 2)));
+        Conditions conditions5 = condition(asName("number"), "!=", asFunc("SOME", asList(1, 2)));
         assembleAst(conditions5);
         assertEquals("WHERE number != SOME(1, 2)", ast.toString());
     }

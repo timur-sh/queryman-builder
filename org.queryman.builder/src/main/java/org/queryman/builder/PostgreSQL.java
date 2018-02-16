@@ -9,7 +9,9 @@ package org.queryman.builder;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
+import org.queryman.builder.command.impl.FromImpl;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -128,6 +130,54 @@ public class PostgreSQL {
      */
     public static Conditions condition(String field, String operator, Query query) {
         return condition(asName(field), Operators.map(operator), query);
+    }
+
+    //----
+    // FROM
+    //----
+
+    /**
+     * FROM clause can be used as a part of other SQL statements.
+     *
+     * @param tableName - is a table name.
+     *
+     * @see #from(Expression)
+     */
+    public static FromFirstStep from(String tableName) {
+        return from(asName(tableName));
+    }
+
+    /**
+     * FROM clause can be used as a part of other SQL statements.
+     *
+     * @param tableName - is a table name
+     *
+     * @see #from(String)
+     */
+    public static FromFirstStep from(Expression tableName) {
+        return new FromImpl(tableName);
+    }
+
+    /**
+     * FROM clause can be used as a part of other SQL statements.
+     *
+     * @param tableName - is a table name
+     *
+     * @see #fromOnly(Expression)
+     */
+    public static FromFirstStep fromOnly(String tableName) {
+        return fromOnly(asName(tableName));
+    }
+
+    /**
+     * FROM clause can be used as a part of other SQL statements.
+     *
+     * @param tableName - is a table name
+     *
+     * @see #fromOnly(String)
+     */
+    public static FromFirstStep fromOnly(Expression tableName) {
+        return new FromImpl(tableName, true);
     }
 
     //----
@@ -275,8 +325,8 @@ public class PostgreSQL {
     /**
      * Examples:
      * <code>
-     *     func("ALL", asArray(List.of(1, 2)));  // ALL(ARRAY[1, 2])
-     *     func("SOME", asList(1, 2)); // SOME(1, 2)
+     *     asFunc("ALL", asArray(List.of(1, 2)));  // ALL(ARRAY[1, 2])
+     *     asFunc("SOME", asList(1, 2)); // SOME(1, 2)
      * </code>
      *
      * @param name - function or operator name, examples: <code>ALL, ANY ...</code>
@@ -288,7 +338,7 @@ public class PostgreSQL {
      * @see #asList(Object[])
      * @see #asStringList(List)
      */
-    public static Expression func(String name, Expression expression) {
+    public static Expression asFunc(String name, Expression expression) {
         return new FuncExpression(name, expression);
     }
 }

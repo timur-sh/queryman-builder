@@ -20,6 +20,8 @@ import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.from;
+import static org.queryman.builder.PostgreSQL.fromOnly;
 
 class SelectImplTest {
     private AbstractSyntaxTree ast;
@@ -78,6 +80,35 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM public.books", select.from(asName("public.books")).sql());
 
         assertEquals("SELECT id, name FROM table1, table2", select.from("table1", "table2").sql());
+    }
+
+    @Test
+    void selectFromOnly() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+
+        assertEquals("SELECT id, name FROM ONLY books", select.from(fromOnly("books")).sql());
+        assertEquals("SELECT id, name FROM ONLY books, ONLY authors", select.from(fromOnly("books"), fromOnly("authors")).sql());
+        assertEquals("SELECT id, name FROM ONLY books AS b", select.from(fromOnly("books").as("b")).sql());
+        assertEquals(
+           "SELECT id, name FROM ONLY books TABLESAMPLE BERNOULLI(30)",
+           select.from(
+              fromOnly("books")
+                 .tablesample("BERNOULLI", "30")
+           )
+              .sql()
+        );
+        assertEquals(
+           "SELECT id, name FROM ONLY books TABLESAMPLE BERNOULLI(30) REPEATABLE(15)",
+           select.from(fromOnly("books")
+              .tablesample("BERNOULLI", "30")
+              .repeatable(15))
+              .sql()
+        );
+    }
+
+    @Test
+    void selectFromTablesample() {
+
     }
 
     @Test
