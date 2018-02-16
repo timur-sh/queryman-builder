@@ -2,6 +2,7 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
@@ -18,7 +19,7 @@ import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
-import static org.queryman.builder.PostgreSQL.between;
+import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.fromOnly;
 
@@ -259,17 +260,17 @@ class SelectImplTest {
     void selectFromWhereBetween() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
-           .where(between("id", "1", "2"))
+           .where(conditionBetween("id", "1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id BETWEEN 1 AND 2", sql);
 
         sql = select.from("books")
-           .where(between(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .where(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
 
         sql = select.from("books")
-           .where(between(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .where(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
     }
@@ -542,17 +543,17 @@ class SelectImplTest {
     void selectFromHavingBetween() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
-           .having(between("id", "1", "2"))
+           .having(conditionBetween("id", "1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING id BETWEEN 1 AND 2", sql);
 
         sql = select.from("books")
-           .having(between(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .having(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING \"id\" BETWEEN 3 AND 4", sql);
 
         sql = select.from("books")
-           .having(between(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .having(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING \"id\" BETWEEN 3 AND 4", sql);
     }
@@ -797,7 +798,7 @@ class SelectImplTest {
         SelectFromStep select = new SelectImpl(ast, "1", "2");
         select
            .from("books")
-           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .union(new SelectImpl(ast, "2", "2"));
 
         assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
@@ -805,7 +806,7 @@ class SelectImplTest {
         select = new SelectImpl(ast, "1", "2");
         select
            .from("books")
-           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .and("name", "IS NOT", null)
            .union(new SelectImpl(ast, "2", "2"));
 
@@ -817,7 +818,7 @@ class SelectImplTest {
         SelectFromStep select = new SelectImpl(ast, "1", "2");
         select
            .from("books")
-           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .groupBy(asQuotedName("books.id"))
            .union(new SelectImpl(ast, "2", "2"));
 
@@ -830,7 +831,7 @@ class SelectImplTest {
         SelectFromStep select = new SelectImpl(ast, "1", "2");
         select
            .from("books")
-           .where(between(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .groupBy(asQuotedName("books.id"))
            .union(new SelectImpl(ast, "2", "2"))
            .orderBy("id", "DESC");

@@ -63,15 +63,17 @@ public class PostgreSQL {
     /**
      * WHERE .. BETWEEN .. AND .. condition.
      */
-    public static Conditions between(Expression field, Expression value1, Expression value2) {
+    public static Conditions conditionBetween(Expression field, Expression value1, Expression value2) {
         return new ConditionsImpl(NodesMetadata.BETWEEN, field, condition(value1, operator("AND"), value2));
     }
 
     /**
      * WHERE .. BETWEEN .. AND .. condition.
+     *
+     * @see #conditionBetween(Expression, Expression, Expression)
      */
-    public static Conditions between(String field, String value1, String value2) {
-        return between(asName(field), asName(value1), asName(value2));
+    public static Conditions conditionBetween(String field, String value1, String value2) {
+        return conditionBetween(asName(field), asName(value1), asName(value2));
     }
 
     public static Keyword keyword(String keyword) {
