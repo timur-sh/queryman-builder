@@ -19,6 +19,7 @@ import static org.queryman.builder.PostgreSQL.keyword;
  */
 public final class NodesMetadata {
     public static final NodeMetadata SELECT             = new NodeMetadata(Keywords.SELECT);
+    public static final NodeMetadata SELECT_ALL             = new NodeMetadata(Keywords.SELECT_ALL);
     public static final NodeMetadata SELECT_DISTINCT    = new NodeMetadata(new Keyword("SELECT DISTINCT"));
     public static final NodeMetadata SELECT_DISTINCT_ON = new NodeMetadata(new Keyword("SELECT DISTINCT ON"));
 

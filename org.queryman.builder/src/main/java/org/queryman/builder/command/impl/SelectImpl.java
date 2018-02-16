@@ -52,6 +52,7 @@ import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
+import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
 
 /**
  * @author Timur Shaidullin
@@ -81,8 +82,9 @@ public class SelectImpl extends AbstractQuery implements
     private Conditions conditions;
     private Stack<Join> joins = new Stack<>();
 
-    private boolean where = true;
-    private boolean join  = true;
+    private boolean where     = true;
+    private boolean join      = true;
+    private boolean selectAll = false;
 
     private Expression limit;
     private Expression offset;
@@ -105,10 +107,19 @@ public class SelectImpl extends AbstractQuery implements
         this.COLUMNS_SELECTED = columnsSelected;
     }
 
+    public final SelectImpl all() {
+        selectAll = true;
+        return this;
+    }
+
     @Override
     public final void assemble(AbstractSyntaxTree tree) {
-        tree.startNode(SELECT, ", ")
-           .addLeaves(COLUMNS_SELECTED);
+        if (selectAll)
+            tree.startNode(SELECT_ALL, ", ");
+        else
+            tree.startNode(SELECT, ", ");
+
+        tree.addLeaves(COLUMNS_SELECTED);
 
         if (!FROM.isEmpty())
             tree.startNode(NodesMetadata.FROM, ", ")

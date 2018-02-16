@@ -39,6 +39,15 @@ class SelectImplTest {
     }
 
     @Test
+    void selectAll() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name").all();
+        assertEquals("SELECT ALL id, name", select.sql());
+
+        SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min")).all();
+        assertEquals("SELECT ALL \"id2\", \"name\", min(price) as min", select2.sql());
+    }
+
+    @Test
     void selectFrom() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 
