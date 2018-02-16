@@ -13,7 +13,7 @@ import org.queryman.builder.token.Expression;
  *
  * @author Timur Shaidullin
  */
-public interface SelectJoinStep extends SelectFromManySteps {
+public interface SelectJoinStep extends SelectWhereFirstStep {
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression

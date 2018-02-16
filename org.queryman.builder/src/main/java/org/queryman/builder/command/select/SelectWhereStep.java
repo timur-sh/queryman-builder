@@ -14,7 +14,7 @@ import org.queryman.builder.token.Operator;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectWhereStep extends SelectWhereManySteps {
+public interface SelectWhereStep extends SelectGroupByStep {
     SelectWhereStep and(String left, String operator, String right);
 
     SelectWhereStep and(Expression left, Operator operator, Expression right);

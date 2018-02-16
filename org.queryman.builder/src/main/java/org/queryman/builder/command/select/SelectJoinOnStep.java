@@ -17,7 +17,7 @@ import org.queryman.builder.token.Operator;
  * @see SelectJoinStep
  * @author Timur Shaidullin
  */
-public interface SelectJoinOnStep extends Query {
+public interface SelectJoinOnStep extends SelectWhereFirstStep {
     SelectJoinManyStepsStep on(boolean all);
 
     SelectJoinOnStepsStep on(String left, String operator, String right);

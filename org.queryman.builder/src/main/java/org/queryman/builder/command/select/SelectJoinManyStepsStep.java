@@ -11,6 +11,6 @@ package org.queryman.builder.command.select;
  */
 public interface SelectJoinManyStepsStep extends
    SelectJoinStep,
-   SelectFromManySteps {
+   SelectWhereFirstStep {
 
 }

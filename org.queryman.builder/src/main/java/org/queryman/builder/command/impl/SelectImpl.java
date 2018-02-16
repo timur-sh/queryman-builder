@@ -13,19 +13,17 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.from.From;
-import org.queryman.builder.command.select.SelectCombiningQueryStep;
 import org.queryman.builder.command.select.SelectFinalStep;
-import org.queryman.builder.command.select.SelectFromManySteps;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
-import org.queryman.builder.command.select.SelectJoinManyStepsStep;
+import org.queryman.builder.command.select.SelectHavingFirstStep;
+import org.queryman.builder.command.select.SelectHavingStep;
 import org.queryman.builder.command.select.SelectJoinOnStep;
 import org.queryman.builder.command.select.SelectJoinOnStepsStep;
 import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.command.select.SelectLimitStep;
 import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
-import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.command.select.SelectWhereStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
@@ -64,32 +62,34 @@ import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
  */
 public class SelectImpl extends AbstractQuery implements
    SelectFromStep,
-   SelectFromManySteps,
    SelectJoinStep,
    SelectJoinOnStep,
    SelectJoinOnStepsStep,
    SelectWhereStep,
-   SelectWhereManySteps,
    SelectGroupByStep,
+   SelectHavingFirstStep,
+   SelectHavingStep,
    SelectOrderByStep,
    SelectLimitStep,
    SelectOffsetStep,
    SelectFinalStep {
 
-    private final List<From> FROM     = new LinkedList<>();
-    private final List<Token>    GROUP_BY = new LinkedList<>();
-    private final List<OrderBy>  ORDER_BY = new LinkedList<>();
+    private final List<From>    FROM     = new LinkedList<>();
+    private final List<Token>   GROUP_BY = new LinkedList<>();
+    private final List<OrderBy> ORDER_BY = new LinkedList<>();
 
     private final List<CombiningQuery> COMBINING_QUERY = new LinkedList<>();
 
     private final Token[] COLUMNS_SELECTED;
     private       Token[] DISTINCT_COLUMNS;
 
-    private Conditions conditions;
+    private Conditions wheres;
+    private Conditions havings;
     private Stack<Join> joins = new Stack<>();
 
-    private boolean where = true;
-    private boolean join  = true;
+    private boolean join   = true;
+    private boolean where  = false;
+    private boolean having = false;
 
     private boolean selectAll      = false;
     private boolean selectDistinct = false;
@@ -176,9 +176,9 @@ public class SelectImpl extends AbstractQuery implements
             for (Join join1 : joins)
                 tree.peek(join1);
 
-        if (conditions != null)
+        if (wheres != null)
             tree.startNode(NodesMetadata.WHERE)
-               .peek(conditions)
+               .peek(wheres)
                .endNode();
 
         if (!GROUP_BY.isEmpty())
@@ -186,7 +186,11 @@ public class SelectImpl extends AbstractQuery implements
                .addLeaves(GROUP_BY)
                .endNode();
 
-        //todo having
+        if (havings != null)
+            tree.startNode(NodesMetadata.HAVING)
+               .peek(havings)
+               .endNode();
+
         //todo window
 
         if (!COMBINING_QUERY.isEmpty())
@@ -218,11 +222,19 @@ public class SelectImpl extends AbstractQuery implements
     private void resetToWhere() {
         where = true;
         join = false;
+        having = false;
     }
 
     private void resetToJoin() {
         where = false;
         join = true;
+        having = false;
+    }
+
+    private void resetToHaving() {
+        where = false;
+        join = false;
+        having = true;
     }
 
     //--
@@ -245,7 +257,7 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectJoinStep from(From... tables) {
+    public final SelectImpl from(From... tables) {
         FROM.clear();
         FROM.addAll(List.of(tables));
         return this;
@@ -278,7 +290,7 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl where(Conditions conditions) {
         resetToWhere();
-        this.conditions = new ConditionsImpl(conditions);
+        this.wheres = new ConditionsImpl(conditions);
 
         return this;
     }
@@ -292,20 +304,13 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl whereBetween(String field, String value1, String value2) {
-        whereBetween(between(field, value1, value2));
+        where(between(field, value1, value2));
         return this;
     }
 
     @Override
     public final SelectImpl whereBetween(Expression field, Expression value1, Expression value2) {
-        whereBetween(between(field, value1, value2));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl whereBetween(Conditions conditions) {
-        where(conditions);
-
+        where(between(field, value1, value2));
         return this;
     }
 
@@ -332,9 +337,13 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl and(Conditions conditions) {
         if (where)
-            this.conditions.and(conditions);
+            this.wheres.and(conditions);
         else if (join)
             joins.peek().getConditions().and(conditions);
+        else if (having)
+            havings.and(conditions);
+        else
+            throw new IllegalArgumentException("Unknown conditions");
 
         return this;
     }
@@ -368,9 +377,13 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl andNot(Conditions conditions) {
         if (where)
-            this.conditions.andNot(conditions);
+            this.wheres.andNot(conditions);
         else if (join)
             joins.peek().getConditions().andNot(conditions);
+        else if (having)
+            havings.andNot(conditions);
+        else
+            throw new IllegalArgumentException("Unknown conditions");
 
         return this;
     }
@@ -404,9 +417,13 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl or(Conditions conditions) {
         if (where)
-            this.conditions.or(conditions);
+            this.wheres.or(conditions);
         else if (join)
             joins.peek().getConditions().or(conditions);
+        else if (having)
+            havings.or(conditions);
+        else
+            throw new IllegalArgumentException("Unknown conditions");
 
         return this;
     }
@@ -427,9 +444,13 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl orNot(Conditions conditions) {
         if (where)
-            this.conditions.orNot(conditions);
+            this.wheres.orNot(conditions);
         else if (join)
             joins.peek().getConditions().orNot(conditions);
+        else if (having)
+            havings.orNot(conditions);
+        else
+            throw new IllegalArgumentException("Unknown conditions");
 
         return this;
     }
@@ -593,12 +614,12 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectJoinManyStepsStep naturalJoin(String name) {
+    public final SelectImpl naturalJoin(String name) {
         return naturalJoin(asName(name));
     }
 
     @Override
-    public SelectJoinManyStepsStep naturalJoin(Expression name) {
+    public final SelectImpl naturalJoin(Expression name) {
         resetToJoin();
         joins.add(new Join(name, NodesMetadata.NATURAL_JOIN));
 
@@ -670,38 +691,85 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public SelectCombiningQueryStep intersect(SelectFinalStep select) {
+    public final SelectImpl intersect(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(INTERSECT, select));
         return this;
     }
 
     @Override
-    public SelectCombiningQueryStep intersectAll(SelectFinalStep select) {
+    public final SelectImpl intersectAll(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(INTERSECT_ALL, select));
         return this;
     }
 
     @Override
-    public SelectCombiningQueryStep intersectDistinct(SelectFinalStep select) {
+    public final SelectImpl intersectDistinct(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(INTERSECT_DISTINCT, select));
         return this;
     }
 
     @Override
-    public SelectCombiningQueryStep except(SelectFinalStep select) {
+    public final SelectImpl except(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(EXCEPT, select));
         return this;
     }
 
     @Override
-    public SelectCombiningQueryStep exceptAll(SelectFinalStep select) {
+    public final SelectImpl exceptAll(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(EXCEPT_ALL, select));
         return this;
     }
 
     @Override
-    public SelectCombiningQueryStep exceptDistinct(SelectFinalStep select) {
+    public final SelectImpl exceptDistinct(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(EXCEPT_DISTINCT, select));
+        return this;
+    }
+
+    //----
+    // HAVING API
+    //----
+
+    @Override
+    public final SelectImpl having(String left, String operator, String right) {
+        having(condition(left, operator, right));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl having(Expression left, Operator operator, Expression right) {
+        having(condition(left, operator, right));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl having(Expression field, Operator operator, Query query) {
+        having(condition(field, operator, query));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl having(Conditions conditions) {
+        resetToHaving();
+        this.havings = new ConditionsImpl(conditions);
+        return this;
+    }
+
+    @Override
+    public final SelectImpl havingExists(Query query) {
+        having(conditionExists(query));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl havingBetween(String field, String value1, String value2) {
+        having(between(field, value1, value2));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl havingBetween(Expression field, Expression value1, Expression value2) {
+        having(between(field, value1, value2));
         return this;
     }
 }

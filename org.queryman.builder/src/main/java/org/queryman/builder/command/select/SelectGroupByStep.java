@@ -11,8 +11,8 @@ import org.queryman.builder.token.Expression;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectGroupByStep extends SelectOrderByStep {
-    SelectCombiningQueryStep groupBy(String... expressions);
+public interface SelectGroupByStep extends SelectHavingFirstStep {
+    SelectHavingFirstStep groupBy(String... expressions);
 
-    SelectCombiningQueryStep groupBy(Expression... expressions);
+    SelectHavingFirstStep groupBy(Expression... expressions);
 }

@@ -14,7 +14,7 @@ import org.queryman.builder.token.Operator;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectWhereFirstStep extends Query {
+public interface SelectWhereFirstStep extends SelectGroupByStep {
     SelectWhereStep where(String left, String operator, String right);
 
     SelectWhereStep where(Expression left, Operator operator, Expression right);
@@ -28,6 +28,4 @@ public interface SelectWhereFirstStep extends Query {
     SelectWhereStep whereBetween(String field, String value1, String value2);
 
     SelectWhereStep whereBetween(Expression field, Expression value1, Expression value2);
-
-    SelectWhereStep whereBetween(Conditions conditions);
 }

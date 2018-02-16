@@ -20,7 +20,6 @@ import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.from;
 import static org.queryman.builder.PostgreSQL.fromOnly;
 
 class SelectImplTest {
@@ -265,14 +264,6 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM books WHERE id BETWEEN 1 AND 2", sql);
 
         sql = select.from("books")
-           .whereBetween(between(asQuotedName("id"), asNumber(3), asNumber(4))
-              .and("phone", "is", "null")
-           )
-           .or("id", "=", "2")
-           .sql();
-        assertEquals("SELECT id, name FROM books WHERE (\"id\" BETWEEN 3 AND 4 AND phone is null) OR id = 2", sql);
-
-        sql = select.from("books")
            .whereBetween(asQuotedName("id"), asNumber(3), asNumber(4))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
@@ -484,6 +475,135 @@ class SelectImplTest {
            .groupBy("id")
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id", sql);
+    }
+
+    //---
+    // HAVING
+    //---
+
+    @Test
+    void selectFromHaving() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .having("id", "=", "1")
+           .and("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING id = 1 AND id2 = 2", sql);
+
+        sql = select.from("books")
+           .having(asQuotedName("id"), EQUAL, asNumber(1))
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING \"id\" = 1", sql);
+
+        sql = select.from("books")
+           .having(asName("id"), IN, new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING id IN (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .havingExists(new SelectImpl(ast, "1", "2"))
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING EXISTS (SELECT 1, 2)", sql);
+
+        sql = select.from("books")
+           .having("id", "=", "1")
+           .andNot("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING id = 1 AND NOT id2 = 2", sql);
+
+        sql = select.from("books")
+           .having("id", "=", "1")
+           .orNot("id3", "=", "3")
+           .andNot("id2", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
+
+        sql = select.from("books")
+           .having(asName("id1"), EQUAL, asString("1"))
+           .or(asQuotedName("id2"), EQUAL, asNumber(2))
+           .orNot(asName("table.id3"), EQUAL, asNumber(3))
+           .and(asQuotedName("table.id4"), EQUAL, asNumber(4))
+           .andNot(asQuotedName("id5"), EQUAL, asNumber(5))
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
+    }
+
+    @Test
+    void selectFromWhereHaving() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .having(asName("name"), LT, asString("Anna"))
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 HAVING name < 'Anna'", sql);
+    }
+
+    @Test
+    void selectFromHavingBetween() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .havingBetween("id", "1", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING id BETWEEN 1 AND 2", sql);
+
+        sql = select.from("books")
+           .havingBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING \"id\" BETWEEN 3 AND 4", sql);
+
+        sql = select.from("books")
+           .havingBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .sql();
+        assertEquals("SELECT id, name FROM books HAVING \"id\" BETWEEN 3 AND 4", sql);
+    }
+
+    @Test
+    void selectFromWhereGroupByHaving() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .groupBy("id")
+           .having("id", "=", "2")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id HAVING id = 2", sql);
+    }
+
+    @Test
+    void selectFromWhereGroupByHavingOrderBy() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .groupBy("id")
+           .having("id", "=", "2")
+           .or("id", "=", "2")
+           .orderBy("id")
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id HAVING id = 2 OR id = 2 ORDER BY id", sql);
+    }
+
+    @Test
+    void selectFromWhereGroupByHavingLimit() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .groupBy("id")
+           .having("id", "=", "2")
+           .or("id", "=", "2")
+           .limit(1)
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id HAVING id = 2 OR id = 2 LIMIT 1", sql);
+    }
+
+    @Test
+    void selectFromWhereGroupByHavingOffset() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        String sql = select.from("books")
+           .where("id", "=", "1")
+           .groupBy("id")
+           .having("id", "=", "2")
+           .offset(1)
+           .sql();
+        assertEquals("SELECT id, name FROM books WHERE id = 1 GROUP BY id HAVING id = 2 OFFSET 1", sql);
     }
 
     //---

@@ -20,7 +20,6 @@ public final class NodesMetadata {
     public static final NodeMetadata SELECT             = new NodeMetadata(Keywords.SELECT);
     public static final NodeMetadata SELECT_ALL         = new NodeMetadata(Keywords.SELECT_ALL);
     public static final NodeMetadata SELECT_DISTINCT    = new NodeMetadata(Keywords.SELECT_DISTINCT);
-    public static final NodeMetadata SELECT_DISTINCT_ON = new NodeMetadata(Keywords.SELECT_DISTINCT_ON);
 
     public static final NodeMetadata FROM        = new NodeMetadata(Keywords.FROM);
     public static final NodeMetadata ONLY        = new NodeMetadata(Keywords.ONLY);
@@ -40,6 +39,8 @@ public final class NodesMetadata {
     public static final NodeMetadata ORDER_BY = new NodeMetadata(Keywords.ORDER_BY);
 
     public static final NodeMetadata WHERE = new NodeMetadata(Keywords.WHERE);
+
+    public static final NodeMetadata HAVING = new NodeMetadata(Keywords.HAVING);
 
     public static final NodeMetadata LIMIT  = new NodeMetadata(Keywords.LIMIT);
     public static final NodeMetadata OFFSET = new NodeMetadata(Keywords.OFFSET);
