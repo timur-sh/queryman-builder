@@ -48,6 +48,24 @@ class SelectImplTest {
     }
 
     @Test
+    void selectDistinct() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name").distinct();
+        assertEquals("SELECT DISTINCT id, name", select.sql());
+
+        select = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min")).distinct();
+        assertEquals("SELECT DISTINCT \"id2\", \"name\", min(price) as min", select.sql());
+    }
+
+    @Test
+    void selectDistinctOn() {
+        SelectFromStep select = new SelectImpl(ast, "id", "name").distinctOn("price", "id");
+        assertEquals("SELECT DISTINCT ON (price, id) id, name", select.sql());
+
+        select = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min")).distinctOn(asName("price"), asName("id"));
+        assertEquals("SELECT DISTINCT ON (price, id) \"id2\", \"name\", min(price) as min", select.sql());
+    }
+
+    @Test
     void selectFrom() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
 

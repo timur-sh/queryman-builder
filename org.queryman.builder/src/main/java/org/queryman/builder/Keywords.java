@@ -15,6 +15,8 @@ import org.queryman.builder.token.Keyword;
 public class Keywords {
     public static final Keyword SELECT = new Keyword("SELECT");
     public static final Keyword SELECT_ALL = new Keyword("SELECT ALL");
+    public static final Keyword SELECT_DISTINCT = new Keyword("SELECT DISTINCT");
+    public static final Keyword SELECT_DISTINCT_ON = new Keyword("SELECT DISTINCT ON");
 
     public static final Keyword FROM = new Keyword("FROM");
 

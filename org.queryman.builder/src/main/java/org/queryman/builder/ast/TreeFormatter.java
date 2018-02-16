@@ -26,7 +26,8 @@ final class TreeFormatter {
         Token        token  = metadata.getToken();
 
         if (metadata.getPosition() == 0) {
-            list.add(token.getName());
+            if (token.getName().length() > 0)
+                list.add(token.getName());
 
             if (node.getLeaves().size() > 0)
                 list.add(String.join(node.getDelimiter(), leaves));

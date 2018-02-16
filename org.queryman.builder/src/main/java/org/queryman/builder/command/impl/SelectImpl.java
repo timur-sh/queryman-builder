@@ -46,13 +46,17 @@ import static org.queryman.builder.Keywords.INTERSECT_DISTINCT;
 import static org.queryman.builder.Keywords.UNION;
 import static org.queryman.builder.Keywords.UNION_ALL;
 import static org.queryman.builder.Keywords.UNION_DISTINCT;
+import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
+import static org.queryman.builder.ast.NodesMetadata.ON;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
+import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
 
 /**
  * @author Timur Shaidullin
@@ -78,13 +82,16 @@ public class SelectImpl extends AbstractQuery implements
     private final List<CombiningQuery> COMBINING_QUERY = new LinkedList<>();
 
     private final Token[] COLUMNS_SELECTED;
+    private       Token[] DISTINCT_COLUMNS;
 
     private Conditions conditions;
     private Stack<Join> joins = new Stack<>();
 
-    private boolean where     = true;
-    private boolean join      = true;
-    private boolean selectAll = false;
+    private boolean where = true;
+    private boolean join  = true;
+
+    private boolean selectAll      = false;
+    private boolean selectDistinct = false;
 
     private Expression limit;
     private Expression offset;
@@ -107,8 +114,36 @@ public class SelectImpl extends AbstractQuery implements
         this.COLUMNS_SELECTED = columnsSelected;
     }
 
+    /**
+     * Clause SELECT ALL ...
+     */
     public final SelectImpl all() {
         selectAll = true;
+        return this;
+    }
+
+    /**
+     * Clause SELECT DISTINCT ...
+     */
+    public final SelectImpl distinct() {
+        selectDistinct = true;
+        return this;
+    }
+
+    /**
+     * Clause SELECT DISTINCT ON ( .. ) ...
+     */
+    public final SelectImpl distinctOn(String... columns) {
+        distinctOn(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+        return this;
+    }
+
+    /**
+     * Clause SELECT DISTINCT ON ( .. ) ...
+     */
+    public final SelectImpl distinctOn(Expression... columns) {
+        selectDistinct = true;
+        DISTINCT_COLUMNS = columns;
         return this;
     }
 
@@ -116,10 +151,16 @@ public class SelectImpl extends AbstractQuery implements
     public final void assemble(AbstractSyntaxTree tree) {
         if (selectAll)
             tree.startNode(SELECT_ALL, ", ");
-        else
-            tree.startNode(SELECT, ", ");
+        else if (selectDistinct) {
+            tree.startNode(SELECT_DISTINCT, ", ");
+            if (DISTINCT_COLUMNS != null && DISTINCT_COLUMNS.length > 0)
+                tree.startNode(ON, "")
+                   .addLeaves(asList(DISTINCT_COLUMNS))
+                   .endNode();
+        } else
+            tree.startNode(SELECT);
 
-        tree.addLeaves(COLUMNS_SELECTED);
+        tree.startNode(EMPTY, ", ").addLeaves(COLUMNS_SELECTED).endNode();
 
         if (!FROM.isEmpty())
             tree.startNode(NodesMetadata.FROM, ", ")
