@@ -12,6 +12,8 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
 /**
+ * The having conditions are followed by {@link SelectHavingFirstStep}.
+ *
  * @author Timur Shaidullin
  */
 public interface SelectHavingStep extends SelectCombiningQueryStep {

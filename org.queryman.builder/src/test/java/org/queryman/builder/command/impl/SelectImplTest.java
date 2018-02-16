@@ -542,17 +542,17 @@ class SelectImplTest {
     void selectFromHavingBetween() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
-           .havingBetween("id", "1", "2")
+           .having(between("id", "1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING id BETWEEN 1 AND 2", sql);
 
         sql = select.from("books")
-           .havingBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .having(between(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING \"id\" BETWEEN 3 AND 4", sql);
 
         sql = select.from("books")
-           .havingBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .having(between(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING \"id\" BETWEEN 3 AND 4", sql);
     }

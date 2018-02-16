@@ -760,16 +760,4 @@ public class SelectImpl extends AbstractQuery implements
         having(conditionExists(query));
         return this;
     }
-
-    @Override
-    public final SelectImpl havingBetween(String field, String value1, String value2) {
-        having(between(field, value1, value2));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl havingBetween(Expression field, Expression value1, Expression value2) {
-        having(between(field, value1, value2));
-        return this;
-    }
 }
