@@ -259,17 +259,17 @@ class SelectImplTest {
     void selectFromWhereBetween() {
         SelectFromStep select = new SelectImpl(ast, "id", "name");
         String sql = select.from("books")
-           .whereBetween("id", "1", "2")
+           .where(between("id", "1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id BETWEEN 1 AND 2", sql);
 
         sql = select.from("books")
-           .whereBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .where(between(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
 
         sql = select.from("books")
-           .whereBetween(asQuotedName("id"), asNumber(3), asNumber(4))
+           .where(between(asQuotedName("id"), asNumber(3), asNumber(4)))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE \"id\" BETWEEN 3 AND 4", sql);
     }

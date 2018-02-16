@@ -48,7 +48,6 @@ import static org.queryman.builder.Keywords.UNION_DISTINCT;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
-import static org.queryman.builder.PostgreSQL.between;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
@@ -299,18 +298,6 @@ public class SelectImpl extends AbstractQuery implements
     public final SelectImpl whereExists(Query query) {
         where(conditionExists(query));
 
-        return this;
-    }
-
-    @Override
-    public final SelectImpl whereBetween(String field, String value1, String value2) {
-        where(between(field, value1, value2));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl whereBetween(Expression field, Expression value1, Expression value2) {
-        where(between(field, value1, value2));
         return this;
     }
 

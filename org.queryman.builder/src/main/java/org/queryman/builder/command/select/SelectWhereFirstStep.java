@@ -24,8 +24,4 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
     SelectWhereStep where(Conditions conditions);
 
     SelectWhereStep whereExists(Query query);
-
-    SelectWhereStep whereBetween(String field, String value1, String value2);
-
-    SelectWhereStep whereBetween(Expression field, Expression value1, Expression value2);
 }
