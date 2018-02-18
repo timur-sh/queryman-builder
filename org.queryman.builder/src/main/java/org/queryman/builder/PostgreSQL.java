@@ -53,6 +53,7 @@ public class PostgreSQL {
     /**
      * Create an operator which ordinarily is used by condition.
      * @param operator LIKE, ILIKE, =, !=, @> etc.
+     * @return instance of {@link Operator}.
      *
      * Most useful operators are collected there:
      * @see Operators
@@ -64,6 +65,7 @@ public class PostgreSQL {
     /**
      * Create a keyword which ordinarily is used to build SQL query.
      * @param keyword SELECT, UPDATE, FROM, JOIN etc.
+     * @return instance of {@link Keyword}
      *
      * Most useful keywords are collected there:
      * @see Operators
@@ -81,6 +83,7 @@ public class PostgreSQL {
      * @param leftValue left operand
      * @param operator operator
      * @param rightValue right operand
+     * @return {@link Conditions}
      *
      * @see #operator(String)
      * @see #asName(String)
@@ -97,6 +100,7 @@ public class PostgreSQL {
      * @param leftValue left operand
      * @param operator operator
      * @param rightValue right operand
+     * @return {@link Conditions}
      *
      * @see #operator(String)
      * @see #condition(Expression, Operator, Expression)
@@ -111,6 +115,7 @@ public class PostgreSQL {
      * @param leftValue left operand
      * @param operator operator
      * @param rightValue right operand
+     * @return {@link Conditions}
      *
      * @see #operator(String)
      */
@@ -125,9 +130,10 @@ public class PostgreSQL {
     /**
      * Create a condition: field BETWEEN value1 AND value2.
      *
-     * @param field
-     * @param value1
-     * @param value2
+     * @param field seeking operand
+     * @param value1 operand before AND
+     * @param value2 operand after AND
+     * @return {@link Conditions}
      *
      * @see #conditionBetween(String, String, String)
      */
@@ -138,9 +144,10 @@ public class PostgreSQL {
     /**
      * Create a condition: field BETWEEN value1 AND value2.
      *
-     * @param field
-     * @param value1
-     * @param value2
+     * @param field seeking operand
+     * @param value1 operand before AND
+     * @param value2 operand after AND
+     * @return {@link Conditions}
      *
      * @see #conditionBetween(Expression, Expression, Expression)
      */
@@ -160,9 +167,10 @@ public class PostgreSQL {
      *  condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query
+     * @param field left operand
+     * @param operator operator
+     * @param query right operand
+     * @return {@link Conditions}
      *
      * @see #select(String...)
      * @see Operators#IN
@@ -179,9 +187,10 @@ public class PostgreSQL {
      *  condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query
+     * @param field left operand
+     * @param operator operator
+     * @param query right operand
+     * @return {@link Conditions}
      *
      * @see #select(String...)
      */
@@ -197,6 +206,7 @@ public class PostgreSQL {
      * </code>
      *
      * @param query subquery
+     * @return {@link Conditions}
      */
     public static Conditions conditionExists(Query query) {
         return new ConditionsImpl(EXISTS, query);
@@ -209,9 +219,10 @@ public class PostgreSQL {
      *     conditionSome(asName("id"), operator("="), select(1, 2)); // id = SOME (SELECT 1, 2);
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query subquery
+     * @param field left operand
+     * @param operator operator
+     * @param query subquery right operand
+     * @return {@link Conditions}
      */
     public static Conditions conditionSome(Expression field, Operator operator, Query query) {
         return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(SOME, query));
@@ -224,9 +235,10 @@ public class PostgreSQL {
      *     conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query subquery
+     * @param field left operand
+     * @param operator operator
+     * @param query subquery right operand
+     * @return {@link Conditions}
      *
      * @see #conditionSome(Expression, Operator, Query)
      */
@@ -241,9 +253,10 @@ public class PostgreSQL {
      *     conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query subquery
+     * @param field left operand
+     * @param operator operator
+     * @param query subquery right operand
+     * @return {@link Conditions}
      *
      */
     public static Conditions conditionAny(Expression field, Operator operator, Query query) {
@@ -257,9 +270,10 @@ public class PostgreSQL {
      *     conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query subquery
+     * @param field left operand
+     * @param operator operator
+     * @param query subquery right operand
+     * @return {@link Conditions}
      *
      * @see #conditionAny(Expression, Operator, Query)
      */
@@ -274,9 +288,10 @@ public class PostgreSQL {
      *     conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query subquery
+     * @param field left operand
+     * @param operator operator
+     * @param query subquery -right operand
+     * @return {@link Conditions}
      *
      * @see #conditionAny(Expression, Operator, Query)
      */
@@ -291,9 +306,10 @@ public class PostgreSQL {
      *     conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
      * </code>
      *
-     * @param field
-     * @param operator
-     * @param query subquery
+     * @param field left operand
+     * @param operator operator
+     * @param query subquery -right operand
+     * @return {@link Conditions}
      *
      * @see #conditionAll(Expression, Operator, Query)
      */
@@ -309,7 +325,7 @@ public class PostgreSQL {
      * FROM clause can be used as a part of other SQL statements.
      *
      * @param tableName is a table name.
-     *
+     * @return first step of FROM clause.
      * @see #from(Expression)
      */
     public static FromFirstStep from(String tableName) {
@@ -320,6 +336,7 @@ public class PostgreSQL {
      * FROM clause can be used as a part of other SQL statements.
      *
      * @param tableName - is a table name
+     * @return first step of FROM clause.
      *
      * @see #from(String)
      */
@@ -331,6 +348,7 @@ public class PostgreSQL {
      * FROM clause can be used as a part of other SQL statements.
      *
      * @param tableName is a table name
+     * @return first step of FROM clause.
      *
      * @see #fromOnly(Expression)
      */
@@ -342,6 +360,7 @@ public class PostgreSQL {
      * FROM clause can be used as a part of other SQL statements.
      *
      * @param tableName is a table name
+     * @return first step of FROM clause.
      *
      * @see #fromOnly(String)
      */
@@ -455,16 +474,28 @@ public class PostgreSQL {
     //----
 
     /**
-     * @param constants - values of list
-     * @return (...), where {@code ...} is concatenated string of values by comma.
+     * List of string expression.
+     * Example:
+     * <code>
+     *     asStringList(1, 2, 3); // ('1', '2', '3')
+     * </code>
+     *
+     * @param constants values
+     * @return (...), where {@code ...} are values of string concatenated by comma.
      */
     @SafeVarargs
     public static <T> Expression asStringList(T... constants) {
-        return new ListStringExpression<T>(constants);
+        return new ListStringExpression<>(constants);
     }
 
     /**
-     * @return (...), where {@code ...} is concatenated string of values by comma.
+     * List of string expression.
+     * Example:
+     * <code>
+     *     asString(List.of(1, 2, 3,)); // ('1', '2', '3')
+     * </code>
+     * @param constants list of values
+     * @return (...), where {@code ...} are values of string concatenated by comma.
      *
      * @see #asStringList(T...)
      */
@@ -473,18 +504,29 @@ public class PostgreSQL {
     }
 
     /**
-     * @param constants - values of list
-     * @return (...), where {@code ...} is concatenated string of values by comma.
+     * List expression.
+     * Example:
+     * <code>
+     *     asString(1, 2, 3); // (1, 2, 3)
+     * </code>
+     *
+     * @param constants values
+     * @return (...), where {@code ...} are values concatenated by comma.
      */
     @SafeVarargs
     public static <T> Expression asList(T... constants) {
-        return new ListExpression<T>(constants);
+        return new ListExpression<>(constants);
     }
 
     /**
-     * @return (...), where {@code ...} is concatenated string of values by comma.
+     * List expression.
+     * Example:
+     * <code>
+     *     asString(List.of(1, 2, 3)); // (1, 2, 3)
+     * </code>
      *
-     * @see #asList(T...)
+     * @param constants values
+     * @return (...), where {@code ...} are values concatenated by comma.
      */
     public static <T> Expression asList(List<T> constants) {
         return asList(constants.toArray());
@@ -495,36 +537,54 @@ public class PostgreSQL {
     //----
 
     /**
+     * Array expression:
+     * <code>
+     *     asArray(1, 2); // ARRAY[1, 2]
+     * </code>
+     *
      * @param arr - values of array
-     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     * @return ARRAY[...], where {@code ...} are values concatenated by comma.
      */
     @SafeVarargs
     public static <T> Expression asArray(T... arr) {
-        return new ArrayExpression<T>(arr);
+        return new ArrayExpression<>(arr);
     }
 
     /**
-     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     * Array expression:
+     * <code>
+     *     asArray(List.of(1,2)); // ARRAY[1, 2]
+     * </code>
      *
-     * @see #asArray(T...)
+     * @param arr - values of array
+     * @return ARRAY[...], where {@code ...} are values concatenated by comma.
      */
     public static <T> Expression asArray(List<T> arr) {
         return asArray(arr.toArray());
     }
 
     /**
+     * Array of string expression:
+     * <code>
+     *     asArray(1, 2); // ARRAY[1, 2]
+     * </code>
+     *
      * @param arr - string values of array
-     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     * @return ARRAY[...], where {@code ...} are values concatenated by comma.
      */
     @SafeVarargs
     public static <T> Expression asStringArray(T... arr) {
-        return new ArrayStringExpression<T>(arr);
+        return new ArrayStringExpression<>(arr);
     }
 
     /**
-     * @return ARRAY[...], where {@code ...} is concatenated string of values by comma.
+     * Array of string expression:
+     * <code>
+     *     asArray(List.of(1, 2)); // ARRAY['1', '2']
+     * </code>
      *
-     * @see #asStringArray(T...)
+     * @param arr - string values of array
+     * @return ARRAY[...], where {@code ...} are values concatenated by comma.
      */
     public static <T> Expression asStringArray(List<T> arr) {
         return asStringArray(arr.toArray());
