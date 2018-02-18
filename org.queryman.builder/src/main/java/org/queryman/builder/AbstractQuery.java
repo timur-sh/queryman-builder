@@ -10,6 +10,8 @@ import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 
 /**
+ * Standard implementation of {@link Query}.
+ *
  * @author Timur Shaidullin
  */
 public abstract class AbstractQuery implements Query, AstVisitor {

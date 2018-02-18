@@ -10,6 +10,8 @@ package org.queryman.builder;
 import org.queryman.builder.token.Keyword;
 
 /**
+ * Collection of key words are used by Queryman to build SQL query.
+ *
  * @author Timur Shaidullin
  */
 public class Keywords {

@@ -15,6 +15,10 @@ import static java.util.Map.entry;
 import static org.queryman.builder.PostgreSQL.operator;
 
 /**
+ * Collection of operators which can be used in different conditions.
+ *
+ * @see org.queryman.builder.command.Conditions
+ *
  * @author Timur Shaidullin
  */
 public class Operators {

@@ -12,6 +12,7 @@ import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
 import org.queryman.builder.command.impl.FromImpl;
+import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -33,25 +34,86 @@ import static org.queryman.builder.ast.NodesMetadata.EXISTS;
 import static org.queryman.builder.ast.NodesMetadata.SOME;
 
 /**
+ * Entry point of all parts of PostgreSQL. This contains a full collection of
+ * SQL statements like the SELECT, UPDATE, DELETE.
+ * Also other parts of SQL clauses are incapsulate here - conditions clause
+ * (AND, OR, OR NOT, etc), FROM clause, any expressions,
+ *
  * @author Timur Shaidullin
  */
 public class PostgreSQL {
+    //----
+    // SELECT API
+    //----
+
+    public static SelectFromStep select(String... columns) {
+        return null;
+    }
+
+    /**
+     * Create an operator which ordinarily is used by condition.
+     * @param operator LIKE, ILIKE, =, !=, @> etc.
+     *
+     * Most useful operators are collected there:
+     * @see Operators
+     */
     public static Operator operator(String operator) {
         return new Operator(operator);
+    }
+
+    /**
+     * Create a keyword which ordinarily is used to build SQL query.
+     * @param keyword SELECT, UPDATE, FROM, JOIN etc.
+     *
+     * Most useful keywords are collected there:
+     * @see Operators
+     */
+    public static Keyword keyword(String keyword) {
+        return new Keyword(keyword);
     }
 
     //----
     // COMMON CONDITIONS
     //----
 
+    /**
+     * Create a condition
+     * @param leftValue left operand
+     * @param operator operator
+     * @param rightValue right operand
+     *
+     * @see #operator(String)
+     * @see #asName(String)
+     * @see #asName(String)
+     * @see #condition(Expression, Operator, Expression)
+     */
     public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return condition(asName(leftValue), Operators.map(operator), asConstant(rightValue));
+        return condition(asName(leftValue), Operators.map(operator), asName(rightValue));
     }
 
+    /**
+     * Create a condition
+
+     * @param leftValue left operand
+     * @param operator operator
+     * @param rightValue right operand
+     *
+     * @see #operator(String)
+     * @see #condition(Expression, Operator, Expression)
+     */
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
         return condition(leftValue, Operators.map(operator), rightValue);
     }
 
+    /**
+     * Create a condition
+     *
+     * @param leftValue left operand
+     * @param operator operator
+     * @param rightValue right operand
+     *
+     * @see #operator(String)
+     */
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
         return new ConditionsImpl(leftValue, new NodeMetadata(operator), rightValue);
     }
@@ -61,14 +123,24 @@ public class PostgreSQL {
     //----
 
     /**
-     * WHERE .. BETWEEN .. AND .. condition.
+     * Create a condition: field BETWEEN value1 AND value2.
+     *
+     * @param field
+     * @param value1
+     * @param value2
+     *
+     * @see #conditionBetween(String, String, String)
      */
     public static Conditions conditionBetween(Expression field, Expression value1, Expression value2) {
         return new ConditionsImpl(NodesMetadata.BETWEEN, field, condition(value1, operator("AND"), value2));
     }
 
     /**
-     * WHERE .. BETWEEN .. AND .. condition.
+     * Create a condition: field BETWEEN value1 AND value2.
+     *
+     * @param field
+     * @param value1
+     * @param value2
      *
      * @see #conditionBetween(Expression, Expression, Expression)
      */
@@ -76,62 +148,157 @@ public class PostgreSQL {
         return conditionBetween(asName(field), asName(value1), asName(value2));
     }
 
-    public static Keyword keyword(String keyword) {
-        return new Keyword(keyword);
-    }
-
     //----
     // SUBQUERY CONDITIONS
     //----
 
-    public static Conditions conditionExists(Query query) {
-        return new ConditionsImpl(EXISTS, query);
-    }
-
-    public static Conditions conditionSome(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(SOME, query));
-    }
-
-    public static Conditions conditionSome(String field, String operator, Query query) {
-        return conditionSome(asName(field), operator(operator), query);
-    }
-
-    public static Conditions conditionAny(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ANY, query));
-    }
-
-    public static Conditions conditionAny(String field, String operator, Query query) {
-        return conditionAny(asName(field), operator(operator), query);
-    }
-
-    public static Conditions conditionAll(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ALL, query));
-    }
-
-    public static Conditions conditionAll(String field, String operator, Query query) {
-        return conditionAll(asName(field), operator(operator), query);
-    }
-
     /**
-     * Subquery condition. It is used primarily by {@code IN} expression:
+     * Subquery condition. Primarily it is used by {@code IN} expression:
      *
      * Example:
-     * name IN (select name from authors)
-     * condition(asName("name"), Operators.IN, select("name").from("authors"))
+     * <code>
+     *  condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query
+     *
+     * @see #select(String...)
+     * @see Operators#IN
      */
     public static Conditions condition(Expression field, Operator operator, Query query) {
         return new ConditionsImpl(field, new NodeMetadata(operator), query);
     }
 
     /**
-     * Subquery condition. It is used primarily by {@code IN} expression:
+     * Subquery condition. Primarily it is used by {@code IN} expression:
      *
      * Example:
-     * name IN (select name from authors)
-     * condition("name", "IN", select("name").from("authors"))
+     * <code>
+     *  condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query
+     *
+     * @see #select(String...)
      */
     public static Conditions condition(String field, String operator, Query query) {
         return condition(asName(field), Operators.map(operator), query);
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionExists(select(1, 2)); // EXISTS (SELECT 1, 2);
+     * </code>
+     *
+     * @param query subquery
+     */
+    public static Conditions conditionExists(Query query) {
+        return new ConditionsImpl(EXISTS, query);
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionSome(asName("id"), operator("="), select(1, 2)); // id = SOME (SELECT 1, 2);
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query subquery
+     */
+    public static Conditions conditionSome(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(SOME, query));
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query subquery
+     *
+     * @see #conditionSome(Expression, Operator, Query)
+     */
+    public static Conditions conditionSome(String field, String operator, Query query) {
+        return conditionSome(asName(field), operator(operator), query);
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query subquery
+     *
+     */
+    public static Conditions conditionAny(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ANY, query));
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query subquery
+     *
+     * @see #conditionAny(Expression, Operator, Query)
+     */
+    public static Conditions conditionAny(String field, String operator, Query query) {
+        return conditionAny(asName(field), operator(operator), query);
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query subquery
+     *
+     * @see #conditionAny(Expression, Operator, Query)
+     */
+    public static Conditions conditionAll(Expression field, Operator operator, Query query) {
+        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ALL, query));
+    }
+
+    /**
+     * Create a condition.
+     * Example:
+     * <code>
+     *     conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
+     * </code>
+     *
+     * @param field
+     * @param operator
+     * @param query subquery
+     *
+     * @see #conditionAll(Expression, Operator, Query)
+     */
+    public static Conditions conditionAll(String field, String operator, Query query) {
+        return conditionAll(asName(field), operator(operator), query);
     }
 
     //----
@@ -141,7 +308,7 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
-     * @param tableName - is a table name.
+     * @param tableName is a table name.
      *
      * @see #from(Expression)
      */
@@ -163,7 +330,7 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
-     * @param tableName - is a table name
+     * @param tableName is a table name
      *
      * @see #fromOnly(Expression)
      */
@@ -174,7 +341,7 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
-     * @param tableName - is a table name
+     * @param tableName is a table name
      *
      * @see #fromOnly(String)
      */
@@ -187,6 +354,18 @@ public class PostgreSQL {
     //----
 
     /**
+     * Constant expression:
+     *
+     * <code>
+     * table_name
+     * $n1
+     * LIST[1]
+     * 234.11
+     * .50
+     * .2E+1
+     * </code>
+     *
+     * @param constant any constant
      * @return a constant. e.g. 1, id, ARRAY[1] ...
      */
     public static Expression asConstant(String constant) {
@@ -194,6 +373,12 @@ public class PostgreSQL {
     }
 
     /**
+     * String expression:
+     * <code>
+     * 'any string is here'
+     * </code>
+     *
+     * @param constant string constant
      * @return a string surrounded by single quote string. e.g. 'string'
      */
     public static Expression asString(String constant) {
@@ -201,25 +386,37 @@ public class PostgreSQL {
     }
 
     /**
+     * Dollar string expression:
+     * <code>
+     *     $$any string is here$$
+     * </code>
+     *
+     * @param constant dollar string
      * @return a string surrounded by dollar singes string. e.g. $$string$$
      */
     public static Expression asDollarString(String constant) {
         return new DollarStringExpression(constant, "");
     }
 
-
     /**
-     * @return a string surrounded by dollar singes string. e.g. $tag$string$tag$
+     * Dollar string expression:
+     * <code>
+     *     $$any string is here$$
+     *     $tag$any string is here$tag$
+     * </code>
      *
-     * where {@code tag} is {@code tagName}
+     * @param constant dollar string
+     * @param tagName tag name
+     * @return a string surrounded by dollar singes string. e.g. $tag$ string $tag$
      */
     public static Expression asDollarString(String constant, String tagName) {
         return new DollarStringExpression(constant, tagName);
     }
 
     /**
-     * It is synonym of {@link #asConstant(String)}
+     * It is a synonym of {@link #asConstant(String)}
      *
+     * @param constant numeric constant
      * @return number.
      */
     public static Expression asNumber(Number constant) {
@@ -227,6 +424,13 @@ public class PostgreSQL {
     }
 
     /**
+     * Column reference expression:
+     * <code>
+     *     table.column
+     *     (complex_type).field
+     * </code>
+     *
+     * @param constant column reference string
      * @return a quoted name. e.g. id; table.phone
      */
     public static Expression asName(String constant) {
@@ -234,6 +438,12 @@ public class PostgreSQL {
     }
 
     /**
+     * Quoted column reference expression:
+     * <code>
+     *     "table"."column"
+     * </code>
+     *
+     * @param constant column reference string
      * @return a quoted name. e.g. "id"; "table"."phone"
      */
     public static Expression asQuotedName(String constant) {
