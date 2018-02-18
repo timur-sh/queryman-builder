@@ -9,7 +9,7 @@ package org.queryman.builder;
 import java.util.Properties;
 
 /**
- * This {@code class} represents all of settings for current module.
+ * Stores metadata of Queryman builder.
  *
  * @author Timur Shaidullin
  */

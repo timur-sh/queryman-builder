@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.ast;
 
+import org.queryman.builder.Metadata;
 import org.queryman.builder.token.Token;
 
 import java.util.Arrays;
@@ -28,6 +29,10 @@ public class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
 
     private       Stack<Node>   NODES     = new Stack<>();
     private final TreeFormatter FORMATTER = new TreeFormatter();
+
+    public AbstractSyntaxTreeImpl(Metadata metadata) {
+
+    }
 
     @Override
     public AbstractSyntaxTree startNode(NodeMetadata metadata) {

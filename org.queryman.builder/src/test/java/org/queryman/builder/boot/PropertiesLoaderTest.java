@@ -12,6 +12,7 @@ import org.queryman.builder.cfg.Settings;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,9 +25,9 @@ public class PropertiesLoaderTest {
     public void loadOk() throws IOException, ClassNotFoundException {
         PropertiesLoader loader = new PropertiesLoader("queryman-builder.properties");
         loader.load();
-        Metadata metadata = loader.getConfiguration();
+        Properties metadata = loader.getConfiguration();
 
-        assertEquals(metadata.getProperties().size(), 1);
+        assertEquals(metadata.size(), 1);
         assertEquals(Boolean.valueOf(metadata.getProperty(Settings.USE_UPPERCASE)), true);
     }
 

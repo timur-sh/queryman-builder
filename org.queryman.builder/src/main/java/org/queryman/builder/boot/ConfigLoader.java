@@ -6,19 +6,18 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.Metadata;
-
 import java.io.IOException;
+import java.util.Properties;
 
 /**
- * This {@code class} loads source.
+ * This {@code class} loads configuration from source file.
  * By default it implies that the configuration file locations is
- * <b>resource</b> path
+ * <b>resource</b> path.
  *
  * @author Timur Shaidullin
  */
 public interface ConfigLoader {
     boolean load() throws IOException, ClassNotFoundException;
 
-    Metadata getConfiguration();
+    Properties getConfiguration();
 }

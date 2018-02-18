@@ -6,16 +6,15 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.Metadata;
-
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * @author Timur Shaidullin
  */
 public class ServiceLoaderImpl implements ServiceLoader {
     private final ConfigLoader[] loaders;
-    private Metadata metadata;
+    private Properties properties;
 
     public ServiceLoaderImpl(ConfigLoader... loaders) {
         if (loaders.length == 0) {
@@ -29,7 +28,7 @@ public class ServiceLoaderImpl implements ServiceLoader {
         for (ConfigLoader loader : loaders) {
             try {
                 loader.load();
-                metadata = loader.getConfiguration();
+                properties = loader.getConfiguration();
                 return true;
             } catch (IllegalStateException | ClassNotFoundException | IOException e) {
                 //todo log an error
@@ -41,7 +40,7 @@ public class ServiceLoaderImpl implements ServiceLoader {
     }
 
     @Override
-    public Metadata getConfiguration() {
-        return metadata;
+    public Properties getConfiguration() {
+        return properties;
     }
 }

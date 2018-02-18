@@ -6,8 +6,7 @@
  */
 package org.queryman.builder.boot.adapter;
 
-import org.queryman.builder.Metadata;
-import org.queryman.builder.impl.MetadataImpl;
+import org.queryman.builder.cfg.Settings;
 
 import java.util.Properties;
 
@@ -15,7 +14,12 @@ import java.util.Properties;
  * @author Timur Shaidullin
  */
 public final class PropertiesMetadataAdapter {
-    public static Metadata convert(Properties properties) {
-        return new MetadataImpl().addProperties(properties);
+    public static Properties convert(Properties properties) {
+        Properties properties1 = new Properties();
+
+        if (properties.contains(Settings.USE_UPPERCASE))
+            properties1.setProperty(Settings.USE_UPPERCASE, properties.getProperty(Settings.USE_UPPERCASE));
+
+        return properties1;
     }
 }

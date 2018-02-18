@@ -4,17 +4,18 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.impl;
+package org.queryman.builder;
 
-import org.queryman.builder.Metadata;
 import org.queryman.builder.utils.StringUtils;
 
 import java.util.Properties;
 
 /**
+ * Standard implementation of {@link Metadata}.
+ *
  * @author Timur Shaidullin
  */
-public class MetadataImpl implements Metadata {
+class MetadataImpl implements Metadata {
     private Properties properties = new Properties();
 
     @Override
@@ -30,10 +31,8 @@ public class MetadataImpl implements Metadata {
 
     @Override
     public boolean isEmpty(String key) {
-        if (!contains(key))
-            return true;
+        return !contains(key) || StringUtils.isEmpty(getProperty(key));
 
-        return StringUtils.isEmpty(getProperty(key));
     }
 
     @Override

@@ -4,21 +4,25 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.impl;
+package org.queryman.builder;
 
-import org.queryman.builder.Metadata;
-import org.queryman.builder.MetadataBuilder;
+import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.boot.JaxbLoader;
 import org.queryman.builder.boot.PropertiesLoader;
 import org.queryman.builder.boot.ServiceLoader;
 import org.queryman.builder.boot.ServiceLoaderImpl;
 import org.queryman.builder.cfg.Settings;
 
+import java.util.Objects;
+
 /**
+ * Standard implementation of {@link MetadataBuilder}.
+ *
  * @author Timur Shaidullin
  */
 public class MetadataBuilderImpl implements MetadataBuilder {
-    private Metadata metadata;
+    private final Metadata metadata = new MetadataImpl();
 
     private String xmlCfgFile        = "queryman-builder.xml";
     private String propertiesCfgFile = "queryman-builder.properties";
@@ -43,6 +47,10 @@ public class MetadataBuilderImpl implements MetadataBuilder {
         return metadata;
     }
 
+    public AbstractSyntaxTree getTree() {
+        return new AbstractSyntaxTreeImpl(metadata);
+    }
+
     @Override
     public void build() {
         load();
@@ -52,6 +60,8 @@ public class MetadataBuilderImpl implements MetadataBuilder {
 
     /**
      * Load configuration.
+     *
+     * @return {@code true} if configuration loaded successfully.
      */
     private boolean load() {
         ServiceLoader loader = new ServiceLoaderImpl(
@@ -61,14 +71,13 @@ public class MetadataBuilderImpl implements MetadataBuilder {
 
         try {
             if (loader.load()) {
-                metadata = loader.getConfiguration();
+                metadata.addProperties(loader.getConfiguration());
                 return true;
             }
         } catch (IllegalStateException e) {
             //todo log
         }
 
-        metadata = new MetadataImpl();
         return false;
     }
 
@@ -76,7 +85,7 @@ public class MetadataBuilderImpl implements MetadataBuilder {
      * The {@code metadata} is validated.
      */
     private void checker() {
-       //todo Establish integrity each value of metadata by particular key.
+       //todo Establish integrity each value of metadata for particular key.
     }
 
     /**

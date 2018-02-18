@@ -1,8 +1,10 @@
-package org.queryman.builder.impl;
+package org.queryman.builder;
 
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.Metadata;
 import org.queryman.builder.MetadataBuilder;
+import org.queryman.builder.MetadataBuilderImpl;
+import org.queryman.builder.MetadataImpl;
 import org.queryman.builder.cfg.Settings;
 
 import java.io.IOException;

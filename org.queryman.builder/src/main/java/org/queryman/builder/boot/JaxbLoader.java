@@ -6,16 +6,15 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.Metadata;
 import org.queryman.builder.boot.adapter.JaxbMetadataAdapter;
 import org.queryman.builder.boot.jaxb.JaxbCfg;
 import org.queryman.builder.utils.StringUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * @author Timur Shaidullin
@@ -46,7 +45,7 @@ public class JaxbLoader extends AbstractConfigLoader {
         }
     }
 
-    public Metadata getConfiguration() {
+    public Properties getConfiguration() {
         return JaxbMetadataAdapter.convert(jaxb);
     }
 }

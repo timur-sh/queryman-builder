@@ -6,6 +6,7 @@ import org.queryman.builder.cfg.Settings;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,9 +17,9 @@ class JaxbLoaderTest {
     public void loadOk() throws IOException, ClassNotFoundException {
         JaxbLoader loader = new JaxbLoader("queryman-builder.xml");
         loader.load();
-        Metadata metadata = loader.getConfiguration();
+        Properties metadata = loader.getConfiguration();
 
-        assertEquals(metadata.getProperties().size(), 1);
+        assertEquals(metadata.size(), 1);
         assertTrue(metadata.contains(Settings.USE_UPPERCASE));
         assertEquals(Boolean.valueOf(metadata.getProperty(Settings.USE_UPPERCASE)), false);
     }
@@ -40,7 +41,7 @@ class JaxbLoaderTest {
     @Test
     public void loadEmpty() throws IOException, ClassNotFoundException {
         JaxbLoader loader = new JaxbLoader("queryman-builder-broke.xml");
-        Metadata metadata = loader.getConfiguration();
+        Properties metadata = loader.getConfiguration();
 
         assertEquals(Boolean.valueOf(metadata.getProperty(Settings.USE_UPPERCASE)), false);
     }
