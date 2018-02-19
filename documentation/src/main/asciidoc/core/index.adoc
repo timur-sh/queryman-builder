@@ -1,8 +1,0 @@
-== Content
-
-=== Guides
-* {domainDocs}/getting-started[Getting started]
-
-=== User Guide
-
-* {domainDocs}/userquide[User guide]

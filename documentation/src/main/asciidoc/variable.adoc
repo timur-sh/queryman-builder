@@ -1,6 +1,6 @@
 
 :mainDir: ../../
-:mainJavaDir: ../java/org/queryman
+:mainJavaDir: ../java/org/queryman/builder
 :mainResourcesDir: {mainDir}resources
 
 :testDir: ../../../test

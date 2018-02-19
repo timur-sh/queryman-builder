@@ -1,3 +1,0 @@
-== Preface
-The Queryman brings query builder for PostgreSQL. The primary aim of Queryman is complete
-support SQL syntax of PostgreSQL for query building.

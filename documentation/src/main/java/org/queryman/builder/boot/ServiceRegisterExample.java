@@ -6,10 +6,10 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.Metadata;
-import org.queryman.builder.MetadataBuilder;
-import org.queryman.builder.impl.MetadataBuilderImpl;
-import org.queryman.builder.impl.MetadataImpl;
+import org.queryman.builder.boot.Metadata;
+import org.queryman.builder.boot.MetadataBuilder;
+import org.queryman.builder.boot.MetadataBuilderImpl;
+import org.queryman.builder.boot.MetadataImpl;
 
 import java.io.IOException;
 

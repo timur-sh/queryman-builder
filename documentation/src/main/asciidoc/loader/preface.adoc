@@ -1,2 +1,0 @@
-== Preface
-The `org.queryman.loader` module provides features for loading configuration.

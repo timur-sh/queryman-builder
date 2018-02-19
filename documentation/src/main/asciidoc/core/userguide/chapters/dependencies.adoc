@@ -1,5 +1,0 @@
-== Dependencies
-
-.Queryman requires
-- Java version 8 and later
-- JDBC 4.0
