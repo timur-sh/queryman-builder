@@ -18,7 +18,7 @@ import java.util.Properties;
  *     <li>via properties file</li>
  * </ol>
  *
- * If no configguration file found, the default settings will apply.
+ * If no configuration file found, the default settings will apply.
  *
  * @author Timur Shaidullin
  */

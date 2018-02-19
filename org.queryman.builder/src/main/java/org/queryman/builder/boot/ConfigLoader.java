@@ -11,7 +11,7 @@ import java.util.Properties;
 
 /**
  * This {@code class} loads configuration from source file.
- * By default it implies that the configuration file locations is
+ * By default it implies that the configuration file location is
  * <b>resource</b> path.
  *
  * @author Timur Shaidullin

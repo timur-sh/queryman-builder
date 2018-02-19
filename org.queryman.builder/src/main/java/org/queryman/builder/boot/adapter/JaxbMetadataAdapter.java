@@ -12,6 +12,8 @@ import org.queryman.builder.cfg.Settings;
 import java.util.Properties;
 
 /**
+ * Adapters a provided setting from <code>xml file</code> to metadata format.
+ *
  * @author Timur Shaidullin
  */
 public final class JaxbMetadataAdapter {
