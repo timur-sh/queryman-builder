@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder;
+package org.queryman.builder.boot;
 
 import org.queryman.builder.utils.StringUtils;
 

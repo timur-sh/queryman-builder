@@ -1,7 +1,6 @@
 package org.queryman.builder.boot;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.Metadata;
 import org.queryman.builder.cfg.Settings;
 
 import java.io.FileNotFoundException;
@@ -20,7 +19,7 @@ class JaxbLoaderTest {
         Properties metadata = loader.getConfiguration();
 
         assertEquals(metadata.size(), 1);
-        assertTrue(metadata.contains(Settings.USE_UPPERCASE));
+        assertTrue(metadata.containsKey(Settings.USE_UPPERCASE));
         assertEquals(Boolean.valueOf(metadata.getProperty(Settings.USE_UPPERCASE)), false);
     }
 

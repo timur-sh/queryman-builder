@@ -17,7 +17,7 @@ public final class PropertiesMetadataAdapter {
     public static Properties convert(Properties properties) {
         Properties properties1 = new Properties();
 
-        if (properties.contains(Settings.USE_UPPERCASE))
+        if (properties.containsKey(Settings.USE_UPPERCASE))
             properties1.setProperty(Settings.USE_UPPERCASE, properties.getProperty(Settings.USE_UPPERCASE));
 
         return properties1;

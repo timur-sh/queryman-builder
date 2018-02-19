@@ -1,12 +1,13 @@
 package org.queryman.builder.boot.impl;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.Metadata;
+import org.queryman.builder.boot.Metadata;
 import org.queryman.builder.boot.JaxbLoader;
 import org.queryman.builder.boot.ServiceLoader;
 import org.queryman.builder.boot.ServiceLoaderImpl;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,7 +21,7 @@ class ServiceLoaderImplTest {
         );
         assertTrue(loader.load());
 
-       assertTrue(loader.getConfiguration() instanceof Metadata);
+       assertTrue(loader.getConfiguration() instanceof Properties);
     }
 
     @Test

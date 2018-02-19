@@ -6,17 +6,14 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.Metadata;
-import org.queryman.builder.MetadataBuilder;
-import org.queryman.builder.MetadataBuilderImpl;
-import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
+import org.queryman.builder.ast.TreeFactory;
 
 /**
  * @author Timur Shaidullin
  */
 public class ServiceRegister {
     private MetadataBuilder metadataBuilder;
+    private final TreeFactory treeFactory = new TreeFactory();
 
     public ServiceRegister() {
         this(new MetadataBuilderImpl());
@@ -37,16 +34,24 @@ public class ServiceRegister {
 
     public ServiceRegister make() {
         metadataBuilder.build();
+        treeFactory.setMetadata(metadataBuilder.getMetadata());
+        return this;
+    }
+
+    public ServiceRegister makeDefaults() {
+        metadataBuilder.buildFromDefault();
+        treeFactory.setMetadata(metadataBuilder.getMetadata());
         return this;
     }
 
     public ServiceRegister make(Metadata metadata) {
         metadataBuilder.build(metadata);
+        treeFactory.setMetadata(metadataBuilder.getMetadata());
         return this;
     }
 
-    private final AbstractSyntaxTree ast() {
-        return new AbstractSyntaxTreeImpl(metadataBuilder.getMetadata());
+    public final TreeFactory treeFactory() {
+        return treeFactory;
     }
 
 }

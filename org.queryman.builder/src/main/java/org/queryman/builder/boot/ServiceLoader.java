@@ -6,8 +6,6 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.Metadata;
-
 import java.util.Properties;
 
 /**

@@ -6,12 +6,16 @@
  */
 package org.queryman.builder;
 
+import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.ast.NodesMetadata;
+import org.queryman.builder.ast.TreeFactory;
+import org.queryman.builder.boot.ServiceRegister;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
 import org.queryman.builder.command.impl.FromImpl;
+import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
@@ -26,6 +30,7 @@ import org.queryman.builder.token.expression.ListExpression;
 import org.queryman.builder.token.expression.ListStringExpression;
 import org.queryman.builder.token.expression.StringExpression;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.queryman.builder.ast.NodesMetadata.ALL;
@@ -36,25 +41,166 @@ import static org.queryman.builder.ast.NodesMetadata.SOME;
 /**
  * Entry point of all parts of PostgreSQL. This contains a full collection of
  * SQL statements like the SELECT, UPDATE, DELETE.
- * Also other parts of SQL clauses are incapsulate here - conditions clause
+ * Also other parts of SQL clauses are encapsulated here, such as any conditions clause
  * (AND, OR, OR NOT, etc), FROM clause, any expressions,
  *
  * @author Timur Shaidullin
  */
 public class PostgreSQL {
+    private static TreeFactory treeFactory;
+
+    static {
+        treeFactory = new ServiceRegister()
+           .makeDefaults()
+           .treeFactory();
+    }
+
+    public static void setTreeFactory(TreeFactory factory) {
+        treeFactory = factory;
+    }
+
+    /**
+     * @return tree
+     */
+    public static AbstractSyntaxTree getTree() {
+        return treeFactory.getTree();
+    }
+
     //----
     // SELECT API
     //----
 
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     select("id", "name"); // SELECT id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
     public static SelectFromStep select(String... columns) {
-        return null;
+        return select(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     select(asName("id"), asName("name")); // SELECT id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep select(Expression... columns) {
+        return new SelectImpl(getTree(), columns);
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     selectAll("id", "name"); // SELECT ALL id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep selectAll(String... columns) {
+        return selectAll(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     select(asName("id"), asName("name")); // SELECT id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep selectAll(Expression... columns) {
+        return new SelectImpl(getTree(), columns).all();
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     selectDistinct("id", "name"); // SELECT DISTINCT id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep selectDistinct(String... columns) {
+        return selectDistinct(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     selectDistinct(asName("id"), asName("name")); // SELECT DISTINCT id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep selectDistinct(Expression... columns) {
+        return new SelectImpl(getTree(), columns).distinct();
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     String[] distinct = {"id"};
+     *     selectDistinctOn(distinct, "id", "name"); // SELECT DISTINCT ON (id) id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep selectDistinctOn(String[] distinct, String... columns) {
+        return selectDistinctOn(
+           Arrays.stream(distinct).map(PostgreSQL::asName).toArray(Expression[]::new),
+           Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new)
+        );
+    }
+
+    /**
+     * SELECT statement.
+     * Example:
+     * <code>
+     *     Expression[] distinct = {"id"};
+     *     selectDistinctOn(distinct, asName("id"), asName("name")); // SELECT DISTINCT ON (id) id, name
+     * </code>
+     *
+     * @param columns output columns
+     *
+     * @return select instance
+     */
+    public static SelectFromStep selectDistinctOn(Expression[] distinct, Expression... columns) {
+        return new SelectImpl(getTree(), columns).distinctOn(distinct);
     }
 
     /**
      * Create an operator which ordinarily is used by condition.
+     *
      * @param operator LIKE, ILIKE, =, !=, @> etc.
      * @return instance of {@link Operator}.
-     *
+     * <p>
      * Most useful operators are collected there:
      * @see Operators
      */
@@ -64,9 +210,10 @@ public class PostgreSQL {
 
     /**
      * Create a keyword which ordinarily is used to build SQL query.
+     *
      * @param keyword SELECT, UPDATE, FROM, JOIN etc.
      * @return instance of {@link Keyword}
-     *
+     * <p>
      * Most useful keywords are collected there:
      * @see Operators
      */
@@ -80,11 +227,11 @@ public class PostgreSQL {
 
     /**
      * Create a condition
-     * @param leftValue left operand
-     * @param operator operator
+     *
+     * @param leftValue  left operand
+     * @param operator   operator
      * @param rightValue right operand
      * @return {@link Conditions}
-     *
      * @see #operator(String)
      * @see #asName(String)
      * @see #asName(String)
@@ -96,12 +243,11 @@ public class PostgreSQL {
 
     /**
      * Create a condition
-
-     * @param leftValue left operand
-     * @param operator operator
+     *
+     * @param leftValue  left operand
+     * @param operator   operator
      * @param rightValue right operand
      * @return {@link Conditions}
-     *
      * @see #operator(String)
      * @see #condition(Expression, Operator, Expression)
      */
@@ -112,11 +258,10 @@ public class PostgreSQL {
     /**
      * Create a condition
      *
-     * @param leftValue left operand
-     * @param operator operator
+     * @param leftValue  left operand
+     * @param operator   operator
      * @param rightValue right operand
      * @return {@link Conditions}
-     *
      * @see #operator(String)
      */
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
@@ -130,11 +275,10 @@ public class PostgreSQL {
     /**
      * Create a condition: field BETWEEN value1 AND value2.
      *
-     * @param field seeking operand
+     * @param field  seeking operand
      * @param value1 operand before AND
      * @param value2 operand after AND
      * @return {@link Conditions}
-     *
      * @see #conditionBetween(String, String, String)
      */
     public static Conditions conditionBetween(Expression field, Expression value1, Expression value2) {
@@ -144,11 +288,10 @@ public class PostgreSQL {
     /**
      * Create a condition: field BETWEEN value1 AND value2.
      *
-     * @param field seeking operand
+     * @param field  seeking operand
      * @param value1 operand before AND
      * @param value2 operand after AND
      * @return {@link Conditions}
-     *
      * @see #conditionBetween(Expression, Expression, Expression)
      */
     public static Conditions conditionBetween(String field, String value1, String value2) {
@@ -161,17 +304,16 @@ public class PostgreSQL {
 
     /**
      * Subquery condition. Primarily it is used by {@code IN} expression:
-     *
+     * <p>
      * Example:
      * <code>
-     *  condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
+     * condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query right operand
+     * @param query    right operand
      * @return {@link Conditions}
-     *
      * @see #select(String...)
      * @see Operators#IN
      */
@@ -181,17 +323,16 @@ public class PostgreSQL {
 
     /**
      * Subquery condition. Primarily it is used by {@code IN} expression:
-     *
+     * <p>
      * Example:
      * <code>
-     *  condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
+     * condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query right operand
+     * @param query    right operand
      * @return {@link Conditions}
-     *
      * @see #select(String...)
      */
     public static Conditions condition(String field, String operator, Query query) {
@@ -202,7 +343,7 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionExists(select(1, 2)); // EXISTS (SELECT 1, 2);
+     * conditionExists(select(1, 2)); // EXISTS (SELECT 1, 2);
      * </code>
      *
      * @param query subquery
@@ -216,12 +357,12 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionSome(asName("id"), operator("="), select(1, 2)); // id = SOME (SELECT 1, 2);
+     * conditionSome(asName("id"), operator("="), select(1, 2)); // id = SOME (SELECT 1, 2);
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query subquery right operand
+     * @param query    subquery right operand
      * @return {@link Conditions}
      */
     public static Conditions conditionSome(Expression field, Operator operator, Query query) {
@@ -232,14 +373,13 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
+     * conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query subquery right operand
+     * @param query    subquery right operand
      * @return {@link Conditions}
-     *
      * @see #conditionSome(Expression, Operator, Query)
      */
     public static Conditions conditionSome(String field, String operator, Query query) {
@@ -250,14 +390,13 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
+     * conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query subquery right operand
+     * @param query    subquery right operand
      * @return {@link Conditions}
-     *
      */
     public static Conditions conditionAny(Expression field, Operator operator, Query query) {
         return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ANY, query));
@@ -267,14 +406,13 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
+     * conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query subquery right operand
+     * @param query    subquery right operand
      * @return {@link Conditions}
-     *
      * @see #conditionAny(Expression, Operator, Query)
      */
     public static Conditions conditionAny(String field, String operator, Query query) {
@@ -285,14 +423,13 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
+     * conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query subquery -right operand
+     * @param query    subquery -right operand
      * @return {@link Conditions}
-     *
      * @see #conditionAny(Expression, Operator, Query)
      */
     public static Conditions conditionAll(Expression field, Operator operator, Query query) {
@@ -303,14 +440,13 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     *     conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
+     * conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
      * </code>
      *
-     * @param field left operand
+     * @param field    left operand
      * @param operator operator
-     * @param query subquery -right operand
+     * @param query    subquery -right operand
      * @return {@link Conditions}
-     *
      * @see #conditionAll(Expression, Operator, Query)
      */
     public static Conditions conditionAll(String field, String operator, Query query) {
@@ -337,7 +473,6 @@ public class PostgreSQL {
      *
      * @param tableName - is a table name
      * @return first step of FROM clause.
-     *
      * @see #from(String)
      */
     public static FromFirstStep from(Expression tableName) {
@@ -349,7 +484,6 @@ public class PostgreSQL {
      *
      * @param tableName is a table name
      * @return first step of FROM clause.
-     *
      * @see #fromOnly(Expression)
      */
     public static FromFirstStep fromOnly(String tableName) {
@@ -361,7 +495,6 @@ public class PostgreSQL {
      *
      * @param tableName is a table name
      * @return first step of FROM clause.
-     *
      * @see #fromOnly(String)
      */
     public static FromFirstStep fromOnly(Expression tableName) {
@@ -374,7 +507,7 @@ public class PostgreSQL {
 
     /**
      * Constant expression:
-     *
+     * <p>
      * <code>
      * table_name
      * $n1
@@ -407,7 +540,7 @@ public class PostgreSQL {
     /**
      * Dollar string expression:
      * <code>
-     *     $$any string is here$$
+     * $$any string is here$$
      * </code>
      *
      * @param constant dollar string
@@ -420,12 +553,12 @@ public class PostgreSQL {
     /**
      * Dollar string expression:
      * <code>
-     *     $$any string is here$$
-     *     $tag$any string is here$tag$
+     * $$any string is here$$
+     * $tag$any string is here$tag$
      * </code>
      *
      * @param constant dollar string
-     * @param tagName tag name
+     * @param tagName  tag name
      * @return a string surrounded by dollar singes string. e.g. $tag$ string $tag$
      */
     public static Expression asDollarString(String constant, String tagName) {
@@ -445,8 +578,8 @@ public class PostgreSQL {
     /**
      * Column reference expression:
      * <code>
-     *     table.column
-     *     (complex_type).field
+     * table.column
+     * (complex_type).field
      * </code>
      *
      * @param constant column reference string
@@ -459,7 +592,7 @@ public class PostgreSQL {
     /**
      * Quoted column reference expression:
      * <code>
-     *     "table"."column"
+     * "table"."column"
      * </code>
      *
      * @param constant column reference string
@@ -477,7 +610,7 @@ public class PostgreSQL {
      * List of string expression.
      * Example:
      * <code>
-     *     asStringList(1, 2, 3); // ('1', '2', '3')
+     * asStringList(1, 2, 3); // ('1', '2', '3')
      * </code>
      *
      * @param constants values
@@ -492,11 +625,11 @@ public class PostgreSQL {
      * List of string expression.
      * Example:
      * <code>
-     *     asString(List.of(1, 2, 3,)); // ('1', '2', '3')
+     * asString(List.of(1, 2, 3,)); // ('1', '2', '3')
      * </code>
+     *
      * @param constants list of values
      * @return (...), where {@code ...} are values of string concatenated by comma.
-     *
      * @see #asStringList(T...)
      */
     public static <T> Expression asStringList(List<T> constants) {
@@ -507,7 +640,7 @@ public class PostgreSQL {
      * List expression.
      * Example:
      * <code>
-     *     asString(1, 2, 3); // (1, 2, 3)
+     * asString(1, 2, 3); // (1, 2, 3)
      * </code>
      *
      * @param constants values
@@ -522,7 +655,7 @@ public class PostgreSQL {
      * List expression.
      * Example:
      * <code>
-     *     asString(List.of(1, 2, 3)); // (1, 2, 3)
+     * asString(List.of(1, 2, 3)); // (1, 2, 3)
      * </code>
      *
      * @param constants values
@@ -539,7 +672,7 @@ public class PostgreSQL {
     /**
      * Array expression:
      * <code>
-     *     asArray(1, 2); // ARRAY[1, 2]
+     * asArray(1, 2); // ARRAY[1, 2]
      * </code>
      *
      * @param arr - values of array
@@ -553,7 +686,7 @@ public class PostgreSQL {
     /**
      * Array expression:
      * <code>
-     *     asArray(List.of(1,2)); // ARRAY[1, 2]
+     * asArray(List.of(1,2)); // ARRAY[1, 2]
      * </code>
      *
      * @param arr - values of array
@@ -566,7 +699,7 @@ public class PostgreSQL {
     /**
      * Array of string expression:
      * <code>
-     *     asArray(1, 2); // ARRAY[1, 2]
+     * asArray(1, 2); // ARRAY[1, 2]
      * </code>
      *
      * @param arr - string values of array
@@ -580,7 +713,7 @@ public class PostgreSQL {
     /**
      * Array of string expression:
      * <code>
-     *     asArray(List.of(1, 2)); // ARRAY['1', '2']
+     * asArray(List.of(1, 2)); // ARRAY['1', '2']
      * </code>
      *
      * @param arr - string values of array
@@ -597,14 +730,13 @@ public class PostgreSQL {
     /**
      * Examples:
      * <code>
-     *     asFunc("ALL", asArray(List.of(1, 2)));  // ALL(ARRAY[1, 2])
-     *     asFunc("SOME", asList(1, 2)); // SOME(1, 2)
+     * asFunc("ALL", asArray(List.of(1, 2)));  // ALL(ARRAY[1, 2])
+     * asFunc("SOME", asList(1, 2)); // SOME(1, 2)
      * </code>
      *
-     * @param name - function or operator name, examples: <code>ALL, ANY ...</code>
+     * @param name       - function or operator name, examples: <code>ALL, ANY ...</code>
      * @param expression - list or array expression
      * @return a combine of {@code name} and {@code expression} objects
-     *
      * @see #asArray(Object[])
      * @see #asStringArray(Object[])
      * @see #asList(Object[])

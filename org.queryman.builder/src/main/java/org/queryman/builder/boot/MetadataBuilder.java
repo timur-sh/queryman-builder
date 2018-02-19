@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder;
+package org.queryman.builder.boot;
 
 /**
  * MetadataBuilder populate {@link Metadata} from either <b>xml</b> or <b>properties</b> file.
@@ -39,6 +39,11 @@ public interface MetadataBuilder {
      * @return populated {@link Metadata}.
      */
     Metadata getMetadata();
+
+    /**
+     * Assembles a default {@link Metadata}.
+     */
+    void buildFromDefault();
 
     /**
      * The configuration loads, then builder populates the {@link Metadata}.

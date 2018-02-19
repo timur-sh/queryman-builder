@@ -4,31 +4,20 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder;
+package org.queryman.builder.boot;
 
-import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
-import org.queryman.builder.boot.JaxbLoader;
-import org.queryman.builder.boot.PropertiesLoader;
-import org.queryman.builder.boot.ServiceLoader;
-import org.queryman.builder.boot.ServiceLoaderImpl;
 import org.queryman.builder.cfg.Settings;
-
-import java.util.Objects;
 
 /**
  * Standard implementation of {@link MetadataBuilder}.
  *
  * @author Timur Shaidullin
  */
-public class MetadataBuilderImpl implements MetadataBuilder {
+class MetadataBuilderImpl implements MetadataBuilder {
     private final Metadata metadata = new MetadataImpl();
 
     private String xmlCfgFile        = "queryman-builder.xml";
     private String propertiesCfgFile = "queryman-builder.properties";
-
-    public MetadataBuilderImpl() {
-    }
 
     @Override
     public MetadataBuilder setXmlCfg(String cfgFile) {
@@ -47,14 +36,24 @@ public class MetadataBuilderImpl implements MetadataBuilder {
         return metadata;
     }
 
-    public AbstractSyntaxTree getTree() {
-        return new AbstractSyntaxTreeImpl(metadata);
+    @Override
+    public void buildFromDefault() {
+        applyDefaults();
     }
 
     @Override
     public void build() {
         load();
         checker();
+        applyDefaults();
+    }
+
+    @Override
+    public void build(Metadata metadata) {
+        load();
+        checker();
+        merge(this.metadata, metadata);
+
         applyDefaults();
     }
 
@@ -98,15 +97,6 @@ public class MetadataBuilderImpl implements MetadataBuilder {
                 metadata.addProperty(setting, Settings.DEFAULTS.get(setting));
             }
         }
-    }
-
-    @Override
-    public void build(Metadata metadata) {
-        load();
-        checker();
-        merge(this.metadata, metadata);
-
-        applyDefaults();
     }
 
     /**

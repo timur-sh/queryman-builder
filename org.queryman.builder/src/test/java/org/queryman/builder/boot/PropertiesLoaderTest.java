@@ -7,7 +7,6 @@
 package org.queryman.builder.boot;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.Metadata;
 import org.queryman.builder.cfg.Settings;
 
 import java.io.FileNotFoundException;

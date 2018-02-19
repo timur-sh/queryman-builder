@@ -2,8 +2,8 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.from.From;
 import org.queryman.builder.command.from.FromFirstStep;
@@ -17,7 +17,7 @@ class FromImplTest {
 
     @BeforeEach
     void tearUp() {
-        ast = new AbstractSyntaxTreeImpl();
+        ast = PostgreSQL.getTree();
     }
 
     void assembleAst(From from) {

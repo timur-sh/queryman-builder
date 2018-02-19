@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
 
@@ -29,6 +28,7 @@ import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.Operators.NOT_LIKE;
 import static org.queryman.builder.PostgreSQL.asArray;
 import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
@@ -40,7 +40,6 @@ import static org.queryman.builder.PostgreSQL.conditionAny;
 import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.conditionSome;
-import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.operator;
 
 /**
@@ -51,7 +50,7 @@ public class ConditionsImplTest {
 
     @BeforeEach
     void tearUp() {
-        ast = new AbstractSyntaxTreeImpl();
+        ast = PostgreSQL.getTree();
     }
 
     void assembleAst(Conditions conditions) {

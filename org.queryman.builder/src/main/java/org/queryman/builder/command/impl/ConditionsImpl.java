@@ -8,7 +8,6 @@ package org.queryman.builder.command.impl;
 
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.ast.Node;
 import org.queryman.builder.ast.NodeImpl;
 import org.queryman.builder.ast.NodeMetadata;
@@ -19,6 +18,7 @@ import org.queryman.builder.token.Operator;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
+import static org.queryman.builder.PostgreSQL.getTree;
 import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
@@ -79,7 +79,7 @@ public final class ConditionsImpl implements
      * The {@code query} is turned into node.
      */
     private Node queryToNode(Query query) {
-        AbstractSyntaxTree tree = new AbstractSyntaxTreeImpl();
+        AbstractSyntaxTree tree = getTree();
         query.assemble(tree);
         return rebuildNodeMetadata(tree.getRootNode(), true);
     }

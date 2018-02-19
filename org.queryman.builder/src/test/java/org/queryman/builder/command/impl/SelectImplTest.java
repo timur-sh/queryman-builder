@@ -1,12 +1,9 @@
 package org.queryman.builder.command.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.PostgreSQL;
-import org.queryman.builder.ast.AbstractSyntaxTree;
-import org.queryman.builder.ast.AbstractSyntaxTreeImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectJoinStep;
+import org.queryman.builder.token.Expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.Operators.EQUAL;
@@ -19,57 +16,55 @@ import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
-import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.fromOnly;
+import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.PostgreSQL.selectAll;
+import static org.queryman.builder.PostgreSQL.selectDistinct;
+import static org.queryman.builder.PostgreSQL.selectDistinctOn;
 
 class SelectImplTest {
-    private AbstractSyntaxTree ast;
-
-    @BeforeEach
-    void tearUp() {
-        ast = new AbstractSyntaxTreeImpl();
-    }
-
     @Test
-    void select() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+    void selectTest() {
+        SelectFromStep select = select("id", "name");
+
         assertEquals("SELECT id, name", select.sql());
 
-        SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
+        SelectFromStep select2 = select(asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT \"id2\", \"name\", min(price) as min", select2.sql());
     }
 
     @Test
-    void selectAll() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name").all();
+    void selectAllTest() {
+        SelectFromStep select = selectAll("id", "name");
         assertEquals("SELECT ALL id, name", select.sql());
 
-        SelectFromStep select2 = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min")).all();
+        SelectFromStep select2 = selectAll(asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT ALL \"id2\", \"name\", min(price) as min", select2.sql());
     }
 
     @Test
-    void selectDistinct() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name").distinct();
+    void selectDistinctTest() {
+        SelectFromStep select = selectDistinct("id", "name");
         assertEquals("SELECT DISTINCT id, name", select.sql());
 
-        select = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min")).distinct();
+        select = selectDistinct(asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT DISTINCT \"id2\", \"name\", min(price) as min", select.sql());
     }
 
     @Test
-    void selectDistinctOn() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name").distinctOn("price", "id");
+    void selectDistinctOnTest() {
+        SelectFromStep select = selectDistinctOn(new String[]{"price", "id"}, "id", "name");
         assertEquals("SELECT DISTINCT ON (price, id) id, name", select.sql());
 
-        select = new SelectImpl(ast, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min")).distinctOn(asName("price"), asName("id"));
+        select = selectDistinctOn(new Expression[] {asName("price"), asName("id")}, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT DISTINCT ON (price, id) \"id2\", \"name\", min(price) as min", select.sql());
     }
 
     @Test
     void selectFrom() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
 
         assertEquals("SELECT id, name FROM books", select.from("books").sql());
 
@@ -84,7 +79,7 @@ class SelectImplTest {
 
     @Test
     void selectFromOnly() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
 
         assertEquals("SELECT id, name FROM ONLY books", select.from(fromOnly("books")).sql());
         assertEquals("SELECT id, name FROM ONLY books, ONLY authors", select.from(fromOnly("books"), fromOnly("authors")).sql());
@@ -113,94 +108,94 @@ class SelectImplTest {
 
     @Test
     void selectFromJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
 
         assertEquals("SELECT id, name FROM books JOIN author ON (true)", select.join("author").on(true).sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books");
+        select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books JOIN author USING (id)", select.join("author").using("id").sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books");
+        select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books JOIN author USING (id, name)", select.join("author").using("id", "name").sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books");
+        select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books JOIN author ON id = author_id", select.join("author").on("id", "=", "author_id").sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").andExists(new SelectImpl(ast, "1", "2"));
+        select = select("id", "name").from("books").join("author").on("id", "=", "author_id").andExists(select("1", "2"));
         assertEquals("SELECT id, name FROM books JOIN author ON id = author_id AND EXISTS (SELECT 1, 2)", select.sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").and(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        select = select("id", "name").from("books").join("author").on("id", "=", "author_id").and(asName("id"), IN, select("1", "2"));
         assertEquals("SELECT id, name FROM books JOIN author ON id = author_id AND id IN (SELECT 1, 2)", select.sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").andNot(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        select = select("id", "name").from("books").join("author").on("id", "=", "author_id").andNot(asName("id"), IN, select("1", "2"));
         assertEquals("SELECT id, name FROM books JOIN author ON id = author_id AND NOT id IN (SELECT 1, 2)", select.sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").or(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        select = select("id", "name").from("books").join("author").on("id", "=", "author_id").or(asName("id"), IN, select("1", "2"));
         assertEquals("SELECT id, name FROM books JOIN author ON id = author_id OR id IN (SELECT 1, 2)", select.sql());
 
-        select = new SelectImpl(ast, "id", "name").from("books").join("author").on("id", "=", "author_id").orNot(asName("id"), IN, new SelectImpl(ast, "1", "2"));
+        select = select("id", "name").from("books").join("author").on("id", "=", "author_id").orNot(asName("id"), IN, select("1", "2"));
         assertEquals("SELECT id, name FROM books JOIN author ON id = author_id OR NOT id IN (SELECT 1, 2)", select.sql());
 
-        select = new SelectImpl(ast, "*").from("books");
-        assertEquals("SELECT * FROM books JOIN author ON EXISTS (SELECT 1, 2)", select.join("author").onExists(new SelectImpl(ast, "1", "2")).sql());
+        select = select("*").from("books");
+        assertEquals("SELECT * FROM books JOIN author ON EXISTS (SELECT 1, 2)", select.join("author").onExists(select("1", "2")).sql());
 
-        select = new SelectImpl(ast, "*").from("books").join("author").on(true).innerJoin("sales").onExists(new SelectImpl(ast, "1", "2"));
+        select = select("*").from("books").join("author").on(true).innerJoin("sales").onExists(select("1", "2"));
         assertEquals("SELECT * FROM books JOIN author ON (true) INNER JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
     }
 
     @Test
     void selectFromInnerJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
 
         assertEquals("SELECT id, name FROM books INNER JOIN author ON (true)", select.innerJoin("author").on(true).sql());
 
-        select = new SelectImpl(ast, "*").from("books").innerJoin("author").on(true).join("sales").onExists(new SelectImpl(ast, "1", "2"));
+        select = select("*").from("books").innerJoin("author").on(true).join("sales").onExists(select("1", "2"));
         assertEquals("SELECT * FROM books INNER JOIN author ON (true) JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
     }
 
     @Test
     void selectFromLeftJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books LEFT JOIN author ON (true)", select.leftJoin("author").on(true).sql());
 
-        select = new SelectImpl(ast, "*").from("books").leftJoin("author").on(true).innerJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        select = select("*").from("books").leftJoin("author").on(true).innerJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM books LEFT JOIN author ON (true) INNER JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
     }
 
     @Test
     void selectFromRightJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books RIGHT JOIN author ON (true)", select.rightJoin("author").on(true).sql());
 
-        select = new SelectImpl(ast, "*").from("books").rightJoin("author").on(true).leftJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        select = select("*").from("books").rightJoin("author").on(true).leftJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM books RIGHT JOIN author ON (true) LEFT JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
     }
 
     @Test
     void selectFromFullJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books FULL JOIN author ON (true)", select.fullJoin("author").on(true).sql());
 
-        select = new SelectImpl(ast, "*").from("books").fullJoin("author").on(true).rightJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        select = select("*").from("books").fullJoin("author").on(true).rightJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM books FULL JOIN author ON (true) RIGHT JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
     }
 
     @Test
     void selectFromCrossJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books CROSS JOIN author", select.crossJoin("author").sql());
 
-        SelectJoinStep select1 = new SelectImpl(ast, "*").from("books");
-        select1.crossJoin("author").fullJoin(asName("sales")).onExists(new SelectImpl(ast, "1", "2"));
+        SelectJoinStep select1 = select("*").from("books");
+        select1.crossJoin("author").fullJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM books CROSS JOIN author FULL JOIN sales ON EXISTS (SELECT 1, 2)", select1.sql());
     }
 
     @Test
     void selectFromNaturalJoin() {
-        SelectJoinStep select = new SelectImpl(ast, "id", "name").from("books");
+        SelectJoinStep select = select("id", "name").from("books");
         assertEquals("SELECT id, name FROM books NATURAL JOIN author", select.naturalJoin("author").sql());
 
-        SelectJoinStep select1 = new SelectImpl(ast, "*").from("books");
+        SelectJoinStep select1 = select("*").from("books");
         select1.crossJoin("author").naturalJoin(asName("sales")).crossJoin(asName("calls"));
         assertEquals("SELECT * FROM books CROSS JOIN author NATURAL JOIN sales CROSS JOIN calls", select1.sql());
     }
@@ -211,7 +206,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhere() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .and("id2", "=", "2")
@@ -224,12 +219,12 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM books WHERE \"id\" = 1", sql);
 
         sql = select.from("books")
-           .where(asName("id"), IN, new SelectImpl(ast, "1", "2"))
+           .where(asName("id"), IN, select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id IN (SELECT 1, 2)", sql);
 
         sql = select.from("books")
-           .whereExists(new SelectImpl(ast, "1", "2"))
+           .whereExists(select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE EXISTS (SELECT 1, 2)", sql);
 
@@ -258,7 +253,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereBetween() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where(conditionBetween("id", "1", "2"))
            .sql();
@@ -277,7 +272,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereAnd() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .and("id2", "=", "2")
@@ -298,20 +293,20 @@ class SelectImplTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .and(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .and(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .andExists(new SelectImpl(ast, "1", "2"))
+           .andExists(select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
     void selectFromWhereAndNot() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .andNot("id2", "!=", "2")
@@ -332,20 +327,20 @@ class SelectImplTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .andNot(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .andNot(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .andNotExists(new SelectImpl(ast, "1", "2"))
+           .andNotExists(select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 AND NOT EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
     void selectFromWhereOr() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .or("id2", "=", "2")
@@ -366,20 +361,20 @@ class SelectImplTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .or(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .or(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .orExists(new SelectImpl(ast, "1", "2"))
+           .orExists(select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
     void selectFromWhereOrNot() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .orNot("id2", "=", "2")
@@ -400,20 +395,20 @@ class SelectImplTest {
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .orNot(asQuotedName("id2"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .orNot(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = select.from("books")
            .where("id", "=", "1")
-           .orNotExists(new SelectImpl(ast, "1", "2"))
+           .orNotExists(select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books WHERE id = 1 OR NOT EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
     void selectFromWhereGroup() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("user")
            .where(condition("name", "=", "timur")
               .and("phone", "is", "null")
@@ -442,7 +437,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereAndWhereGroup() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("user")
            .where("id", "=", "1")
            .and(condition("name", "=", "timur")
@@ -461,7 +456,7 @@ class SelectImplTest {
 
     @Test
     void selectFromGroupBy() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .groupBy("id", "name")
            .sql();
@@ -470,7 +465,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupBy() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .groupBy("id")
@@ -484,7 +479,7 @@ class SelectImplTest {
 
     @Test
     void selectFromHaving() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .having("id", "=", "1")
            .and("id2", "=", "2")
@@ -497,12 +492,12 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM books HAVING \"id\" = 1", sql);
 
         sql = select.from("books")
-           .having(asName("id"), IN, new SelectImpl(ast, "1", "2"))
+           .having(asName("id"), IN, select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING id IN (SELECT 1, 2)", sql);
 
         sql = select.from("books")
-           .havingExists(new SelectImpl(ast, "1", "2"))
+           .havingExists(select("1", "2"))
            .sql();
         assertEquals("SELECT id, name FROM books HAVING EXISTS (SELECT 1, 2)", sql);
 
@@ -531,7 +526,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereHaving() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .having(asName("name"), LT, asString("Anna"))
@@ -541,7 +536,7 @@ class SelectImplTest {
 
     @Test
     void selectFromHavingBetween() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .having(conditionBetween("id", "1", "2"))
            .sql();
@@ -560,7 +555,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupByHaving() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .groupBy("id")
@@ -571,7 +566,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupByHavingOrderBy() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .groupBy("id")
@@ -584,7 +579,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupByHavingLimit() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .groupBy("id")
@@ -597,7 +592,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupByHavingOffset() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .groupBy("id")
@@ -613,7 +608,7 @@ class SelectImplTest {
 
     @Test
     void selectFromOrderBy() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .orderBy("id")
            .sql();
@@ -635,7 +630,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupByOrderBy() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .groupBy("id")
@@ -646,7 +641,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereOrderBy() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .orderBy("name")
@@ -667,7 +662,7 @@ class SelectImplTest {
 
     @Test
     void selectFromLimit() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .limit(1)
            .sql();
@@ -677,7 +672,7 @@ class SelectImplTest {
 
     @Test
     void selectFromOrderByLimit() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .orderBy("id")
            .limit(2)
@@ -688,7 +683,7 @@ class SelectImplTest {
 
     @Test
     void selectFromGroupByLimit() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .groupBy("id")
            .limit(2)
@@ -699,7 +694,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereLimit() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .and("id2", "=", "2")
@@ -714,7 +709,7 @@ class SelectImplTest {
 
     @Test
     void selectFromOffset() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .limit(1)
            .sql();
@@ -724,7 +719,7 @@ class SelectImplTest {
 
     @Test
     void selectFromGroupByOffset() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .groupBy("id")
            .limit(1)
@@ -735,7 +730,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereOffset() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .and("id2", "=", "2")
@@ -746,7 +741,7 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereLimitOffset() {
-        SelectFromStep select = new SelectImpl(ast, "id", "name");
+        SelectFromStep select = select("id", "name");
         String sql = select.from("books")
            .where("id", "=", "1")
            .and("id2", "=", "2")
@@ -763,64 +758,64 @@ class SelectImplTest {
 
     @Test
     void selectUnion() {
-        String sql = new SelectImpl(ast, "1", "2").union(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").union(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 UNION SELECT 2, 2", sql);
     }
 
     @Test
     void selectFromUnion() {
-        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        SelectFromStep select = select("1", "2");
         select
            .from("books")
-           .union(new SelectImpl(ast, "2", "2"));
+           .union(select("2", "2"));
         String sql = select.sql();
         assertEquals("SELECT 1, 2 FROM books UNION SELECT 2, 2", sql);
 
-        select = new SelectImpl(ast, "1", "2");
+        select = select("1", "2");
         select
            .from("books")
            .crossJoin("author")
-           .union(new SelectImpl(ast, "2", "2"));
+           .union(select("2", "2"));
         sql = select.sql();
         assertEquals("SELECT 1, 2 FROM books CROSS JOIN author UNION SELECT 2, 2", sql);
 
-        select = new SelectImpl(ast, "1", "2");
+        select = select("1", "2");
         select
            .from("books")
            .join("author").on(true)
-           .union(new SelectImpl(ast, "2", "2"));
+           .union(select("2", "2"));
         sql = select.sql();
         assertEquals("SELECT 1, 2 FROM books JOIN author ON (true) UNION SELECT 2, 2", sql);
     }
 
     @Test
     void selectFromWhereUnion() {
-        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        SelectFromStep select = select("1", "2");
         select
            .from("books")
            .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
-           .union(new SelectImpl(ast, "2", "2"));
+           .union(select("2", "2"));
 
         assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
 
-        select = new SelectImpl(ast, "1", "2");
+        select = select("1", "2");
         select
            .from("books")
            .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .and("name", "IS NOT", null)
-           .union(new SelectImpl(ast, "2", "2"));
+           .union(select("2", "2"));
 
-        assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 AND name IS NOT NULL UNION SELECT 2, 2", select.sql());
+        assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 AND name IS NOT null UNION SELECT 2, 2", select.sql());
     }
 
     @Test
     void selectFromWhereGroupByUnion() {
-        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        SelectFromStep select = select("1", "2");
         select
            .from("books")
            .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .groupBy(asQuotedName("books.id"))
-           .union(new SelectImpl(ast, "2", "2"));
+           .union(select("2", "2"));
 
         String sql = select.sql();
         assertEquals("SELECT 1, 2 FROM books WHERE 'id' BETWEEN 1 AND 2 GROUP BY \"books\".\"id\" UNION SELECT 2, 2", sql);
@@ -828,12 +823,12 @@ class SelectImplTest {
 
     @Test
     void selectFromWhereGroupByUnionOrderBy() {
-        SelectFromStep select = new SelectImpl(ast, "1", "2");
+        SelectFromStep select = select("1", "2");
         select
            .from("books")
            .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
            .groupBy(asQuotedName("books.id"))
-           .union(new SelectImpl(ast, "2", "2"))
+           .union(select("2", "2"))
            .orderBy("id", "DESC");
 
         String sql = select.sql();
@@ -842,13 +837,13 @@ class SelectImplTest {
 
     @Test
     void selectUnionAll() {
-        String sql = new SelectImpl(ast, "1", "2").unionAll(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").unionAll(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 UNION ALL SELECT 2, 2", sql);
     }
 
     @Test
     void selectUnionDistinct() {
-        String sql = new SelectImpl(ast, "1", "2").unionDistinct(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").unionDistinct(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 UNION DISTINCT SELECT 2, 2", sql);
     }
 
@@ -858,19 +853,19 @@ class SelectImplTest {
 
     @Test
     void selectIntersect() {
-        String sql = new SelectImpl(ast, "1", "2").intersect(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").intersect(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 INTERSECT SELECT 2, 2", sql);
     }
 
     @Test
     void selectIntersectAll() {
-        String sql = new SelectImpl(ast, "1", "2").intersectAll(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").intersectAll(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 INTERSECT ALL SELECT 2, 2", sql);
     }
 
     @Test
     void selectIntersectDistinct() {
-        String sql = new SelectImpl(ast, "1", "2").intersectDistinct(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").intersectDistinct(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 INTERSECT DISTINCT SELECT 2, 2", sql);
     }
 
@@ -880,19 +875,19 @@ class SelectImplTest {
 
     @Test
     void selectExcept() {
-        String sql = new SelectImpl(ast, "1", "2").except(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").except(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 EXCEPT SELECT 2, 2", sql);
     }
 
     @Test
     void selectExceptAll() {
-        String sql = new SelectImpl(ast, "1", "2").exceptAll(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").exceptAll(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 EXCEPT ALL SELECT 2, 2", sql);
     }
 
     @Test
     void selectExceptDistinct() {
-        String sql = new SelectImpl(ast, "1", "2").exceptDistinct(new SelectImpl(ast, "2", "2")).sql();
+        String sql = select("1", "2").exceptDistinct(select("2", "2")).sql();
         assertEquals("SELECT 1, 2 EXCEPT DISTINCT SELECT 2, 2", sql);
     }
 
