@@ -4,7 +4,7 @@ include::./../variable.adoc[]
 :example: ../{mainJavaDir}/boot/ServiceRegisterExample.java
 
 [NOTE]
-At first. You should deal bootstrap only when the default {domainDocs}/userguide/settings[settings]
+At first. You should deal bootstrap only when the default {domainDocs}/userguide/settings.html[settings]
 are not suitable for your project.
 
 By default the settings can be derived either in xml file (is named `queryman-builder.xml`)

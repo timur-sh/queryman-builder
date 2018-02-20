@@ -34,6 +34,7 @@ import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asStringList;
+import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionAll;
 import static org.queryman.builder.PostgreSQL.conditionAny;
@@ -41,6 +42,7 @@ import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.conditionSome;
 import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.PostgreSQL.select;
 
 /**
  * @author Timur Shaidullin
@@ -64,6 +66,10 @@ public class ConditionsImplTest {
         Conditions conditions = condition("id", "=", "3");
         assembleAst(conditions);
         assertEquals("WHERE id = 3", ast.toString());
+
+        Conditions conditions1 = condition(asName("id"), EQUAL, asSubQuery(select("max(sum)")).as("sum"));
+        assembleAst(conditions1);
+        assertEquals("WHERE id = (SELECT max(sum)) AS sum", ast.toString());
     }
 
     //----

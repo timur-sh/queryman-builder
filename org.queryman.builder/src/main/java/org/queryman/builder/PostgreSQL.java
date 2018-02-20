@@ -29,6 +29,7 @@ import org.queryman.builder.token.expression.FuncExpression;
 import org.queryman.builder.token.expression.ListExpression;
 import org.queryman.builder.token.expression.ListStringExpression;
 import org.queryman.builder.token.expression.StringExpression;
+import org.queryman.builder.token.expression.SubQueryExpression;
 
 import java.util.Arrays;
 import java.util.List;
@@ -737,6 +738,7 @@ public class PostgreSQL {
      * @param name       - function or operator name, examples: <code>ALL, ANY ...</code>
      * @param expression - list or array expression
      * @return a combine of {@code name} and {@code expression} objects
+     *
      * @see #asArray(Object[])
      * @see #asStringArray(Object[])
      * @see #asList(Object[])
@@ -744,5 +746,45 @@ public class PostgreSQL {
      */
     public static Expression asFunc(String name, Expression expression) {
         return new FuncExpression(name, expression);
+    }
+
+    /**
+     * @param name of function
+     * @param arguments arguments
+     * @return a function with list of arguments
+
+     * @see #asFunc(String, Expression)
+     */
+    public static Expression asFunc(String name, String... arguments) {
+        return asFunc(name, asList(arguments));
+    }
+
+    /**
+     * VALUES list.
+     * Examples:
+     * <code>
+     *     values(asList(1, 2), asList(3, 4)); // VALUES(1, 2), (3, 4)
+     *
+     *     // (VALUES(1, 2), (3, 4)) AS point(x, y)
+     *     values(asList(1, 2), asList(3, 4)).as("point", "x", "y");
+     * </code>
+     *
+     *
+     * @param expressions list of expressions
+     * @return VALUES expression
+     *
+     * @see #asList(Object[])
+     * @see #asStringList(Object[])
+     */
+    public static Expression values(Expression... expressions) {
+       return new FuncExpression("VALUES", expressions);
+    }
+
+    /**
+     * @param query subquery
+     * @return a subquery expression
+     */
+    public static Expression asSubQuery(Query query) {
+        return new SubQueryExpression(query);
     }
 }

@@ -1,0 +1,56 @@
+=== Expressions
+
+include::./../variable.adoc[]
+:example: ../{mainJavaDir}/PostgreSQLExamples.java
+
+The expression are used in a variety context and by almost all of clauses, like
+output list in SELECT clause, table name or subquery in FROM clause, WHERE clause operates
+scalar, row, subquery expressions etc in its own conditions.
+
+Expression can represent:
+
+* link:#constant[a constant (numeric, string, dollar-string etc.)]
+* link:#column-reference[a column reference]
+* link:#array[an array constructor]
+* link:#list[a list]
+* link:#subquery[a subquery expression]
+* link:#function-calls[a function calls]
+
+[[constant]]
+====  Constant (numeric, string, dollar-string etc.)
+Examples of constant expressions:
+[source,java]
+include::{example}[tag=constant]
+
+
+[[column-reference]]
+==== Column reference
+[source,java]
+include::{example}[tag=column-reference]
+
+[[array]]
+==== Array constructor
+[source,java]
+include::{example}[tag=array]
+
+[source,java]
+include::{example}[tag=array-expression]
+
+
+[[list]]
+==== List constructor
+[source,java]
+include::{example}[tag=list]
+
+[source,java]
+include::{example}[tag=list-expression]
+
+[[subquery]]
+==== Subquery
+[source,java]
+include::{example}[tag=query]
+
+[[function-calls]]
+==== Function calls
+[source,java]
+include::{example}[tag=func]

@@ -165,6 +165,13 @@ class ExpressionTest {
     @Test
     void aliasTest() {
         assertEquals("books AS b", asName("books").as("b").getName());
-        assertEquals("books AS b(id, name)", asName("books").as("b", "id", "name").getName());
+    }
+
+    @Test
+    void valuesTest() {
+        Expression values = PostgreSQL.values(asList(1, 2), asList(3, 4));
+
+        assertEquals("VALUES(1, 2), (3, 4)", values.getName());
+        assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", values.as("point", "x", "y").getName());
     }
 }

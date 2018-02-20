@@ -30,7 +30,7 @@ public class ServiceRegisterExample {
 
         // Change the name of properties configuration file.
         serviceRegister.getMetadataBuilder()
-           .setXmlCfg("another-settings.properties");
+           .setPropertiesCfg("another-settings.properties");
         //end::change-xml-file[]
 
         //tag::get-tree-factory[]

@@ -36,7 +36,7 @@ public abstract class Expression extends AbstractToken {
     /**
      * Alias of expression.
      */
-    private String outputName;
+    protected String outputName;
 
     /**
      * Column aliases of derived table.
@@ -63,7 +63,7 @@ public abstract class Expression extends AbstractToken {
 
         if (columns != null) {
             if (columns.length == 0)
-                return "()";
+                builder.append("()");
             else {
                 String[] result = new String[columns.length];
 

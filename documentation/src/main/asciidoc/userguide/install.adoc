@@ -4,12 +4,12 @@ include::./../variable.adoc[]
 
 By Gradle:
 [source, subs="attributes"]
-compile group: 'org.queryman', name: 'queryman-builder', version: '{version}'
+compile group: 'org.queryman', name: 'builder', version: '{version}'
 
 By Maven
 [source,xml,subs="verbatim,attributes"]
 <dependency>
     <groupId>org.queryman</groupId>
-    <artifactId>queryman-builder</artifactId>
+    <artifactId>builder</artifactId>
     <version>{version}</version>
 </dependency>

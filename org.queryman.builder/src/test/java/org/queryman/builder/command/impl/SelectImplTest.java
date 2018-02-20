@@ -12,8 +12,10 @@ import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.NE2;
 import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
+import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
@@ -31,8 +33,11 @@ class SelectImplTest {
 
         assertEquals("SELECT id, name", select.sql());
 
-        SelectFromStep select2 = select(asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
-        assertEquals("SELECT \"id2\", \"name\", min(price) as min", select2.sql());
+        SelectFromStep select2 = select(asQuotedName("id2"), asQuotedName("name"), asFunc("min", asName("price")).as("min"));
+        assertEquals("SELECT \"id2\", \"name\", min(price) AS min", select2.sql());
+
+        SelectFromStep select3 = select(asQuotedName("id2"), asSubQuery(select("max(sum)")).as("sum"));
+        assertEquals("SELECT \"id2\", (SELECT max(sum)) AS sum", select3.sql());
     }
 
     @Test
