@@ -2,4 +2,8 @@
 
 include::./../preface.adoc[]
 
-include::./chapters/bootstrap.adoc[]
+include::./install.adoc[]
+
+include::./bootstrap.adoc[]
+
+include::./settings.adoc[]

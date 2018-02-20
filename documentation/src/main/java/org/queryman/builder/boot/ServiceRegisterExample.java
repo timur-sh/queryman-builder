@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.boot;
 
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.boot.Metadata;
 import org.queryman.builder.boot.MetadataBuilder;
 import org.queryman.builder.boot.MetadataBuilderImpl;
@@ -23,14 +24,18 @@ public class ServiceRegisterExample {
         //end::simple-register[]
 
         //tag::change-xml-file[]
+        // Change the name of xml configuration file.
         serviceRegister.getMetadataBuilder()
-           .setXmlCfg("/etc/queryman/builder.xml");
+           .setXmlCfg("another-settings.xml");
+
+        // Change the name of properties configuration file.
+        serviceRegister.getMetadataBuilder()
+           .setXmlCfg("another-settings.properties");
         //end::change-xml-file[]
 
-        //tag::change-properties-file[]
-        serviceRegister.getMetadataBuilder()
-           .setXmlCfg("/etc/queryman/builder.properties");
-        //end::change-properties-file[]
+        //tag::get-tree-factory[]
+        PostgreSQL.setTreeFactory(serviceRegister.treeFactory());
+        //end::get-tree-factory[]
 
 
         //tag::custom-metadata[]

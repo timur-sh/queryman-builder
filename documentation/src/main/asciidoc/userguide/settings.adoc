@@ -1,0 +1,7 @@
+=== Settings
+
+include::./../variable.adoc[]
+
+This chapter covers settings descriptions.
+
+
