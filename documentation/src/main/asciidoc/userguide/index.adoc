@@ -3,6 +3,7 @@
 :toclevels: 3
 :sectanchors:
 
+:numbered:
 
 include::./../preface.adoc[]
 
@@ -22,5 +23,7 @@ statements, as an ease-to-use methods to build an auxiliary clauses such as `FRO
  any expressions etc.
 
 include::./expressions.adoc[]
+
+include::./conditions.adoc[]
 
 include::./select.adoc[]

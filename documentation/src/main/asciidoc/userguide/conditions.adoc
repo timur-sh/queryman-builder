@@ -1,0 +1,6 @@
+[[conditions]]
+=== Conditions
+
+include::./../variable.adoc[]
+:example: ../{mainJavaDir}/Conditions.java
+

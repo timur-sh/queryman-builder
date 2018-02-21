@@ -466,6 +466,12 @@ class SelectImplTest {
            .groupBy("id", "name")
            .sql();
         assertEquals("SELECT id, name FROM book GROUP BY id, name", sql);
+
+        select = select("id", "name");
+        sql = select.from("book")
+           .groupBy(asFunc("ROLLUP", "id", "name"), asFunc("CUBE", "id", "name"))
+           .sql();
+        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name)", sql);
     }
 
     @Test

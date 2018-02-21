@@ -7,13 +7,16 @@
 package org.queryman.builder;
 
 
+import org.queryman.builder.command.select.SelectFromStep;
+
 import static org.queryman.builder.PostgreSQL.*;
+import static org.queryman.builder.PostgreSQL.select;
 
 /**
  * @author Timur Shaidullin
  */
 public class Select {
-    void select() {
+    void selectTest() {
         //tag::simple-select[]
         PostgreSQL.select("id", "name")
            .from("books", "author")
@@ -33,5 +36,23 @@ public class Select {
            .offset(10)
            .sql();
         //end::simple-select2[]
+    }
+
+    void selectGroupBy() {
+        //tag::select-group[]
+        // SELECT id, name FROM book GROUP BY id, name
+        select("id", "name")
+           .from("book")
+           .groupBy("id", "name")
+           .sql();
+        //end::select-group[]
+
+        //tag::select-group2[]
+        // SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name)
+        select("id", "name")
+           .from("book")
+           .groupBy(asOperator("ROLLUP", "id", "name"), asOperator("CUBE", "id", "name"))
+           .sql();
+        //end::select-group2[]
     }
 }

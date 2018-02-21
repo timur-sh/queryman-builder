@@ -767,6 +767,45 @@ public class PostgreSQL {
     }
 
     /**
+     * This is a synonym of {@link #asFunc(String, Expression)}.
+     *
+     * Examples:
+     * <code>
+     * asOperator("ALL", asArray(List.of(1, 2)));  // ALL(ARRAY[1, 2])
+     * asOperator("SOME", asList(1, 2)); // SOME(1, 2)
+     * </code>
+     *
+     * @param name       - function or operator name, examples: <code>ALL, ANY ...</code>
+     * @param expression - list or array expression
+     * @return a combine of {@code name} and {@code expression} objects
+     *
+     * @see #asArray(Object[])
+     * @see #asStringArray(Object[])
+     * @see #asList(Object[])
+     * @see #asStringList(List)
+     *
+     * @see #asFunc(String, Expression)
+     */
+    public static Expression asOperator(String name, Expression expression) {
+        return new FuncExpression(name, expression);
+    }
+
+    /**
+     * This is a synonym of {@link #asFunc(String, Object[])}.
+     *
+     * @param name of function
+     * @param arguments arguments
+     * @return a function with list of arguments
+
+     * @see #asOperator(String, Expression)
+     */
+    @SafeVarargs
+    public static <T> Expression asOperator(String name, T... arguments) {
+        String[] args = Arrays.stream(arguments).map(String::valueOf).toArray(String[]::new);
+        return asFunc(name, asList(args));
+    }
+
+    /**
      * VALUES list.
      * Examples:
      * <code>

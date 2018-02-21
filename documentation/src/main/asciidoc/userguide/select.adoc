@@ -1,3 +1,53 @@
 [[select]]
 == SELECT statement
 
+include::./../variable.adoc[]
+:example: ../{mainJavaDir}/Select.java
+
+link:https://www.postgresql.org/docs/9.6/static/sql-select.html[SELECT command (PostgreSQL)]
+
+Synopsis:
+```
+SELECT [ ALL | DISTINCT [ ON ( expression [, ...] ) ] ]
+    [ * | expression [ [ AS ] output_name ] [, ...] ]
+    [ FROM from_item [, ...] ]
+    [ WHERE condition ]
+    [ GROUP BY grouping_element [, ...] ]
+    [ HAVING condition [, ...] ]
+    [ { UNION | INTERSECT | EXCEPT } [ ALL | DISTINCT ] select ]
+    [ ORDER BY expression [ ASC | DESC | USING operator ] [ NULLS { FIRST | LAST } ] [, ...] ]
+    [ LIMIT { count | ALL } ]
+    [ OFFSET start [ ROW | ROWS ] ]
+
+where from_item can be one of:
+
+    [ ONLY ] table_name [ * ] [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+                [ TABLESAMPLE sampling_method ( argument [, ...] ) [ REPEATABLE ( seed ) ] ]
+    from_item [ NATURAL ] join_type from_item [ ON join_condition | USING ( join_column [, ...] ) ]
+
+and grouping_element can be one of:
+
+    ( )
+    expression
+    ( expression [, ...] )
+    ROLLUP ( { expression | ( expression [, ...] ) } [, ...] )
+    CUBE ( { expression | ( expression [, ...] ) } [, ...] )
+    GROUPING SETS ( grouping_element [, ...] )
+
+```
+
+Above synopsis shows clauses are implemented by Queryman Builder for SELECT statement.
+This chapter is presenting examples of using these clauses.
+
+=== WHERE
+
+=== GROUP BY
+The simple use the GROUP BY clause:
+[source,java]
+include::{example}[tag=select-group]
+
+PostgreSQL provides more complex grouping operators such as `ROLLUP`, `CUBE`,
+and `GROUPING SETS`. You can use this operators in Queryman alongside `asOperator`
+passing them into `groupBy` methods as shown below.
+[source,java]
+include::{example}[tag=select-group2]

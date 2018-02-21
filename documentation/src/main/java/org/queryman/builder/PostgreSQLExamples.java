@@ -12,6 +12,7 @@ import static org.queryman.builder.PostgreSQL.asDollarString;
 import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
+import static org.queryman.builder.PostgreSQL.asOperator;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.select;
@@ -133,7 +134,7 @@ public class PostgreSQLExamples {
         //tag::exists-query[]
         // SELECT EXISTS(SELECT * FROM book) AS exists
         select(
-           asFunc("EXISTS", asSubQuery(select("*").from("book"))).as("exists")
+           asOperator("EXISTS", asSubQuery(select("*").from("book"))).as("exists")
         );
         //end::exists-query[]
     }

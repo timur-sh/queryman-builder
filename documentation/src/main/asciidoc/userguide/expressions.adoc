@@ -101,7 +101,7 @@ Examples of function expression:
 include::{example}[tag=func]
 ```
 
-=== Extending expression
+==== Extending expression
 
 You may easily add your own expression implementation by extending the
 `org.queryman.builder.token.Expressing` class.
