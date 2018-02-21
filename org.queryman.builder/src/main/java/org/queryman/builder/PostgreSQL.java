@@ -31,6 +31,7 @@ import org.queryman.builder.token.expression.ListStringExpression;
 import org.queryman.builder.token.expression.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,15 +76,19 @@ public class PostgreSQL {
      * SELECT statement.
      * Example:
      * <code>
-     *     select("id", "name"); // SELECT id, name
+     *     select("id", "name", 3); // SELECT id, name, 3
      * </code>
      *
      * @param columns output columns
      *
      * @return select instance
      */
-    public static SelectFromStep select(String... columns) {
-        return select(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+    @SafeVarargs
+    public static <T> SelectFromStep select(T... columns) {
+        return select(Arrays.stream(columns)
+           .map(v -> PostgreSQL.asName(String.valueOf(v)))
+           .toArray(Expression[]::new)
+        );
     }
 
     /**
@@ -755,8 +760,10 @@ public class PostgreSQL {
 
      * @see #asFunc(String, Expression)
      */
-    public static Expression asFunc(String name, String... arguments) {
-        return asFunc(name, asList(arguments));
+    @SafeVarargs
+    public static <T> Expression asFunc(String name, T... arguments) {
+        String[] args = Arrays.stream(arguments).map(String::valueOf).toArray(String[]::new);
+        return asFunc(name, asList(args));
     }
 
     /**

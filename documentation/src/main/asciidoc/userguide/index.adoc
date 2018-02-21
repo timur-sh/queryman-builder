@@ -1,4 +1,8 @@
 = User guide
+:toc2:
+:toclevels: 3
+:sectanchors:
+
 
 include::./../preface.adoc[]
 
@@ -8,6 +12,7 @@ include::./bootstrap.adoc[]
 
 include::./settings.adoc[]
 
+[[domain]]
 == Domain
 
 === Introduction

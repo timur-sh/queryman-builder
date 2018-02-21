@@ -10,15 +10,16 @@ import org.queryman.builder.utils.StringUtils;
 
 /**
  * PostgreSQL expressions:
- *
+ * <p>
  * <ul>
- *     <li>String</li>
- *     <li>Dollar string</li>
- *     <li>Constant</li>
- *     <li>List</li>
- *     <li>Array</li>
+ * <li>String</li>
+ * <li>Dollar string</li>
+ * <li>Constant</li>
+ * <li>List</li>
+ * <li>Array</li>
  * </ul>
  *
+ * @author Timur Shaidullin
  * @see org.queryman.builder.token.expression.ArrayExpression
  * @see org.queryman.builder.token.expression.ArrayStringExpression
  * @see org.queryman.builder.token.expression.ColumnReferenceExpression
@@ -28,15 +29,21 @@ import org.queryman.builder.utils.StringUtils;
  * @see org.queryman.builder.token.expression.ListExpression
  * @see org.queryman.builder.token.expression.ListStringExpression
  * @see org.queryman.builder.token.expression.StringExpression
- *
- * @author Timur Shaidullin
  */
-public abstract class Expression extends AbstractToken {
+public abstract class Expression extends AbstractToken
+   implements
+   ExpressionAsStep,
+   ExpressionCastStep {
 
     /**
      * Alias of expression.
      */
     protected String outputName;
+
+    /**
+     * Specified a type for explicitly casting.
+     */
+    private String castType;
 
     /**
      * Column aliases of derived table.
@@ -61,6 +68,9 @@ public abstract class Expression extends AbstractToken {
                .append(outputName)
                ;
 
+        if (castType != null)
+            builder.append("::").append(castType);
+
         if (columns != null) {
             if (columns.length == 0)
                 builder.append("()");
@@ -83,11 +93,19 @@ public abstract class Expression extends AbstractToken {
         return StringUtils.isEmpty(name);
     }
 
+    @Override
+    public final Expression cast(String type) {
+        this.castType = type;
+        return this;
+    }
+
+    @Override
     public final Expression as(String alias) {
         this.outputName = alias;
         return this;
     }
 
+    @Override
     public final Expression as(String alias, String... columns) {
         as(alias);
 

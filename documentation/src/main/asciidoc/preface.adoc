@@ -1,3 +1,4 @@
+[[preface]]
 == Preface
 include::variable.adoc[]
 
@@ -10,3 +11,6 @@ Queryman Builder provides a simple SQL builder for PostgreSQL databases.
 [source, java]
 include::{selectExamples}[tag=simple-select]
 
+Or
+[source, java]
+include::{selectExamples}[tag=simple-select2]

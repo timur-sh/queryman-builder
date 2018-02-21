@@ -53,6 +53,9 @@ public class FuncExpression extends Expression {
             else
                 return "(" + name + result + ")";
 
+        } else if (expression instanceof SubQueryExpression) {
+            return String.join("", name, result);
+
         } else if (expression instanceof ListExpression || expression instanceof ListStringExpression)
             return String.join("", name, result);
 

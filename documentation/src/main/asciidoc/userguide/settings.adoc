@@ -1,4 +1,5 @@
-=== Settings
+[[settings]]
+== Settings
 
 include::./../variable.adoc[]
 

@@ -16,6 +16,8 @@ import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asStringArray;
 import static org.queryman.builder.PostgreSQL.asStringList;
 import static org.queryman.builder.PostgreSQL.asFunc;
+import static org.queryman.builder.PostgreSQL.asSubQuery;
+import static org.queryman.builder.PostgreSQL.select;
 
 class ExpressionTest {
     @Test
@@ -140,6 +142,8 @@ class ExpressionTest {
 
         String[] numbers = { "1", "2" };
         assertEquals("ARRAY[1, 2]", asArray(numbers).getName());
+        assertEquals("ARRAY[1, 2]::bigint[]", asArray(numbers).cast("bigint[]").getName());
+        assertEquals("ARRAY[1, 2]::bigint[]", asArray(numbers).cast("bigint[]").getName());
         assertEquals("ARRAY[1, 2]", asArray(List.of(numbers)).getName());
         assertEquals("ARRAY[1, 2]", asArray(List.of(1, 2)).getName());
         assertEquals("ARRAY[]", asArray().getName());
@@ -164,7 +168,7 @@ class ExpressionTest {
 
     @Test
     void aliasTest() {
-        assertEquals("books AS b", asName("books").as("b").getName());
+        assertEquals("book AS b", asName("book").as("b").getName());
     }
 
     @Test
@@ -173,5 +177,15 @@ class ExpressionTest {
 
         assertEquals("VALUES(1, 2), (3, 4)", values.getName());
         assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", values.as("point", "x", "y").getName());
+    }
+
+    @Test
+    void existsTest() {
+        String sql =select(
+           asFunc("EXISTS", asSubQuery(select("*").from("book"))).as("exists")
+        ).sql();
+
+        assertEquals("SELECT EXISTS(SELECT * FROM book) AS exists", sql);
+
     }
 }

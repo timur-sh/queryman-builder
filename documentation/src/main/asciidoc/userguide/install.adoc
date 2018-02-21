@@ -1,5 +1,5 @@
-
-=== Install
+[[install]]
+== Install
 include::./../variable.adoc[]
 
 By Gradle:

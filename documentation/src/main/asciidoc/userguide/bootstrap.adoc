@@ -1,4 +1,5 @@
-=== Bootstrap
+[[bootstrap]]
+== Bootstrap
 
 include::./../variable.adoc[]
 :example: ../{mainJavaDir}/boot/ServiceRegisterExample.java

@@ -1,56 +1,107 @@
+[[expressions]]
 === Expressions
 
 include::./../variable.adoc[]
 :example: ../{mainJavaDir}/PostgreSQLExamples.java
 
-The expression are used in a variety context and by almost all of clauses, like
+The expression are used in a variety context, almost by all of clauses, like
 output list in SELECT clause, table name or subquery in FROM clause, WHERE clause operates
 scalar, row, subquery expressions etc in its own conditions.
 
-Expression can represent:
+`PostgreSQL` provides a convenient methods creating an any expressions. Some examples
+described below.
+
+There are common methods that are implemented by each expression. The expression may have
+an alias:
+[source,java]
+include::{example}[tag=alias]
+
+Also you can explicitly casting the expression to particular type:
+[source,java]
+include::{example}[tag=cast]
+
+Expression can be leveraged by other expressions creating a more complex expression:
+[source,java]
+include::{example}[tag=leverage]
+
+Expression are implemented in `PostgreSQL`:
 
 * link:#constant[a constant (numeric, string, dollar-string etc.)]
 * link:#column-reference[a column reference]
-* link:#array[an array constructor]
 * link:#list[a list]
+* link:#array[an array constructor]
 * link:#subquery[a subquery expression]
 * link:#function-calls[a function calls]
 
 [[constant]]
 ====  Constant (numeric, string, dollar-string etc.)
-Examples of constant expressions:
+Actually, here, the constant expression is a kind of expressions that do not
+require additional handling. Exception of these are string and dollar string expressions.
+
+Some of examples of constant expressions are:
 [source,java]
 include::{example}[tag=constant]
 
 
 [[column-reference]]
 ==== Column reference
+Examples of column reference expression:
 [source,java]
 include::{example}[tag=column-reference]
 
+
+[[list]]
+==== List constructor
+The list constructor takes arguments and builds them into PostgreSQL's list
+compatible form. The PostgreSQL's list is a values are separated by comma,
+then the got value is surrounded by parentheses
+
+[source,java]
+include::{example}[tag=list]
+
+The other expressions can be used by `asList` expression.
+[source,java]
+include::{example}[tag=list-expression]
+
+Even `asList` expression can used by other expressions. For example, the `list`
+expression is used by link:#function-calls[`function calls`]
+
+
 [[array]]
 ==== Array constructor
+The described above rules are applicable for the ARRAY expression too, except
+the last step. The formatted value from the previous step is surrounded by
+square brackets, then preceded by ARRAY keyword.
 [source,java]
 include::{example}[tag=array]
 
 [source,java]
 include::{example}[tag=array-expression]
 
-
-[[list]]
-==== List constructor
-[source,java]
-include::{example}[tag=list]
-
-[source,java]
-include::{example}[tag=list-expression]
-
 [[subquery]]
 ==== Subquery
+Subquery are used in a variety statements. Its common using is:
 [source,java]
 include::{example}[tag=query]
 
+SELECT clause using subquery:
+[source,java]
+include::{example}[tag=select-query]
+
+EXISTS clause using subquery:
+[source,java]
+include::{example}[tag=exists-query]
+
+
 [[function-calls]]
 ==== Function calls
+Examples of function expression:
 [source,java]
+```
 include::{example}[tag=func]
+```
+
+=== Extending expression
+
+You may easily add your own expression implementation by extending the
+`org.queryman.builder.token.Expressing` class.
