@@ -13,6 +13,7 @@ import org.queryman.builder.token.Operator;
 
 /**
  * The first step of having condition.
+ * HAVING eliminates group rows that do not satisfy condition.
  *
  * @author Timur Shaidullin
  */
@@ -23,12 +24,30 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
     SelectHavingStep having(String left, String operator, String right);
 
     /**
-     * HAVING eliminates group rows that do not satisfy condition.
      */
     SelectHavingStep having(Expression left, Operator operator, Expression right);
 
     /**
-     * HAVING eliminates group rows that do not satisfy condition.
+     * Subquery condition.
+     * Example:
+     * <code>
+     *
+     * // SELECT price FROM book ... HAVING price <= (SELECT MAX(total) FROM order)
+     * select("price")
+     *  .from("book")
+     *  ...
+     *  .having(asName("price"), operator("<="), select(max("total")).from("order"))
+     *  .sql()
+     * </code>
+     *
+     * @param field field
+     * @param operator operator
+     * @param query subquery
+     * @return itself
+     *
+     * @see org.queryman.builder.PostgreSQL#max(String)
+     * @see org.queryman.builder.PostgreSQL#asName(String)
+     * @see org.queryman.builder.PostgreSQL#operator(String)
      */
     SelectHavingStep having(Expression field, Operator operator, Query query);
 

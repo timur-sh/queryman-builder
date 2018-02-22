@@ -14,10 +14,21 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
 /**
- * It supplies a search condition.
+ * This supplies a search condition.
+ * Conditions are used in different context, some of usual examples:
+ * <ul>
+ *     <li>SELECT .. FROM .. JOIN  .. ON <i>conditions</i></li>
+ *     <li>SELECT .. WHERE <i>conditions</i></li>
+ *     <li>SELECT .. HAVING <i>conditions</i></li>
+ *     <li>DELETE .. WHERE <i>conditions</i></li>
+ *     <li>UPDATE .. WHERE <i>conditions</i></li>
+ * </ul>
  *
- * {@link Conditions} must be used only as a part of query: {@code SELECT},
- * {@code UPDATE} etc.
+ * Each condition is built from operands and operator returning a boolean type
+ * value (=, !=, IN, IS, IS NOT etc). Internally, any operand is being a {@link Expression}
+ * object. And operator is being {@link Operator} object. For convenience sake
+ * it's possible to use a {@code String} representation of them, which will
+ * convert into needful type.
  *
  * Example:
  * <p><code>
@@ -27,52 +38,70 @@ import org.queryman.builder.token.Operator;
  *       .and("gender", "!=", "male")
  *       .or("code", "=", "3")
  *    );
+ * </code></p>
  *
+ * Conditions can be grouped:
+ * <p><code>
+ * // "id" = 1 AND (users.name = 'Alan' AND gender != 'male' OR code = 3)
  * PostgreSQL.conditions(asQuotedName("id"), operator("="), asNumber("1"))
- *    .and(asQualifiedName("users.name"), "=", asString("Alan"))
- *    .and(condition(asQualifiedName("users.age"), ">", "29")
+ *    .and(asName("users.name"), "=", asString("Alan")
  *       .and(asName("gender"), "!=", asString("male"))
  *       .or(asName("code"), "=", asNumber("3"))
  *    );
  * </code></p>
  *
  *
- * @see org.queryman.builder.PostgreSQL#asName(String)
- * @see org.queryman.builder.PostgreSQL#asConstant(String)
- * @see org.queryman.builder.PostgreSQL#asQuotedName(String)
+ * See conditions' methods in {@link org.queryman.builder.PostgreSQL}:
+ * @see org.queryman.builder.PostgreSQL#condition(Expression, Operator, Expression)
  *
  * @author Timur Shaidullin
  */
 public interface Conditions extends AstVisitor {
     /**
-     * {@code AND} condition.
-     *
      * Example:
-     * <p>
-     * conditions.and("id", "=", "1")
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND id = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .and("id", "=", "1")
+     *  .sql()
+     * </code>
      */
     Conditions and(String leftField, String operator, String rightField);
 
     /**
-     * {@code AND} condition.
-     *
      * Example:
-     * <p>
-     * conditions.and(asName("id"), operator("="), asNumber("1"))
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND id = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .and(asName("id"), operator("="), asNumber(1))
+     *  .sql()
+     * </code>
      */
     Conditions and(Expression leftField, Operator operator, Expression rightField);
 
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
      * Example:
-     * AND name IN (select name from authors)
-     * conditions(asName("name"), Operators.IN, select("name").from("authors"))
+     * <code>
      *
-     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     * // SELECT * FROM book WHERE year > 2010 AND author_id IN (SELECT id FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .and(asName("author_id"), IN, select("id").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param field field
+     * @param operator operator
+     * @param query subquery
+     * @return itself
+     *
+     * @see org.queryman.builder.Operators#IN
      */
     Conditions and(Expression field, Operator operator, Query query);
 
@@ -118,10 +147,22 @@ public interface Conditions extends AstVisitor {
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
      * Example:
-     * andNot name IN (select name from authors)
-     * andNot(asName("name"), Operators.IN, select("name").from("authors"))
+     * <code>
      *
-     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     * // SELECT * FROM book WHERE year > 2010 AND NOT author_id IN (SELECT id FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andNot(asName("author_id"), IN, select("id").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param field field
+     * @param operator operator
+     * @param query subquery
+     * @return itself
+     *
+     * @see org.queryman.builder.Operators#IN
      */
     Conditions andNot(Expression field, Operator operator, Query query);
 
@@ -166,11 +207,22 @@ public interface Conditions extends AstVisitor {
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
      * Example:
-     * OR NOT name IN (select name from authors)
-     * orNot(asName("name"), Operators.IN, select("name").from("authors"))
+     * <code>
      *
-     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     * // SELECT * FROM book WHERE year > 2010 OR author_id IN (SELECT id FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .or(asName("author_id"), IN, select("id").from("author"))
+     *  .sql()
+     * </code>
      *
+     * @param field field
+     * @param operator operator
+     * @param query subquery
+     * @return itself
+     *
+     * @see org.queryman.builder.Operators#IN
      */
     Conditions or(Expression field, Operator operator, Query query);
 
@@ -215,11 +267,22 @@ public interface Conditions extends AstVisitor {
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
      * Example:
-     * OR NOT name IN (select name from authors)
-     * orNot(asName("name"), Operators.IN, select("name").from("authors"))
+     * <code>
      *
-     * @see org.queryman.builder.command.impl.ConditionsImpl#ConditionsImpl(Expression, NodeMetadata, Query)
+     * // SELECT * FROM book WHERE year > 2010 OR NOT author_id IN (SELECT id FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orNot(asName("author_id"), IN, select("id").from("authors"))
+     *  .sql()
+     * </code>
      *
+     * @param field field
+     * @param operator operator
+     * @param query subquery
+     * @return itself
+     *
+     * @see org.queryman.builder.Operators#IN
      */
     Conditions orNot(Expression field, Operator operator, Query query);
 

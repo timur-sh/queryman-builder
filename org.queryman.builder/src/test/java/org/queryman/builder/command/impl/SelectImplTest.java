@@ -21,6 +21,7 @@ import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.fromOnly;
+import static org.queryman.builder.PostgreSQL.max;
 import static org.queryman.builder.PostgreSQL.select;
 import static org.queryman.builder.PostgreSQL.selectAll;
 import static org.queryman.builder.PostgreSQL.selectDistinct;
@@ -38,6 +39,8 @@ class SelectImplTest {
 
         SelectFromStep select3 = select(asQuotedName("id2"), asSubQuery(select("max(sum)")).as("sum"));
         assertEquals("SELECT \"id2\", (SELECT max(sum)) AS sum", select3.sql());
+
+        assertEquals("SELECT MAX(total) FROM order", select(max("total")).from("order").sql());
     }
 
     @Test

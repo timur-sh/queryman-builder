@@ -24,6 +24,30 @@ public interface SelectJoinOnStep extends SelectWhereFirstStep {
 
     SelectJoinOnStepsStep on(Expression left, Operator operator, Expression right);
 
+    /**
+     * Subquery condition.
+     * Example:
+     * <code>
+     *
+     * // SELECT price FROM book JOIN order ON total < (SELECT MAX(price) FROM book)
+     *
+     * select("price")
+     *  .from("book")
+     *  .join("order")
+     *  .on(asName("total"), operator("<"), select(max("price")).from("book"))
+     *  .sql()
+     * </code>
+     *
+     * @param field field
+     * @param operator operator
+     * @param query subquery
+     * @return itself
+     *
+     * @see org.queryman.builder.Operators#GTE
+     * @see org.queryman.builder.PostgreSQL#max(String)
+     * @see org.queryman.builder.PostgreSQL#asName(String)
+     * @see org.queryman.builder.PostgreSQL#operator(String)
+     */
     SelectJoinOnStepsStep on(Expression field, Operator operator, Query query);
 
     SelectJoinOnStepsStep on(Conditions conditions);

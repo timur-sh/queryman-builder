@@ -320,7 +320,7 @@ public class PostgreSQL {
      * @param operator operator
      * @param query    right operand
      * @return {@link Conditions}
-     * @see #select(String...)
+
      * @see Operators#IN
      */
     public static Conditions condition(Expression field, Operator operator, Query query) {
@@ -339,14 +339,14 @@ public class PostgreSQL {
      * @param operator operator
      * @param query    right operand
      * @return {@link Conditions}
-     * @see #select(String...)
+     * @see #select(Object[])
      */
     public static Conditions condition(String field, String operator, Query query) {
         return condition(asName(field), Operators.map(operator), query);
     }
 
     /**
-     * Create a condition.
+     * Creates a condition.
      * Example:
      * <code>
      * conditionExists(select(1, 2)); // EXISTS (SELECT 1, 2);
@@ -360,10 +360,10 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a condition.
+     * Creates a condition.
      * Example:
      * <code>
-     * conditionSome(asName("id"), operator("="), select(1, 2)); // id = SOME (SELECT 1, 2);
+     * conditionSome(asName("id"), operator("="), select(1)); // id = SOME (SELECT 1);
      * </code>
      *
      * @param field    left operand
@@ -426,7 +426,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a condition.
+     * Creates a condition.
      * Example:
      * <code>
      * conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
@@ -443,7 +443,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a condition.
+     * Creates a condition.
      * Example:
      * <code>
      * conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
@@ -751,6 +751,19 @@ public class PostgreSQL {
      */
     public static Expression asFunc(String name, Expression expression) {
         return new FuncExpression(name, expression);
+    }
+    /**
+     * Examples:
+     * <code>
+     * max("price");  // MAX("price")
+     * </code>
+     *
+     * @param field field
+     * @return an aggregate functions
+     *
+     */
+    public static Expression max(String field) {
+        return new FuncExpression("MAX", asName(field));
     }
 
     /**

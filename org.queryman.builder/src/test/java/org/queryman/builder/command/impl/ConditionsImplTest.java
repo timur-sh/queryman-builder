@@ -43,6 +43,7 @@ import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.conditionSome;
 import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.PostgreSQL.values;
 
 /**
  * @author Timur Shaidullin
@@ -227,33 +228,37 @@ public class ConditionsImplTest {
 
     @Test
     void conditionExistsTest() {
-        Conditions conditions = conditionExists(new SelectImpl(ast, "1", "2"));
+        Conditions conditions = conditionExists(select("1"));
         assembleAst(conditions);
-        assertEquals("WHERE EXISTS (SELECT 1, 2)", ast.toString());
+        assertEquals("WHERE EXISTS (SELECT 1)", ast.toString());
 
-        conditions.andExists(new SelectImpl(ast, "id", "name")
+        conditions = conditionExists(select("1"));
+        assembleAst(conditions);
+        assertEquals("WHERE EXISTS (SELECT 1)", ast.toString());
+
+        conditions.andExists(select("id", "name")
            .from("user")
            .where("id", "=", "1"));
         assembleAst(conditions);
-        assertEquals("WHERE EXISTS (SELECT 1, 2) AND EXISTS (SELECT id, name FROM user WHERE id = 1)", ast.toString());
+        assertEquals("WHERE EXISTS (SELECT 1) AND EXISTS (SELECT id, name FROM user WHERE id = 1)", ast.toString());
 
-        conditions = conditionExists(new SelectImpl(ast, "1", "2"))
-           .andNotExists(new SelectImpl(ast, "id", "name").from("user"));
+        conditions = conditionExists(select("1"))
+           .andNotExists(select("id", "name").from("user"));
         assembleAst(conditions);
-        assertEquals("WHERE EXISTS (SELECT 1, 2) AND NOT EXISTS (SELECT id, name FROM user)", ast.toString());
+        assertEquals("WHERE EXISTS (SELECT 1) AND NOT EXISTS (SELECT id, name FROM user)", ast.toString());
 
-        conditions = conditionExists(new SelectImpl(ast, "1", "2"))
-           .orExists(new SelectImpl(ast, "id", "name").from("user"));
+        conditions = conditionExists(select("1"))
+           .orExists(select("id", "name").from("user"));
         assembleAst(conditions);
-        assertEquals("WHERE EXISTS (SELECT 1, 2) OR EXISTS (SELECT id, name FROM user)", ast.toString());
+        assertEquals("WHERE EXISTS (SELECT 1) OR EXISTS (SELECT id, name FROM user)", ast.toString());
 
-        conditions = conditionExists(new SelectImpl(ast, "1", "2"))
-           .orNotExists(new SelectImpl(ast, "id", "name").from("user"));
+        conditions = conditionExists(select("1"))
+           .orNotExists(select("id", "name").from("user"));
         assembleAst(conditions);
-        assertEquals("WHERE EXISTS (SELECT 1, 2) OR NOT EXISTS (SELECT id, name FROM user)", ast.toString());
+        assertEquals("WHERE EXISTS (SELECT 1) OR NOT EXISTS (SELECT id, name FROM user)", ast.toString());
 
 
-        Query select = new SelectImpl(ast, "id", "name").from("user")
+        Query select = select("id", "name").from("user")
            .where("id", "=", "1")
            .and(condition("name", "=", "timur")
               .and("phone", "is", "null")
@@ -268,26 +273,26 @@ public class ConditionsImplTest {
 
     @Test
     void conditionInSubquery() {
-        Conditions conditions = condition("name", "IN", new SelectImpl(ast, "1", "2"));
+        Conditions conditions = condition("name", "IN", select("1", "2"));
         assembleAst(conditions);
         assertEquals("WHERE name IN (SELECT 1, 2)", ast.toString());
 
         conditions = conditions
-           .and(asName("name"), IN, new SelectImpl(ast, "1", "2"))
-           .andNot(asName("name"), IN, new SelectImpl(ast, "1", "2"))
-           .or(asName("name"), IN, new SelectImpl(ast, "1", "2"))
-           .orNot(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"));
+           .and(asName("name"), IN, select("1", "2"))
+           .andNot(asName("name"), IN, select("1", "2"))
+           .or(asName("name"), IN, select("1", "2"))
+           .orNot(asName("name"), NOT_IN, select("1", "2"));
         assembleAst(conditions);
         assertEquals("WHERE name IN (SELECT 1, 2) AND name IN (SELECT 1, 2) AND NOT name IN (SELECT 1, 2) OR name IN (SELECT 1, 2) OR NOT name NOT IN (SELECT 1, 2)", ast.toString());
 
-        conditions = condition(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"));
+        conditions = condition(asName("name"), NOT_IN, select("1", "2"));
         assembleAst(conditions);
         assertEquals("WHERE name NOT IN (SELECT 1, 2)", ast.toString());
 
 
         conditions = conditions
-           .or(condition(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"))
-              .and(condition(asName("name"), NOT_IN, new SelectImpl(ast, "1", "2"))
+           .or(condition(asName("name"), NOT_IN, select("1", "2"))
+              .and(condition(asName("name"), NOT_IN, select("1", "2"))
               )
            );
 
@@ -297,33 +302,37 @@ public class ConditionsImplTest {
 
     @Test
     void conditionAnyTest() {
-        Conditions conditions = conditionAny("id", "=", new SelectImpl(ast, "1", "2"));
+        Conditions conditions = conditionAny("id", "=", select( "1"));
+        assembleAst(conditions);
+        assertEquals("WHERE id = ANY (SELECT 1)", ast.toString());
+
+        conditions = conditionAny("id", "=", select("1", "2"));
         assembleAst(conditions);
         assertEquals("WHERE id = ANY (SELECT 1, 2)", ast.toString());
 
-        conditions.and(conditionAny(asName("id"), operator("="), new SelectImpl(ast, "id").from("user")));
+        conditions.and(conditionAny(asName("id"), operator("="), select("id").from("user")));
         assembleAst(conditions);
         assertEquals("WHERE id = ANY (SELECT 1, 2) AND id = ANY (SELECT id FROM user)", ast.toString());
     }
 
     @Test
     void conditionSomeTest() {
-        Conditions conditions = conditionSome("id", "=", new SelectImpl(ast, "1", "2"));
+        Conditions conditions = conditionSome("id", "=", select("1", "2"));
         assembleAst(conditions);
         assertEquals("WHERE id = SOME (SELECT 1, 2)", ast.toString());
 
-        conditions.and(conditionSome(asName("id"), operator("="), new SelectImpl(ast, "id").from("user")));
+        conditions.and(conditionSome(asName("id"), operator("="), select("id").from("user")));
         assembleAst(conditions);
         assertEquals("WHERE id = SOME (SELECT 1, 2) AND id = SOME (SELECT id FROM user)", ast.toString());
     }
 
     @Test
     void conditionAllTest() {
-        Conditions conditions = conditionAll("id", "=", new SelectImpl(ast, "1", "2"));
+        Conditions conditions = conditionAll("id", "=", select("1", "2"));
         assembleAst(conditions);
         assertEquals("WHERE id = ALL (SELECT 1, 2)", ast.toString());
 
-        conditions.and(conditionAll(asName("id"), operator("="), new SelectImpl(ast, "id").from("user")));
+        conditions.and(conditionAll(asName("id"), operator("="), select("id").from("user")));
         assembleAst(conditions);
         assertEquals("WHERE id = ALL (SELECT 1, 2) AND id = ALL (SELECT id FROM user)", ast.toString());
     }
