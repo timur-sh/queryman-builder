@@ -15,13 +15,14 @@ import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asNumber;
-import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
 import static org.queryman.builder.PostgreSQL.asString;
+import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.fromOnly;
 import static org.queryman.builder.PostgreSQL.max;
+import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.PostgreSQL.select;
 import static org.queryman.builder.PostgreSQL.selectAll;
 import static org.queryman.builder.PostgreSQL.selectDistinct;
@@ -63,10 +64,10 @@ class SelectImplTest {
 
     @Test
     void selectDistinctOnTest() {
-        SelectFromStep select = selectDistinctOn(new String[]{"price", "id"}, "id", "name");
+        SelectFromStep select = selectDistinctOn(new String[]{ "price", "id" }, "id", "name");
         assertEquals("SELECT DISTINCT ON (price, id) id, name", select.sql());
 
-        select = selectDistinctOn(new Expression[] {asName("price"), asName("id")}, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
+        select = selectDistinctOn(new Expression[]{ asName("price"), asName("id") }, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
         assertEquals("SELECT DISTINCT ON (price, id) \"id2\", \"name\", min(price) as min", select.sql());
     }
 
@@ -456,6 +457,17 @@ class SelectImplTest {
            .sql();
 
         assertEquals("SELECT id, name FROM user WHERE id = 1 AND (name = timur AND phone is null OR email = 'timur@shaidullin.net') AND id2 = 2", sql);
+
+        sql = select("*")
+           .from("book")
+           .where("year", ">", "2010")
+           .orNot(
+              conditionBetween("id", "1", "10")
+                 .and(asName("name"), operator("="), asString("Advanced SQL"))
+           )
+           .sql();
+
+        assertEquals("SELECT * FROM book WHERE year > 2010 OR NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')", sql);
     }
 
     //---

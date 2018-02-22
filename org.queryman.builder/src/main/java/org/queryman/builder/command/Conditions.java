@@ -9,9 +9,9 @@ package org.queryman.builder.command;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.Node;
-import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.PostgreSQL;
 
 /**
  * This supplies a search condition.
@@ -73,11 +73,11 @@ public interface Conditions extends AstVisitor {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND id = 1
+     * // SELECT * FROM book WHERE year > 2010 AND "id" = 1
      * select("*")
      *  .from("book")
      *  .where("year", ">", "2010")
-     *  .and(asName("id"), operator("="), asNumber(1))
+     *  .and(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
      */
@@ -105,23 +105,83 @@ public interface Conditions extends AstVisitor {
      */
     Conditions and(Expression field, Operator operator, Query query);
 
-
+    /**
+     * Example:
+     * <code>
+     *
+     * // SELECT * FROM book WHERE year > 2010 AND EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andExists(select("*").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param query subquery
+     * @return itseld
+     */
     Conditions andExists(Query query);
 
     /**
-     * {@code AND} condition. This is useful to group expressions.
+     * This function useful in a few case:
+     * <ul>
+     *     <li>
+     *         When the {@code conditions} is a special case of condition,
+     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
+     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         See the first example.
+     *     </li>
+     *     <li>
+     *         When the {@code conditions} is conditions are joined by AND, AND NOT,
+     *         OR and OR NOT operators. These conditions is being a grouped condition,
+     *         and will be surrounded by parentheses.
+     *         See the second example.
+     *      </li>
+     * </ul>
      *
-     * Example:
-     * <p>
-     * conditions.and(condition("id", "=", "1")
-     *      .and("id2", "=", "3")
-     *      .or("id3", "=", "2")
+     * The first example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .and(conditionBetween("id", "1", "10"))
+     *  .sql()
+     * </code>
+     *
+     * The second example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .and(
+     *      conditionBetween("id", "1", "10")
+     *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
      *  )
-     * ...
-     * </p>
+     *  .sql()
+     * </code>
+     *
+     * @param conditions condition
+     * @return itself
+     *
+     * Kind of conditions:
+     * @see PostgreSQL#condition(String, String, Query)
+     * @see PostgreSQL#condition(String, String, String)
      */
     Conditions and(Conditions conditions);
 
+    /**
+     * Example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND NOT "id" = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andNot(asQuotedName("id"), operator("="), asNumber(1))
+     *  .sql()
+     * </code>
+     */
     Conditions andNot(Expression leftField, Operator operator, Expression rightField);
 
     /**
@@ -159,19 +219,69 @@ public interface Conditions extends AstVisitor {
      */
     Conditions andNot(Expression field, Operator operator, Query query);
 
+    /**
+     * Example:
+     * <code>
+     *
+     * // SELECT * FROM book WHERE year > 2010 AND NOT EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andNotExists(select("*").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param query subquery
+     * @return itseld
+     */
     Conditions andNotExists(Query query);
 
     /**
-     * {@code AND NOT} condition. This is useful to group expressions.
+     * This function useful in a few case:
+     * <ul>
+     *     <li>
+     *         When the {@code conditions} is a special case of condition,
+     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
+     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         See the first example.
+     *     </li>
+     *     <li>
+     *         When the {@code conditions} is conditions are joined by AND, AND NOT,
+     *         OR and OR NOT operators. These conditions is being a grouped condition,
+     *         and will be surrounded by parentheses.
+     *         See the second example.
+     *      </li>
+     * </ul>
      *
-     * Example:
-     * <p>
-     * conditions.andNot(condition("id", "=", "1")
-     *      .and("id2", "=", "2")
-     *      .or("id3", "=", "3")
+     * The first example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND NOT id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andNot(conditionBetween("id", "1", "10"))
+     *  .sql()
+     * </code>
+     *
+     * The second example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andNot(
+     *      conditionBetween("id", "1", "10")
+     *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
      *  )
-     * ...
-     * </p>
+     *  .sql()
+     * </code>
+     *
+     * @param conditions condition
+     * @return itself
+     *
+     * Kind of conditions:
+     * @see PostgreSQL#condition(String, String, Query)
+     * @see PostgreSQL#condition(String, String, String)
      */
     Conditions andNot(Conditions conditions);
 
@@ -189,13 +299,15 @@ public interface Conditions extends AstVisitor {
     Conditions or(String leftField, String operator, String rightField);
 
     /**
-     * {@code OR} condition.
-     *
      * Example:
-     * <p>
-     * conditions.or(asName("id"), operator("="), asNumber("1"))
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR "id" = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .or(asQuotedName("id"), operator("="), asNumber(1))
+     *  .sql()
+     * </code>
      */
     Conditions or(Expression leftField, Operator operator, Expression rightField);
 
@@ -221,30 +333,82 @@ public interface Conditions extends AstVisitor {
      */
     Conditions or(Expression field, Operator operator, Query query);
 
+    /**
+     * Example:
+     * <code>
+     *
+     * // SELECT * FROM book WHERE year > 2010 OR EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orExists(select("*").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param query subquery
+     * @return itseld
+     */
     Conditions orExists(Query query);
 
     /**
-     * {@code OR} condition. This is useful to group expressions.
+     * This function useful in a few case:
+     * <ul>
+     *     <li>
+     *         When the {@code conditions} is a special case of condition,
+     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
+     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         See the first example.
+     *     </li>
+     *     <li>
+     *         When the {@code conditions} is conditions are joined by AND, AND NOT,
+     *         OR and OR NOT operators. These conditions is being a grouped condition,
+     *         and will be surrounded by parentheses.
+     *         See the second example.
+     *      </li>
+     * </ul>
      *
-     * Example:
-     * <p>
-     * conditions.or(condition("id", "=", "2")
-     *      .and("id2", "=", "2")
-     *      .or("id3", "=", "3")
+     * The first example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .or(conditionBetween("id", "1", "10"))
+     *  .sql()
+     * </code>
+     *
+     * The second example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .ir(
+     *      conditionBetween("id", "1", "10")
+     *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
      *  )
-     * ...
-     * </p>
+     *  .sql()
+     * </code>
+     *
+     * @param conditions condition
+     * @return itself
+     *
+     * Kind of conditions:
+     * @see PostgreSQL#condition(String, String, Query)
+     * @see PostgreSQL#condition(String, String, String)
      */
     Conditions or(Conditions conditions);
 
     /**
-     * {@code OR} condition.
-     *
      * Example:
-     * <p>
-     * conditions.orNot(asName("id"), operator("="), asNumber("1"))
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR NOT "id" = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orNot(asQuotedName("id"), operator("="), asNumber(1))
+     *  .sql()
+     * </code>
      */
     Conditions orNot(Expression leftField, Operator operator, Expression rightField);
 
@@ -283,19 +447,69 @@ public interface Conditions extends AstVisitor {
      */
     Conditions orNot(Expression field, Operator operator, Query query);
 
+    /**
+     * Example:
+     * <code>
+     *
+     * // SELECT * FROM book WHERE year > 2010 OR NOT EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orNotExists(select("*").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param query subquery
+     * @return itseld
+     */
     Conditions orNotExists(Query query);
 
     /**
-     * {@code OR NOT} condition. This is useful to group expressions.
+     * This function useful in a few case:
+     * <ul>
+     *     <li>
+     *         When the {@code conditions} is a special case of condition,
+     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
+     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         See the first example.
+     *     </li>
+     *     <li>
+     *         When the {@code conditions} is conditions are joined by AND, AND NOT,
+     *         OR and OR NOT operators. These conditions is being a grouped condition,
+     *         and will be surrounded by parentheses.
+     *         See the second example.
+     *      </li>
+     * </ul>
      *
-     * Example:
-     * <p>
-     * conditions.orNot(condition("id", "=", "1")
-     *      .and("id2", "=", "2")
-     *      .or("id3", "=", "3")
+     * The first example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR NOT id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orNot(conditionBetween("id", "1", "10"))
+     *  .sql()
+     * </code>
+     *
+     * The second example:
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orNot(
+     *      conditionBetween("id", "1", "10")
+     *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
      *  )
-     * ...
-     * </p>
+     *  .sql()
+     * </code>
+     *
+     * @param conditions condition
+     * @return itself
+     *
+     * Kind of conditions:
+     * @see PostgreSQL#condition(String, String, Query)
+     * @see PostgreSQL#condition(String, String, String)
      */
     Conditions orNot(Conditions conditions);
 
