@@ -18,25 +18,50 @@ import org.queryman.builder.token.Operator;
  * @author Timur Shaidullin
  */
 public interface SelectJoinOnStep extends SelectWhereFirstStep {
+
+    /**
+     * This form of JOIN ON condition is equivalent to CROSS JOIN.
+     *
+     * Example:
+     * <code>
+     * // SELECT * FROM book AS b JOIN author a ON (true)
+     * select("*")
+     *  .from(asName("book").as("b"))
+     *  .join("author a")
+     *  .on(true)
+     *  .sql()
+     * </code>
+     */
     SelectJoinManyStepsStep on(boolean all);
 
+    /**
+     * Example:
+     * <code>
+     * // SELECT * FROM book AS b JOIN author a ON a.id = b.author_id
+     * select("*")
+     *  .from(asName("book").as("b"))
+     *  .join("author a")
+     *  .on("a.id", "=", "b.author_id")
+     *  .sql()
+     * </code>
+     */
     SelectJoinOnStepsStep on(String left, String operator, String right);
 
+    /**
+     * Example:
+     * <code>
+     * // SELECT id FROM book b JOIN author a ON "a"."id" = "b"."author_id"
+     * select("id")
+     *  .from("book b")
+     *  .join("author a")
+     *  .on(asQuotedName("a.id"), operator("="), asQuotedName("b.author_id"))
+     *  .sql()
+     * </code>
+     */
     SelectJoinOnStepsStep on(Expression left, Operator operator, Expression right);
 
     /**
      * Subquery condition.
-     * Example:
-     * <code>
-     *
-     * // SELECT price FROM book JOIN order ON total < (SELECT MAX(price) FROM book)
-     *
-     * select("price")
-     *  .from("book")
-     *  .join("order")
-     *  .on(asName("total"), operator("<"), select(max("price")).from("book"))
-     *  .sql()
-     * </code>
      *
      * @param field field
      * @param operator operator
@@ -54,10 +79,30 @@ public interface SelectJoinOnStep extends SelectWhereFirstStep {
 
     SelectJoinOnStepsStep onExists(Query query);
 
+    /**
+     * Example:
+     * <code>
+     * // SELECT * FROM book JOIN author USING (id)
+     * select("*")
+     *  .from("book")
+     *  .join("author")
+     *  .using("id")
+     *  .sql()
+     * </code>
+     */
     SelectJoinManyStepsStep using(String... columns);
 
+    /**
+     * Example:
+     * <code>
+     * // SELECT * FROM book JOIN author USING (id)
+     * select("*")
+     *  .from(asName("book"))
+     *  .join("author")
+     *  .using(asName("id"))
+     *  .sql()
+     * </code>
+     */
     SelectJoinManyStepsStep using(Expression... columns);
-
-
 
 }

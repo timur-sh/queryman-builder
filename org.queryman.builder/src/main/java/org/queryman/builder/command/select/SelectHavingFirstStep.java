@@ -22,7 +22,7 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book HAVING year > 2010
+     * // SELECT year FROM book HAVING year > 2010
      * select("year", "id")
      *  .from("book")
      *  .having("year", ">", "2010")
@@ -34,8 +34,8 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE "id" = 1
-     * select("*")
+     * // SELECT id FROM book WHERE "id" = 1
+     * select("id")
      *  .from("book")
      *  .having(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
@@ -47,11 +47,9 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      * Subquery condition.
      * Example:
      * <code>
-     *
-     * // SELECT price FROM book ... HAVING price <= (SELECT MAX(total) FROM order)
+     * // SELECT price FROM book HAVING price <= (SELECT MAX(total) FROM order)
      * select("price")
      *  .from("book")
-     *  ...
      *  .having(asName("price"), operator("<="), select(max("total")).from("order"))
      *  .sql()
      * </code>
@@ -86,8 +84,8 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      *
      * The first example:
      * <code>
-     * // SELECT * FROM book HAVING id BETWEEN 1 AND 10
-     * select("*")
+     * // SELECT id FROM book HAVING id BETWEEN 1 AND 10
+     * select("id")
      *  .from("book")
      *  .having(conditionBetween("id", "1", "10"))
      *  .sql()
@@ -95,8 +93,8 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      *
      * The second example:
      * <code>
-     * // SELECT * FROM book HAVING (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
-     * select("*")
+     * // SELECT id, name FROM book HAVING (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("id", "name")
      *  .from("book")
      *  .having(
      *      conditionBetween("id", "1", "10")
