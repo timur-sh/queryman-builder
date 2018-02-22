@@ -122,25 +122,18 @@ public interface Conditions extends AstVisitor {
      */
     Conditions and(Conditions conditions);
 
-    /**
-     * {@code AND NOT} condition.
-     *
-     * Example:
-     * <p>
-     * conditions.andNot(asName("id"), operator("="), asNumber("1"))
-     * ...
-     * </p>
-     */
     Conditions andNot(Expression leftField, Operator operator, Expression rightField);
 
     /**
-     * {@code AND NOT} condition.
-     *
      * Example:
-     * <p>
-     * conditions.andNot("id", "=", "1")
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 AND NOT id = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .andNot("id", "=", "1")
+     *  .sql()
+     * </code>
      */
     Conditions andNot(String leftField, String operator, String rightField);
 
@@ -183,13 +176,15 @@ public interface Conditions extends AstVisitor {
     Conditions andNot(Conditions conditions);
 
     /**
-     * {@code OR} condition.
-     *
      * Example:
-     * <p>
-     * conditions.or("id", "=", "1")
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR id = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .or("id", "=", "1")
+     *  .sql()
+     * </code>
      */
     Conditions or(String leftField, String operator, String rightField);
 
@@ -254,13 +249,15 @@ public interface Conditions extends AstVisitor {
     Conditions orNot(Expression leftField, Operator operator, Expression rightField);
 
     /**
-     * {@code OR NOT} condition.
-     *
      * Example:
-     * <p>
-     * conditions.or("id", "=", "1")
-     * ...
-     * </p>
+     * <code>
+     * // SELECT * FROM book WHERE year > 2010 OR NOT id = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .orNot("id", "=", "1")
+     *  .sql()
+     * </code>
      */
     Conditions orNot(String leftField, String operator, String rightField);
 
