@@ -19,7 +19,15 @@ import org.queryman.builder.token.Operator;
  */
 public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
     /**
-     * HAVING eliminates group rows that do not satisfy condition.
+     * Example:
+     * <code>
+     * // SELECT * FROM book HAVING year > 2010 AND id = 1
+     * select("year", "id")
+     *  .from("book")
+     *  .having("year", ">", "2010")
+     *  .and("id", "=", "1")
+     *  .sql()
+     * </code>
      */
     SelectHavingStep having(String left, String operator, String right);
 

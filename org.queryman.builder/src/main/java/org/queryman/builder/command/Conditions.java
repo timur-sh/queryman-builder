@@ -118,7 +118,7 @@ public interface Conditions extends AstVisitor {
      * </code>
      *
      * @param query subquery
-     * @return itseld
+     * @return itself
      */
     Conditions andExists(Query query);
 
@@ -232,7 +232,7 @@ public interface Conditions extends AstVisitor {
      * </code>
      *
      * @param query subquery
-     * @return itseld
+     * @return itself
      */
     Conditions andNotExists(Query query);
 
@@ -346,7 +346,7 @@ public interface Conditions extends AstVisitor {
      * </code>
      *
      * @param query subquery
-     * @return itseld
+     * @return itself
      */
     Conditions orExists(Query query);
 
@@ -460,7 +460,7 @@ public interface Conditions extends AstVisitor {
      * </code>
      *
      * @param query subquery
-     * @return itseld
+     * @return itself
      */
     Conditions orNotExists(Query query);
 

@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
@@ -15,8 +16,28 @@ import org.queryman.builder.token.Operator;
  * @author Timur Shaidullin
  */
 public interface SelectWhereFirstStep extends SelectGroupByStep {
+    /**
+     * Example:
+     * <code>
+     * // SELECT * FROM book WHERE id = 1
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
+     *  .sql()
+     * </code>
+     */
     SelectWhereStep where(String left, String operator, String right);
 
+    /**
+     * Example:
+     * <code>
+     * // SELECT * FROM book WHERE "id" = 1
+     * select("*")
+     *  .from("book")
+     *  .where(asQuotedName("id"), operator("="), asNumber(1))
+     *  .sql()
+     * </code>
+     */
     SelectWhereStep where(Expression left, Operator operator, Expression right);
 
     /**
@@ -44,7 +65,66 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      */
     SelectWhereStep where(Expression field, Operator operator, Query query);
 
+    /**
+     * This function useful in a few case:
+     * <ul>
+     *     <li>
+     *         When the {@code conditions} is a special case of condition,
+     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
+     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         See the first example.
+     *     </li>
+     *     <li>
+     *         When the {@code conditions} is conditions are joined by AND, AND NOT,
+     *         OR and OR NOT operators. These conditions is being a grouped condition,
+     *         and will be surrounded by parentheses.
+     *         See the second example.
+     *      </li>
+     * </ul>
+     *
+     * The first example:
+     * <code>
+     * // SELECT * FROM book WHERE id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
+     *  .where(conditionBetween("id", "1", "10"))
+     *  .sql()
+     * </code>
+     *
+     * The second example:
+     * <code>
+     * // SELECT * FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
+     *  .where(
+     *      conditionBetween("id", "1", "10")
+     *      .and(asName("name"), operator("="), asString("Advanced SQL"))
+     *  )
+     *  .sql()
+     * </code>
+     *
+     * @param conditions condition
+     * @return itself
+     *
+     * Kind of conditions:
+     * @see PostgreSQL#condition(String, String, Query)
+     * @see PostgreSQL#condition(String, String, String)
+     */
     SelectWhereStep where(Conditions conditions);
 
+    /**
+     * Example:
+     * <code>
+     *
+     * // SELECT * FROM book WHERE EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
+     *  .whereExists(select("*").from("authors"))
+     *  .sql()
+     * </code>
+     *
+     * @param query subquery
+     * @return itself
+     */
     SelectWhereStep whereExists(Query query);
 }

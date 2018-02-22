@@ -468,6 +468,16 @@ class SelectImplTest {
            .sql();
 
         assertEquals("SELECT * FROM book WHERE year > 2010 OR NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')", sql);
+
+        sql = select("*")
+           .from("book")
+           .where(
+              conditionBetween("id", "1", "10")
+                 .and(asName("name"), operator("="), asString("Advanced SQL"))
+           )
+           .sql();
+
+        assertEquals("SELECT * FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')", sql);
     }
 
     //---
