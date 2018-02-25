@@ -16,7 +16,9 @@ import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
 import org.queryman.builder.command.impl.FromImpl;
 import org.queryman.builder.command.impl.SelectImpl;
+import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.select.SelectFromStep;
+import org.queryman.builder.command.sequence.SequenceFirstStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -201,6 +203,194 @@ public class PostgreSQL {
         return new SelectImpl(getTree(), columns).distinctOn(distinct);
     }
 
+    //----
+    // SEQUENCE
+    //----
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createSequence("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createSequence(String name) {
+        return createSequence(asName(name));
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createSequence("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createSequence(Expression name) {
+        return new SequenceImpl(getTree(), name);
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createTempSequence("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createTempSequence(String name) {
+        return createTempSequence(asName(name));
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createTempSequence("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createTempSequence(Expression name) {
+        return new SequenceImpl(getTree(), name, true);
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createTempSequenceIfNotExists("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createTempSequenceIfNotExists(String name) {
+        return createTempSequenceIfNotExists(asName(name));
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createTempSequenceIfNotExists("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createTempSequenceIfNotExists(Expression name) {
+        return new SequenceImpl(getTree(), name, true, true);
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createSequenceIfNotExists("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createSequenceIfNotExists(String name) {
+        return createSequenceIfNotExists(asName(name));
+    }
+
+    /**
+     * Create a sequence.
+     * Example:
+     * <code>
+     *     createSequenceIfNotExists("book_seq")
+     *      .as("smallint")
+     *      .incrementBy(1)
+     *      .minvalue(0)
+     *      .noMaxvalue()
+     *      .startWith(0)
+     *      .cache(5)
+     *      .cycle()
+     *      .ownedByNone()
+     *      .sql();
+     * </code>
+     *
+     * @param name sequence name
+     * @return sequence AS step
+     */
+    public static SequenceFirstStep createSequenceIfNotExists(Expression name) {
+        return new SequenceImpl(getTree(), name, false, true);
+    }
+
     /**
      * Create an operator which ordinarily is used by condition.
      *
@@ -225,6 +415,16 @@ public class PostgreSQL {
      */
     public static Keyword keyword(String keyword) {
         return new Keyword(keyword);
+    }
+
+    /**
+     * NodeMetadata contains a metadata for tree node.
+     *
+     * @param keyword NodeMetadata is composed from keyword.
+     * @return node metadata
+     */
+    public static NodeMetadata nodeMetadata(Keyword keyword) {
+        return new NodeMetadata(keyword);
     }
 
     //----
@@ -528,6 +728,24 @@ public class PostgreSQL {
      */
     public static Expression asConstant(String constant) {
         return new ConstantExpression(constant);
+    }
+    /**
+     * Constant expression:
+     * <p>
+     * <code>
+     * table_name
+     * $n1
+     * LIST[1]
+     * 234.11
+     * .50
+     * .2E+1
+     * </code>
+     *
+     * @param constant any constant
+     * @return a constant. e.g. 1, id, ARRAY[1] ...
+     */
+    public static Expression asConstant(boolean constant) {
+        return new ConstantExpression(String.valueOf(constant));
     }
 
     /**

@@ -9,18 +9,20 @@ package org.queryman.builder;
 
 import org.queryman.builder.token.Keyword;
 
+import static org.queryman.builder.PostgreSQL.keyword;
+
 /**
  * Collection of key words are used by Queryman to build SQL query.
  *
  * @author Timur Shaidullin
  */
 public class Keywords {
-    public static final Keyword SELECT             = new Keyword("SELECT");
-    public static final Keyword SELECT_ALL         = new Keyword("SELECT ALL");
-    public static final Keyword SELECT_DISTINCT    = new Keyword("SELECT DISTINCT");
+    public static final Keyword SELECT          = new Keyword("SELECT");
+    public static final Keyword SELECT_ALL      = new Keyword("SELECT ALL");
+    public static final Keyword SELECT_DISTINCT = new Keyword("SELECT DISTINCT");
 
-    public static final Keyword FROM        = new Keyword("FROM");
-    public static final Keyword ONLY        = new Keyword("ONLY");
+    public static final Keyword FROM = new Keyword("FROM");
+    public static final Keyword ONLY = new Keyword("ONLY");
 
     public static final Keyword UNION          = new Keyword("UNION");
     public static final Keyword UNION_ALL      = new Keyword("UNION ALL");
@@ -61,4 +63,30 @@ public class Keywords {
     public static final Keyword ANY    = new Keyword("ANY");
     public static final Keyword SOME   = new Keyword("SOME");
     public static final Keyword ALL    = new Keyword("ALL");
+
+    public static final Keyword TEMP      = keyword("TEMP");
+    public static final Keyword TEMPORARY = keyword("TEMPORARY");
+
+    public static final Keyword CREATE_SEQUENCE                    = keyword("CREATE SEQUENCE");
+    public static final Keyword CREATE_TEMP_SEQUENCE               = keyword("CREATE TEMP SEQUENCE");
+    public static final Keyword CREATE_TEMP_SEQUENCE_IF_NOT_EXISTS = keyword("CREATE TEMP SEQUENCE IF NOT EXISTS");
+    public static final Keyword CREATE_SEQUENCE_IF_NOT_EXISTS      = keyword("CREATE SEQUENCE IF NOT EXISTS");
+
+
+    public static final Keyword INCREMENT    = keyword("INCREMENT");
+    public static final Keyword INCREMENT_BY = keyword("INCREMENT BY");
+    public static final Keyword MINVALUE     = keyword("MINVALUE");
+    public static final Keyword MAXVALUE     = keyword("MAXVALUE");
+    public static final Keyword START        = keyword("START");
+    public static final Keyword START_WITH   = keyword("START WITH");
+
+    public static final Keyword WITH     = keyword("WITH");
+    public static final Keyword CACHE    = keyword("CACHE");
+    public static final Keyword CYCLE    = keyword("CYCLE");
+    public static final Keyword NO_CYCLE = keyword("NO CYCLE");
+    public static final Keyword OWNED_BY = keyword("OWNED BY");
+
+    public static final Keyword IF_NOT_EXISTS = keyword("IF NOT EXISTS");
+
+    public static final Keyword AS = keyword("AS");
 }
