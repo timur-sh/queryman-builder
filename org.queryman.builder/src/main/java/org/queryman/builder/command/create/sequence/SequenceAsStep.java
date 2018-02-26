@@ -11,7 +11,7 @@ package org.queryman.builder.command.create.sequence;
  *
  * @author Timur Shaidullin
  */
-public interface SequenceFirstStep extends SequenceIncrementStep {
+public interface SequenceAsStep extends SequenceIncrementStep {
     /**
      * Specifies a data type of sequence. Valid types are smallint, integer,
      * and bigint.

@@ -18,7 +18,7 @@ import org.queryman.builder.command.impl.FromImpl;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.select.SelectFromStep;
-import org.queryman.builder.command.create.sequence.SequenceFirstStep;
+import org.queryman.builder.command.create.sequence.SequenceAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -225,7 +225,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createSequence(String name) {
+    public static SequenceAsStep createSequence(String name) {
         return createSequence(asName(name));
     }
 
@@ -248,7 +248,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createSequence(Expression name) {
+    public static SequenceAsStep createSequence(Expression name) {
         return new SequenceImpl(getTree(), name);
     }
 
@@ -271,7 +271,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createTempSequence(String name) {
+    public static SequenceAsStep createTempSequence(String name) {
         return createTempSequence(asName(name));
     }
 
@@ -294,7 +294,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createTempSequence(Expression name) {
+    public static SequenceAsStep createTempSequence(Expression name) {
         return new SequenceImpl(getTree(), name, true);
     }
 
@@ -317,7 +317,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createTempSequenceIfNotExists(String name) {
+    public static SequenceAsStep createTempSequenceIfNotExists(String name) {
         return createTempSequenceIfNotExists(asName(name));
     }
 
@@ -340,7 +340,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createTempSequenceIfNotExists(Expression name) {
+    public static SequenceAsStep createTempSequenceIfNotExists(Expression name) {
         return new SequenceImpl(getTree(), name, true, true);
     }
 
@@ -363,7 +363,7 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createSequenceIfNotExists(String name) {
+    public static SequenceAsStep createSequenceIfNotExists(String name) {
         return createSequenceIfNotExists(asName(name));
     }
 
@@ -386,9 +386,21 @@ public class PostgreSQL {
      * @param name sequence name
      * @return sequence AS step
      */
-    public static SequenceFirstStep createSequenceIfNotExists(Expression name) {
+    public static SequenceAsStep createSequenceIfNotExists(Expression name) {
         return new SequenceImpl(getTree(), name, false, true);
     }
+
+    //----
+    // DECLARE
+    //----
+
+    public static void declare(String name) {
+
+    }
+
+    //----
+    // COMMON
+    //----
 
     /**
      * Create an operator which ordinarily is used by condition.

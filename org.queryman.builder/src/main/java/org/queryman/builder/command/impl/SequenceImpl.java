@@ -12,7 +12,7 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.command.create.sequence.SequenceCacheStep;
 import org.queryman.builder.command.create.sequence.SequenceCycleStep;
 import org.queryman.builder.command.create.sequence.SequenceFinalStep;
-import org.queryman.builder.command.create.sequence.SequenceFirstStep;
+import org.queryman.builder.command.create.sequence.SequenceAsStep;
 import org.queryman.builder.command.create.sequence.SequenceIncrementStep;
 import org.queryman.builder.command.create.sequence.SequenceMaxValueStep;
 import org.queryman.builder.command.create.sequence.SequenceMinValueStep;
@@ -45,7 +45,7 @@ import static org.queryman.builder.PostgreSQL.nodeMetadata;
  * @author Timur Shaidullin
  */
 public class SequenceImpl extends AbstractQuery implements
-   SequenceFirstStep,
+   SequenceAsStep,
    SequenceIncrementStep,
    SequenceMinValueStep,
    SequenceMaxValueStep,

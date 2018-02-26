@@ -19,7 +19,7 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE id = 1
+     * // SELECT * FROM book WHERE year > 2010
      * select("*")
      *  .from("book")
      *  .where("year", ">", "2010")
@@ -75,8 +75,8 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      *         See the first example.
      *     </li>
      *     <li>
-     *         When the {@code conditions} is conditions are joined by AND, AND NOT,
-     *         OR and OR NOT operators. These conditions is being a grouped condition,
+     *         When the {@code conditions} is a group of conditions are joined by AND, AND NOT,
+     *         OR and OR NOT operators. These conditions are being a grouped condition,
      *         and will be surrounded by parentheses.
      *         See the second example.
      *      </li>
