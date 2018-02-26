@@ -12,8 +12,10 @@ import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.ast.TreeFactory;
 import org.queryman.builder.boot.ServiceRegister;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.delete.DeleteAsStep;
 import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
+import org.queryman.builder.command.impl.DeleteImpl;
 import org.queryman.builder.command.impl.FromImpl;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.impl.SequenceImpl;
@@ -396,6 +398,26 @@ public class PostgreSQL {
 
     public static void declare(String name) {
 
+    }
+
+    //----
+    // DELETE
+    //----
+
+    public static DeleteAsStep deleteFrom(String name) {
+        return deleteFrom(asName(name));
+    }
+
+    public static DeleteAsStep deleteFrom(Expression name) {
+        return new DeleteImpl(getTree(), name);
+    }
+
+    public static DeleteAsStep deleteFromOnly(String name) {
+        return deleteFromOnly(asName(name));
+    }
+
+    public static DeleteAsStep deleteFromOnly(Expression name) {
+        return new DeleteImpl(getTree(), name, true);
     }
 
     //----

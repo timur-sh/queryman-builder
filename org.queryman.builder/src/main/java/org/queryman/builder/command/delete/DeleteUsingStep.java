@@ -18,7 +18,7 @@ public interface DeleteUsingStep extends DeleteWhereFirstStep {
      * Set the list of table that will be appeared in WHERE clause.
      *
      * @param tables list of tables or table expressions
-     * @return delete where step
+     * @return deleteFrom where step
      */
     DeleteWhereFirstStep using(Expression... tables);
 
@@ -26,7 +26,7 @@ public interface DeleteUsingStep extends DeleteWhereFirstStep {
      * Set the list of table that will be appeared in WHERE clause.
      *
      * @param tables list of tables or table expressions
-     * @return delete where step
+     * @return deleteFrom where step
      *
      * @see #using(Expression...)
      */

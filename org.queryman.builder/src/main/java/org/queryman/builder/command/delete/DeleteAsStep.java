@@ -16,7 +16,7 @@ public interface DeleteAsStep extends DeleteUsingStep {
      * A substitute name for the target table.
      *
      * @param alias alias
-     * @return delete using step
+     * @return deleteFrom using step
      */
     DeleteUsingStep as(String alias);
 }

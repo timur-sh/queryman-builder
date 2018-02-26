@@ -13,7 +13,7 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
 /**
- * DELETE .. WHERE | DELETE .. WHERE CURRENT OF .. clause.
+ * DELETE FROM .. WHERE | DELETE FROM .. WHERE CURRENT OF .. clause.
  *
  * @author Timur Shaidullin
  */
@@ -21,8 +21,8 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
     /**
      * Example:
      * <code>
-     * // DELETE book WHERE b.year > 1
-     * delete("book")
+     * // DELETE FROM book WHERE b.year > 1
+     * deleteFrom("book")
      *  .as("b")
      *  .where("b.year", ">", "2010")
      *  .sql()
@@ -33,8 +33,8 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
     /**
      * Example:
      * <code>
-     * // DELETE book WHERE "id" = 1
-     * delete("book")
+     * // DELETE FROM book WHERE "id" = 1
+     * deleteFrom("book")
      *  .where(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
@@ -46,9 +46,9 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * Example:
      * <code>
      *
-     * // DELETE book WHERE price < (SELECT MAX(total) FROM order)
+     * // DELETE FROM book WHERE price < (SELECT MAX(total) FROM order)
      *
-     * delete("book")
+     * deleteFrom("book")
      *  .where("year", "<=", select(max("total")).from("order"))
      *  .sql()
      * </code>
@@ -84,16 +84,16 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      *
      * The first example:
      * <code>
-     * // DELETE book WHERE id BETWEEN 1 AND 10
-     * delete("book")
+     * // DELETE FROM book WHERE id BETWEEN 1 AND 10
+     * deleteFrom("book")
      *  .where(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
      *
      * The second example:
      * <code>
-     * // DELETE book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
-     * delete("book")
+     * // DELETE FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * deleteFrom("book")
      *  .where(
      *      conditionBetween("id", "1", "10")
      *      .and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -114,8 +114,8 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * Example:
      * <code>
      *
-     * // DELETE book WHERE EXISTS (SELECT * FROM author)
-     * delete("book")
+     * // DELETE FROM FROM book WHERE EXISTS (SELECT * FROM author)
+     * deleteFrom("book")
      *  .whereExists(select("*").from("authors"))
      *  .sql()
      * </code>
@@ -129,7 +129,7 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * Set a cursor name created by DECLARE statement.
      *
      * @param cursorName cursor name.
-     * @return delete returning step
+     * @return deleteFrom returning step
      *
      * @see PostgreSQL#declare(String)
      */

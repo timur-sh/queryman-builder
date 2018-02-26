@@ -17,7 +17,7 @@ import org.queryman.builder.token.Keyword;
  *
  * @author Timur Shaidullin
  */
-public class CombiningQuery implements AstVisitor {
+class CombiningQuery implements AstVisitor {
     private final Keyword type;
     private final Query query;
 

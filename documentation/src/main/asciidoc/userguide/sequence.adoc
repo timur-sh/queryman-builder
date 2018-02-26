@@ -1,0 +1,6 @@
+[[sequence]]
+== CREATE SEQUENCE statement
+
+include::./../variable.adoc[]
+:example: ../{mainJavaDir}/Sequence.java
+

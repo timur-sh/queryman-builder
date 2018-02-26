@@ -17,12 +17,12 @@ import static org.queryman.builder.PostgreSQL.keyword;
  * @author Timur Shaidullin
  */
 public final class NodesMetadata {
-    public static final NodeMetadata SELECT             = new NodeMetadata(Keywords.SELECT);
-    public static final NodeMetadata SELECT_ALL         = new NodeMetadata(Keywords.SELECT_ALL);
-    public static final NodeMetadata SELECT_DISTINCT    = new NodeMetadata(Keywords.SELECT_DISTINCT);
+    public static final NodeMetadata SELECT          = new NodeMetadata(Keywords.SELECT);
+    public static final NodeMetadata SELECT_ALL      = new NodeMetadata(Keywords.SELECT_ALL);
+    public static final NodeMetadata SELECT_DISTINCT = new NodeMetadata(Keywords.SELECT_DISTINCT);
 
-    public static final NodeMetadata FROM        = new NodeMetadata(Keywords.FROM);
-    public static final NodeMetadata ONLY        = new NodeMetadata(Keywords.ONLY);
+    public static final NodeMetadata FROM = new NodeMetadata(Keywords.FROM);
+    public static final NodeMetadata ONLY = new NodeMetadata(Keywords.ONLY);
 
     public static final NodeMetadata ON           = new NodeMetadata(Keywords.ON);
     public static final NodeMetadata USING        = new NodeMetadata(Keywords.USING);
@@ -49,6 +49,10 @@ public final class NodesMetadata {
     public static final NodeMetadata ANY    = new NodeMetadata(Keywords.ANY);
     public static final NodeMetadata SOME   = new NodeMetadata(Keywords.SOME);
     public static final NodeMetadata ALL    = new NodeMetadata(Keywords.ALL);
+
+    public static final NodeMetadata WHERE_CURRENT_OF = new NodeMetadata(Keywords.WHERE_CURRENT_OF);
+    public static final NodeMetadata RETURNING        = new NodeMetadata(Keywords.RETURNING);
+    public static final NodeMetadata AS               = new NodeMetadata(Keywords.AS);
 
     public static final NodeMetadata EMPTY_GROUPED = new NodeMetadata(keyword(""), 0, true);
     public static final NodeMetadata EMPTY         = new NodeMetadata(keyword(""));

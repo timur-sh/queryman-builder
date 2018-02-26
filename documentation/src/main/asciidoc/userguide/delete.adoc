@@ -1,0 +1,6 @@
+[[delete]]
+== DELETE statement
+
+include::./../variable.adoc[]
+:example: ../{mainJavaDir}/Delete.java
+

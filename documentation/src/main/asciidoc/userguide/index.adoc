@@ -27,3 +27,7 @@ include::./expressions.adoc[]
 include::./conditions.adoc[]
 
 include::./select.adoc[]
+
+include::./delete.adoc[]
+
+include::./sequence.adoc[]
