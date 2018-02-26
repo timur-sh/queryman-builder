@@ -22,7 +22,7 @@ public interface UpdateSetStep extends UpdateFromStep {
      * @param value expression value
      * @return itself
      */
-    UpdateSetStep set(String column, String value);
+    <T> UpdateSetStep set(String column, T value);
 
     /**
      * Set a columns names and an expression list that are be assigned to the columns.

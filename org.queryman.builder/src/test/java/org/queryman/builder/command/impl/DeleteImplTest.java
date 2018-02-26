@@ -51,7 +51,7 @@ class DeleteImplTest {
     }
 
     @Test
-    void selectFromWhereAnd() {
+    void deleteFromWhereAnd() {
         DeleteUsingStep delete = deleteFrom("book")
            .as("b");
 
@@ -95,7 +95,7 @@ class DeleteImplTest {
     }
 
     @Test
-    void selectFromWhereAndNot() {
+    void deleteFromWhereAndNot() {
         DeleteUsingStep delete = deleteFrom("book").as("b");
 
         String sql = delete
@@ -130,7 +130,7 @@ class DeleteImplTest {
     }
 
     @Test
-    void selectFromWhereOr() {
+    void deleteFromWhereOr() {
         DeleteUsingStep delete = deleteFrom("book").as("b");
         String sql = delete
            .where("id", "=", "1")
@@ -164,7 +164,7 @@ class DeleteImplTest {
     }
 
     @Test
-    void selectFromWhereOrNot() {
+    void deleteFromWhereOrNot() {
         DeleteUsingStep delete = deleteFrom("book").as("b");
         String sql = delete
            .where("id", "=", "1")

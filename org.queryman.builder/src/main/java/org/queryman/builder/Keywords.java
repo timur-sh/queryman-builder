@@ -88,12 +88,17 @@ public class Keywords {
 
     public static final Keyword IF_NOT_EXISTS = keyword("IF NOT EXISTS");
 
-    public static final Keyword AS = keyword("AS");
+    public static final Keyword AS        = keyword("AS");
     public static final Keyword RETURNING = keyword("RETURNING");
 
 
-    public static final Keyword DELETE_FROM = keyword("DELETE FROM");
+    public static final Keyword DELETE_FROM      = keyword("DELETE FROM");
     public static final Keyword DELETE_FROM_ONLY = keyword("DELETE FROM ONLY");
+
+    public static final Keyword UPDATE      = keyword("UPDATE");
+    public static final Keyword UPDATE_ONLY = keyword("UPDATE ONLY");
+
+    public static final Keyword SET = keyword("SET");
 
 
     public static final Keyword WHERE_CURRENT_OF = keyword("WHERE CURRENT OF");

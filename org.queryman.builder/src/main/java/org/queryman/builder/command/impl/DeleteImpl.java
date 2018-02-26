@@ -145,7 +145,7 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public DeleteReturningStep whereCurrentOf(String cursorName) {
+    public final DeleteImpl whereCurrentOf(String cursorName) {
         this.whereCurrentOf = cursorName;
         return this;
     }

@@ -19,8 +19,10 @@ import org.queryman.builder.command.impl.DeleteImpl;
 import org.queryman.builder.command.impl.FromImpl;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.impl.SequenceImpl;
+import org.queryman.builder.command.impl.UpdateImpl;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.create.sequence.SequenceAsStep;
+import org.queryman.builder.command.update.UpdateAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -418,6 +420,79 @@ public class PostgreSQL {
 
     public static DeleteAsStep deleteFromOnly(Expression name) {
         return new DeleteImpl(getTree(), name, true);
+    }
+
+    //----
+    // UPDATE
+    //----
+
+    /**
+     * UPDATE statement.
+     *
+     * update("book")
+     *  .as("b")
+     *  .set("author", asQuotedName("Andrew"))
+     *  .where("b.id", "=", "1")
+     *  .returning(asName("max(price)").as("price"))
+     *  .sql();
+     *
+     * @param name name of the table ot update
+     * @return update as step
+     */
+    public static UpdateAsStep update(String name) {
+        return update(asName(name));
+    }
+
+
+    /**
+     * UPDATE statement.
+     *
+     * update("book")
+     *  .as("b")
+     *  .set("author", asQuotedName("Andrew"))
+     *  .where("b.id", "=", "1")
+     *  .returning(asName("max(price)").as("price"))
+     *  .sql();
+     *
+     * @param name name of the table ot update
+     * @return update as step
+     */
+    public static UpdateAsStep update(Expression name) {
+        return new UpdateImpl(getTree(), name);
+    }
+
+    /**
+     * UPDATE statement.
+     *
+     * updateOnly("book")
+     *  .as("b")
+     *  .set("author", asQuotedName("Andrew"))
+     *  .where("b.id", "=", "1")
+     *  .returning(asName("max(price)").as("price"))
+     *  .sql();
+     *
+     * @param name name of the table ot update
+     * @return update as step
+     */
+    public static UpdateAsStep updateOnly(String name) {
+        return updateOnly(asName(name));
+    }
+
+    /**
+     * UPDATE statement.
+     *
+     * updateOnly("book")
+     *  .as("b")
+     *  .set("author", asQuotedName("Andrew"))
+     *  .where("b.id", "=", "1")
+     *  .returning(asName("max(price)").as("price"))
+     *  .sql();
+     *
+     * @param name name of the table ot update
+     * @return update as step
+     */
+    public static UpdateAsStep updateOnly(Expression name) {
+        return new UpdateImpl(getTree(), name, true);
     }
 
     //----
