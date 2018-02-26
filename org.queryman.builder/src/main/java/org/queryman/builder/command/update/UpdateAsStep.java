@@ -7,7 +7,16 @@
 package org.queryman.builder.command.update;
 
 /**
+ * UPDATE .. AS .. clause.
+ *
  * @author Timur Shaidullin
  */
-public interface Update {
+public interface UpdateAsStep extends UpdateSetStep {
+    /**
+     * A substitute name for the target table.
+     *
+     * @param alias alias
+     * @return update using step
+     */
+    UpdateSetStep as(String alias);
 }

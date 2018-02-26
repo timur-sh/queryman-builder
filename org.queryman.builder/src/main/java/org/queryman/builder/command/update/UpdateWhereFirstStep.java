@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.delete;
+package org.queryman.builder.command.update;
 
 import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
@@ -13,42 +13,45 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
 /**
- * DELETE FROM .. WHERE | DELETE FROM .. WHERE CURRENT OF .. clause.
+ * UPDATE .. WHERE .. | UPDATE .. WHERE CURRENT OF .. clause.
  *
  * @author Timur Shaidullin
  */
-public interface DeleteWhereFirstStep extends DeleteReturningStep {
+public interface UpdateWhereFirstStep extends UpdateReturningStep {
     /**
      * Example:
      * <code>
-     * // DELETE FROM book WHERE b.year > 1
-     * deleteFrom("book")
+     * // UPDATE book AS b SET year = 2003 WHERE b.year > 1
+     * update("book")
      *  .as("b")
+     *  .set("year", 2003)
      *  .where("b.year", ">", "2010")
      *  .sql()
      * </code>
      */
-    DeleteWhereManyStep where(String left, String operator, String right);
+    UpdateWhereManyStep where(String left, String operator, String right);
 
     /**
      * Example:
      * <code>
-     * // DELETE FROM book WHERE "id" = 1
-     * deleteFrom("book")
+     * // UPDATE book SET year = 2003 WHERE "id" = 1
+     * update("book")
+     *  .set("year", 2003)
      *  .where(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
      */
-    DeleteWhereManyStep where(Expression left, Operator operator, Expression right);
+    UpdateWhereManyStep where(Expression left, Operator operator, Expression right);
 
     /**
      * Subquery condition.
      * Example:
      * <code>
      *
-     * // DELETE FROM book WHERE price < (SELECT MAX(total) FROM order)
+     * // UPDATE book SET year = 2003 WHERE price < (SELECT MAX(total) FROM order)
      *
-     * deleteFrom("book")
+     * update("book")
+     *  .set("year", 2003)
      *  .where("year", "<=", select(max("total")).from("order"))
      *  .sql()
      * </code>
@@ -56,14 +59,14 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * @param field field
      * @param operator operator
      * @param query subquery
-     * @return delete where many steps
+     * @return itself
      *
      * @see org.queryman.builder.Operators#GTE
-     * @see org.queryman.builder.PostgreSQL#max(String)
-     * @see org.queryman.builder.PostgreSQL#asName(String)
-     * @see org.queryman.builder.PostgreSQL#operator(String)
+     * @see PostgreSQL#max(String)
+     * @see PostgreSQL#asName(String)
+     * @see PostgreSQL#operator(String)
      */
-    DeleteWhereManyStep where(Expression field, Operator operator, Query query);
+    UpdateWhereManyStep where(Expression field, Operator operator, Query query);
 
     /**
      * This function useful in a few case:
@@ -84,16 +87,18 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      *
      * The first example:
      * <code>
-     * // DELETE FROM book WHERE id BETWEEN 1 AND 10
-     * deleteFrom("book")
+     * // UPDATE book SET year = 2003 WHERE id BETWEEN 1 AND 10
+     * update("book")
+     *  .set("year", 2003)
      *  .where(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
      *
      * The second example:
      * <code>
-     * // DELETE FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
-     * deleteFrom("book")
+     * // UPDATE book SET year = 2003 WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * update("book")
+     *  .set("year", 2003)
      *  .where(
      *      conditionBetween("id", "1", "10")
      *      .and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -102,36 +107,37 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * </code>
      *
      * @param conditions condition
-     * @return delete where many steps
+     * @return itself
      *
      * Kind of conditions:
      * @see PostgreSQL#condition(String, String, Query)
      * @see PostgreSQL#condition(String, String, String)
      */
-    DeleteWhereManyStep where(Conditions conditions);
+    UpdateWhereManyStep where(Conditions conditions);
 
     /**
      * Example:
      * <code>
      *
-     * // DELETE FROM FROM book WHERE EXISTS (SELECT * FROM author)
-     * deleteFrom("book")
+     * // UPDATE book SET year = 2003 WHERE EXISTS (SELECT * FROM author)
+     * update("book")
+     *  .set("year", 2003)
      *  .whereExists(select("*").from("authors"))
      *  .sql()
      * </code>
      *
      * @param query subquery
-     * @return delete where many steps
+     * @return itself
      */
-    DeleteWhereManyStep whereExists(Query query);
+    UpdateWhereManyStep whereExists(Query query);
 
     /**
      * Set a cursor name created by DECLARE statement.
      *
      * @param cursorName cursor name.
-     * @return delete returning step
+     * @return update returning step
      *
      * @see PostgreSQL#declare(String)
      */
-    DeleteReturningStep whereCurrentOf(String cursorName);
+    UpdateReturningStep whereCurrentOf(String cursorName);
 }
