@@ -4,21 +4,21 @@
  *  License: MIT License.
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.sequence;
+package org.queryman.builder.command.create.sequence;
 
 /**
  * @author Timur Shaidullin
  */
-public interface SequenceMaxValueStep extends SequenceStartStep {
+public interface SequenceMinValueStep extends SequenceMaxValueStep {
     /**
-     * @param maxvalue max value of sequence.
+     * @param minvalue min value of sequence.
      * @return the next step
      */
-    SequenceStartStep maxvalue(long maxvalue);
+    SequenceMaxValueStep minvalue(long minvalue);
 
     /**
-     * Set NO MAXVALUE
+     * Set NO MINVALUE
      * @return the next step
      */
-    SequenceStartStep noMaxvalue();
+    SequenceMaxValueStep noMinvalue();
 }

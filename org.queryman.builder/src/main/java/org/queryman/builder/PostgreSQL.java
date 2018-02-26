@@ -18,7 +18,7 @@ import org.queryman.builder.command.impl.FromImpl;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.select.SelectFromStep;
-import org.queryman.builder.command.sequence.SequenceFirstStep;
+import org.queryman.builder.command.create.sequence.SequenceFirstStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -33,7 +33,6 @@ import org.queryman.builder.token.expression.ListStringExpression;
 import org.queryman.builder.token.expression.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
