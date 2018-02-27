@@ -14,6 +14,5 @@ CREATE TABLE book (
 CREATE TABLE author (
   id BIGSERIAL NOT NULL,
   name VARCHAR(255),
-  book_id BIGINT,
-  FOREIGN KEY (book_id) REFERENCES book(id)
+  book_id BIGINT
 );

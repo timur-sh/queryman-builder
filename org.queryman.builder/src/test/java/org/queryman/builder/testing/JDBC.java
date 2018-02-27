@@ -23,7 +23,7 @@ public class JDBC {
     private static DataSource dataSource = new Bootstrap().init().getDataSource();
     private static Connection connection;
 
-    public void createConnection() {
+    public Connection createConnection() {
         if (connection != null)
             closeConnection();
 
@@ -32,6 +32,12 @@ public class JDBC {
         } catch (SQLException e) {
             throw new JDBCException(e.getMessage());
         }
+
+        return connection;
+    }
+
+    public static Connection getConnection() {
+        return connection;
     }
 
     public void closeConnection() {

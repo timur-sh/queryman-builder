@@ -217,6 +217,6 @@ class UpdateImplTest {
            .where("b.id", "=", "1")
            .returning(asName("max(price)").as("price"))
            .sql();
-        assertEquals("UPDATE book AS b SET author=\"order\" WHERE b.id = 1 RETURNING max(price) AS price", sql);
+        assertEquals("UPDATE book AS b SET author=\"Andrew\" WHERE b.id = 1 RETURNING max(price) AS price", sql);
     }
 }
