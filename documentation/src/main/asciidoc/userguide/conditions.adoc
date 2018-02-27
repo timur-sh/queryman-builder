@@ -4,3 +4,26 @@
 include::./../variable.adoc[]
 :example: ../{mainJavaDir}/Conditions.java
 
+Ordinarily any condition is used within data manipulation statements, like
+SELECT, UPDATE, DELETE, INSERT. Also, some other statements may use condition also,
+for example CHECK.
+
+The condition is representing by interface `org.queryman.builder.command.Conditions`.
+
+In considering SELECT .. WHERE clause, lets look at the below query:
+[source,java]
+include::{example}[tag=select-where]
+
+Each condition is succession of operands are joined by operator. For convenience's sake
+any conditions may take a String object, but internally  each operand represents
+the `Expression` object.
+
+The conditions may be more complicated, including a `org.queryman.builder.Query`
+object:
+[source,java]
+include::{example}[tag=select-where-query]
+
+If you wish to specify a precedence of conditions (surround them by parentheses),
+it’s possible to do using grouping conditions:
+[source,java]
+include::{example}[tag=select-where-complex]

@@ -157,7 +157,7 @@ public interface Conditions extends AstVisitor {
      *  .where("year", ">", "2010")
      *  .and(
      *      conditionBetween("id", "1", "10")
-     *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
+     *      .and(asName("name"), operator("="), asString("Advanced SQL"))
      *  )
      *  .sql()
      * </code>

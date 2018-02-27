@@ -2,6 +2,7 @@
 :toc2:
 :toclevels: 3
 :sectanchors:
+:source-highlighter: prettify
 
 :numbered:
 
