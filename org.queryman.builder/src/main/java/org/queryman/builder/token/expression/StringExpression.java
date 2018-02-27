@@ -6,7 +6,7 @@
  */
 package org.queryman.builder.token.expression;
 
-import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
 
 /**
  * Represents string asConstant. Variable is surrounded by single quotes:
@@ -17,7 +17,7 @@ import org.queryman.builder.token.Expression;
  * </code>
  * @author Timur Shaidullin
  */
-public class StringExpression extends Expression {
+public class StringExpression extends PreparedExpression {
     public StringExpression(String constant) {
         super(constant);
     }

@@ -837,8 +837,9 @@ public class PostgreSQL {
     public static Expression asConstant(String constant) {
         return new ConstantExpression(constant);
     }
+
     /**
-     * Constant expression:
+     * Prepared constant expression:
      * <p>
      * <code>
      * table_name
@@ -852,8 +853,8 @@ public class PostgreSQL {
      * @param constant any constant
      * @return a constant. e.g. 1, id, ARRAY[1] ...
      */
-    public static Expression asConstant(boolean constant) {
-        return new ConstantExpression(String.valueOf(constant));
+    public static Expression asPreparedConstant(String constant) {
+        return new ConstantExpression(constant).setPrepared(true);
     }
 
     /**
@@ -867,6 +868,19 @@ public class PostgreSQL {
      */
     public static Expression asString(String constant) {
         return new StringExpression(constant);
+    }
+
+    /**
+     * Prepared string expression:
+     * <code>
+     * 'any string is here'
+     * </code>
+     *
+     * @param constant string constant
+     * @return a string surrounded by single quote string. e.g. 'string'
+     */
+    public static Expression asPreparedString(String constant) {
+        return new StringExpression(constant).setPrepared(true);
     }
 
     /**
@@ -898,6 +912,34 @@ public class PostgreSQL {
     }
 
     /**
+     * Prepared dollar string expression:
+     * <code>
+     * $$any string is here$$
+     * </code>
+     *
+     * @param constant dollar string
+     * @return a string surrounded by dollar singes string. e.g. $$string$$
+     */
+    public static Expression asPreparedDollarString(String constant) {
+        return new DollarStringExpression(constant, "").setPrepared(true);
+    }
+
+    /**
+     * Prepared dollar string expression:
+     * <code>
+     * $$any string is here$$
+     * $tag$any string is here$tag$
+     * </code>
+     *
+     * @param constant dollar string
+     * @param tagName  tag name
+     * @return a string surrounded by dollar singes string. e.g. $tag$ string $tag$
+     */
+    public static Expression asPreparedDollarString(String constant, String tagName) {
+        return new DollarStringExpression(constant, tagName).setPrepared(true);
+    }
+
+    /**
      * It is a synonym of {@link #asConstant(String)}
      *
      * @param constant numeric constant
@@ -905,6 +947,16 @@ public class PostgreSQL {
      */
     public static Expression asNumber(Number constant) {
         return new ConstantExpression(constant);
+    }
+
+    /**
+     * It is a synonym of {@link #asConstant(String)}
+     *
+     * @param constant numeric constant
+     * @return number.
+     */
+    public static Expression asPreparedNumber(Number constant) {
+        return new ConstantExpression(constant).setPrepared(true);
     }
 
     /**

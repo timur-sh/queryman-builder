@@ -6,7 +6,7 @@
  */
 package org.queryman.builder.token.expression;
 
-import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
 
 /**
  * Represent a default expression. It is not surrounded by quotes. It
@@ -23,7 +23,7 @@ import org.queryman.builder.token.Expression;
  *
  * @author Timur Shaidullin
  */
-public class ConstantExpression extends Expression {
+public class ConstantExpression extends PreparedExpression {
     public ConstantExpression(String constant) {
         super(constant);
     }

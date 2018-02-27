@@ -151,13 +151,13 @@ public class SequenceImpl extends AbstractQuery implements
 
     @Override
     public final SequenceImpl cycle() {
-        cycle = asConstant(true);
+        cycle = asConstant(String.valueOf(true));
         return this;
     }
 
     @Override
     public final SequenceImpl noCycle() {
-        cycle = asConstant(false);
+        cycle = asConstant(String.valueOf(false));
         return this;
     }
 

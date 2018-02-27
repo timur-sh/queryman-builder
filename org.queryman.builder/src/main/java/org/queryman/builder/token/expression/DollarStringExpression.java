@@ -6,7 +6,7 @@
  */
 package org.queryman.builder.token.expression;
 
-import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
 
 /**
  * Represents dollar string asConstant. Variable is surrounded by single quotes:
@@ -17,7 +17,7 @@ import org.queryman.builder.token.Expression;
  *
  * @author Timur Shaidullin
  */
-public class DollarStringExpression extends Expression {
+public class DollarStringExpression extends PreparedExpression {
     /**
      * Tag name is used to surround dollar string. If no tag is given, the empty
      * {@code ""} string will be used.
