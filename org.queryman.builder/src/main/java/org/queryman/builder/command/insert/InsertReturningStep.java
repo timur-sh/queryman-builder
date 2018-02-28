@@ -4,31 +4,32 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.update;
+package org.queryman.builder.command.insert;
 
+import org.queryman.builder.command.delete.DeleteFinalStep;
 import org.queryman.builder.token.Expression;
 
 /**
- * UPDATE .. RETURNING .. clause.
+ * INSERT INTO .. RETURNING clause.
  *
  * @author Timur Shaidullin
  */
-public interface UpdateReturningStep extends UpdateFinalStep {
+public interface InsertReturningStep extends InsertFinalStep {
     /**
-     * Set list of expressions that to be computed after each row is updated.
+     * Set list of expressions that to be computed after each row is inserted.
      *
      * @param output list of output expressions
      * @return final step
      *
      * @see #returning(Expression...)
      */
-    UpdateFinalStep returning(String... output);
+    InsertFinalStep returning(String... output);
 
     /**
-     * Set list of expressions that to be computed after each row is updated.
+     * Set list of expressions that to be computed after each row is inserted.
      *
      * @param output list of output expressions
      * @return final step
      */
-    UpdateFinalStep returning(Expression... output);
+    InsertFinalStep returning(Expression... output);
 }

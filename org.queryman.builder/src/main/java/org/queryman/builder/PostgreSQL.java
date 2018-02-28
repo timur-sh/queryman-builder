@@ -17,9 +17,11 @@ import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
 import org.queryman.builder.command.impl.DeleteImpl;
 import org.queryman.builder.command.impl.FromImpl;
+import org.queryman.builder.command.impl.InsertImpl;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.impl.UpdateImpl;
+import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.create.sequence.SequenceAsStep;
 import org.queryman.builder.command.update.UpdateAsStep;
@@ -496,43 +498,15 @@ public class PostgreSQL {
     }
 
     //----
-    // COMMON
+    // UPDATE
     //----
 
-    /**
-     * Create an operator which ordinarily is used by condition.
-     *
-     * @param operator LIKE, ILIKE, =, !=, @> etc.
-     * @return instance of {@link Operator}.
-     * <p>
-     * Most useful operators are collected there:
-     * @see Operators
-     */
-    public static Operator operator(String operator) {
-        return new Operator(operator);
+    public static InsertAsStep insertInto(String table) {
+        return insertInto(asName(table));
     }
 
-    /**
-     * Create a keyword which ordinarily is used to build SQL query.
-     *
-     * @param keyword SELECT, UPDATE, FROM, JOIN etc.
-     * @return instance of {@link Keyword}
-     * <p>
-     * Most useful keywords are collected there:
-     * @see Operators
-     */
-    public static Keyword keyword(String keyword) {
-        return new Keyword(keyword);
-    }
-
-    /**
-     * NodeMetadata contains a metadata for tree node.
-     *
-     * @param keyword NodeMetadata is composed from keyword.
-     * @return node metadata
-     */
-    public static NodeMetadata nodeMetadata(Keyword keyword) {
-        return new NodeMetadata(keyword);
+    public static InsertAsStep insertInto(Expression table) {
+        return new InsertImpl(getTree(), table);
     }
 
     //----
@@ -1223,5 +1197,69 @@ public class PostgreSQL {
      */
     public static Expression asSubQuery(Query query) {
         return new SubQueryExpression(query);
+    }
+
+    //----
+    // COMMON
+    //----
+
+    /**
+     * Create an operator which ordinarily is used by condition.
+     *
+     * @param operator LIKE, ILIKE, =, !=, @> etc.
+     * @return instance of {@link Operator}.
+     * <p>
+     * Most useful operators are collected there:
+     * @see Operators
+     */
+    public static Operator operator(String operator) {
+        return new Operator(operator);
+    }
+
+    /**
+     * Create a keyword which ordinarily is used to build SQL query.
+     *
+     * @param keyword SELECT, UPDATE, FROM, JOIN etc.
+     * @return instance of {@link Keyword}
+     * <p>
+     * Most useful keywords are collected there:
+     * @see Operators
+     */
+    public static Keyword keyword(String keyword) {
+        return new Keyword(keyword);
+    }
+
+    /**
+     * NodeMetadata contains a metadata for tree node.
+     *
+     * @param keyword NodeMetadata is composed from keyword.
+     * @return node metadata
+     */
+    public static NodeMetadata nodeMetadata(Keyword keyword) {
+        return new NodeMetadata(keyword);
+    }
+
+    public static ConflictTarget conflictTargetExpression(String indexName) {
+        return conflictTargetExpression(indexName, null, null);
+    }
+
+    public static ConflictTarget conflictTargetExpression(String indexName, String collation) {
+        return conflictTargetExpression(indexName, collation, null);
+    }
+
+    public static ConflictTarget conflictTargetExpression(String indexName, String collation, String opclass) {
+        return new ConflictTarget(indexName, collation, opclass).markAsExpression();
+    }
+
+    public static ConflictTarget conflictTargetColumn(String indexName) {
+        return conflictTargetColumn(indexName, null, null);
+    }
+
+    public static ConflictTarget conflictTargetColumn(String indexName, String collation) {
+        return conflictTargetColumn(indexName, collation, null);
+    }
+
+    public static ConflictTarget conflictTargetColumn(String indexName, String collation, String opclass) {
+        return new ConflictTarget(indexName, collation, opclass).markAsColumn();
     }
 }
