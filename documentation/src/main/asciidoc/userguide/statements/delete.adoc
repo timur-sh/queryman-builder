@@ -1,0 +1,22 @@
+[[delete]]
+=== DELETE statement
+
+include::./../../variable.adoc[]
+:example: ../../{mainJavaDir}/Delete.java
+
+link:https://www.postgresql.org/docs/9.6/static/sql-delete.html[DELETE command (PostgreSQL)]
+
+Synopsis
+```
+DELETE FROM [ ONLY ] table_name [ * ] [ [ AS ] alias ]
+    [ USING using_list ]
+    [ WHERE condition | WHERE CURRENT OF cursor_name ]
+    [ RETURNING * | output_expression [ [ AS ] output_name ] [, ...] ]
+
+```
+
+DELETE statement is entirely implemented. Considering the above synopsis of DELETE,
+ let's look at example of SQL of Queryman Builder
+
+[source,java]
+include::{example}[tag=simple-delete]

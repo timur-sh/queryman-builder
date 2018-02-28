@@ -27,8 +27,10 @@ include::./expressions.adoc[]
 
 include::./conditions.adoc[]
 
-include::./select.adoc[]
+== Statements
 
-include::./delete.adoc[]
+include::./statements/select.adoc[]
 
-include::./sequence.adoc[]
+include::./statements/delete.adoc[]
+
+include::./statements/sequence.adoc[]
