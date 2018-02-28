@@ -23,7 +23,7 @@ import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.impl.UpdateImpl;
 import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
-import org.queryman.builder.command.create.sequence.SequenceAsStep;
+import org.queryman.builder.command.create_sequence.SequenceAsStep;
 import org.queryman.builder.command.update.UpdateAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
@@ -259,7 +259,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Create a create_sequence.
      * Example:
      * <code>
      *     createTempSequence("book_seq")

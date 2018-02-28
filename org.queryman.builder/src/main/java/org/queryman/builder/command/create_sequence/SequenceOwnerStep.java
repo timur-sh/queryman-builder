@@ -4,7 +4,7 @@
  *  License: MIT License.
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.create.sequence;
+package org.queryman.builder.command.create_sequence;
 
 import org.queryman.builder.token.Expression;
 
