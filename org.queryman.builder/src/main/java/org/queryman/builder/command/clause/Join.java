@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.command.impl;
+package org.queryman.builder.command.clause;
 
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
@@ -18,7 +18,7 @@ import static org.queryman.builder.ast.NodesMetadata.*;
 /**
  * @author Timur Shaidullin
  */
-class Join implements AstVisitor {
+public class Join implements AstVisitor {
     private final NodeMetadata type;
     private final Expression   name;
 
@@ -26,12 +26,12 @@ class Join implements AstVisitor {
     private Conditions   conditions;
     private Expression[] using;
 
-    Join(Expression name, NodeMetadata type) {
+    public Join(Expression name, NodeMetadata type) {
         this.name = name;
         this.type = type;
     }
 
-    Join using(Expression... columns) {
+    public Join using(Expression... columns) {
         this.using = columns;
         return this;
     }

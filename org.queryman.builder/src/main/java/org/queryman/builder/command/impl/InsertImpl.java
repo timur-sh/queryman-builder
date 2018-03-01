@@ -7,7 +7,7 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.ConflictTarget;
+import org.queryman.builder.command.ConflictTarget;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.command.Conditions;

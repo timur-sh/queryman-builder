@@ -6,7 +6,7 @@
  */
 package org.queryman.builder.command.insert;
 
-import org.queryman.builder.ConflictTarget;
+import org.queryman.builder.command.ConflictTarget;
 
 /**
  * INSERT INTO .. ON CONFLICT .. step.

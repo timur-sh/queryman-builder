@@ -1,5 +1,6 @@
 package org.queryman.builder.command.impl;
 
+import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,6 +9,8 @@ import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.conflictTargetColumn;
 
 class InsertImplTest {
+
+    @Test
     void insertFull1() {
         String sql = PostgreSQL.insertInto("book")
            .as("b")
@@ -23,6 +26,7 @@ class InsertImplTest {
         assertEquals("INSERT INTO book AS b (id, name) OVERRIDING SYSTEM VALUE VALUES(1, 'test') ON CONFLICT ON CONSTRAINT index_name DO NOTHING", sql);
     }
 
+    @Test
     void isnertFull2() {
         String sql = PostgreSQL.insertInto("book")
            .columns("id", "name")
@@ -38,6 +42,7 @@ class InsertImplTest {
         assertEquals("INSERT INTO book AS b (id, name) OVERRIDING USER VALUE VALUES(1, 'test') ON CONFLICT (tt) WHERE id = 2 AND id != 3 DO NOTHING RETURNING id", sql);
     }
 
+    @Test
     void insertFull2() {
         String sql = PostgreSQL.insertInto("book")
            .as("b")
@@ -55,6 +60,7 @@ class InsertImplTest {
         assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (tt) DO UPDATE SET 1, 2 WHERE id = 2 AND id != 3 RETURNING id", sql);
     }
 
+    @Test
     void insertFull4() {
         String sql = PostgreSQL.insertInto("book")
            .as("b")

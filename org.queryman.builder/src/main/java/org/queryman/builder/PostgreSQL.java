@@ -12,6 +12,7 @@ import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.ast.TreeFactory;
 import org.queryman.builder.boot.ServiceRegister;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.ConflictTarget;
 import org.queryman.builder.command.delete.DeleteAsStep;
 import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
@@ -501,10 +502,24 @@ public class PostgreSQL {
     // UPDATE
     //----
 
+    /**
+     * Creates an INSERT INTO statement.
+     *
+     * @param table target table name
+     * @return insert as step of INSERT INTO statement
+     *
+     * @see #insertInto(Expression)
+     */
     public static InsertAsStep insertInto(String table) {
         return insertInto(asName(table));
     }
 
+    /**
+     * Creates an INSERT INTO statement.
+     *
+     * @param table target table name
+     * @return insert as step of INSERT INTO statement
+     */
     public static InsertAsStep insertInto(Expression table) {
         return new InsertImpl(getTree(), table);
     }
@@ -1239,27 +1254,75 @@ public class PostgreSQL {
         return new NodeMetadata(keyword);
     }
 
-    public static ConflictTarget conflictTargetExpression(String indexName) {
-        return conflictTargetExpression(indexName, null, null);
+    /**
+     * The type represents an index expression.
+     * {@link ConflictTarget} type is a part of INSERT .. ON CONFLICT clause
+     *
+     * @param expression index expression
+     * @return conflict target type
+     */
+    public static ConflictTarget conflictTargetExpression(String expression) {
+        return conflictTargetExpression(expression, null, null);
     }
 
-    public static ConflictTarget conflictTargetExpression(String indexName, String collation) {
-        return conflictTargetExpression(indexName, collation, null);
+    /**
+     * The type represents an index expression.
+     * {@link ConflictTarget} type is a part of INSERT .. ON CONFLICT clause
+     *
+     * @param expression index expression
+     * @param collation collation
+     * @return conflict target type
+     */
+    public static ConflictTarget conflictTargetExpression(String expression, String collation) {
+        return conflictTargetExpression(expression, collation, null);
     }
 
-    public static ConflictTarget conflictTargetExpression(String indexName, String collation, String opclass) {
-        return new ConflictTarget(indexName, collation, opclass).markAsExpression();
+    /**
+     * The type represents an index expression.
+     * {@link ConflictTarget} type is a part of INSERT .. ON CONFLICT clause
+     *
+     * @param expression index expression
+     * @param collation collation
+     * @param opclass operator class
+     * @return conflict target type
+     */
+    public static ConflictTarget conflictTargetExpression(String expression, String collation, String opclass) {
+        return new ConflictTarget(expression, collation, opclass).markAsExpression();
     }
 
-    public static ConflictTarget conflictTargetColumn(String indexName) {
-        return conflictTargetColumn(indexName, null, null);
+    /**
+     * The type represents an index column.
+     * {@link ConflictTarget} type is a part of INSERT .. ON CONFLICT clause
+     *
+     * @param column index expression
+     * @return conflict target type
+     */
+    public static ConflictTarget conflictTargetColumn(String column) {
+        return conflictTargetColumn(column, null, null);
     }
 
-    public static ConflictTarget conflictTargetColumn(String indexName, String collation) {
-        return conflictTargetColumn(indexName, collation, null);
+    /**
+     * The type represents an index column.
+     * {@link ConflictTarget} type is a part of INSERT .. ON CONFLICT clause
+     *
+     * @param column index expression
+     * @param collation collation
+     * @return conflict target type
+     */
+    public static ConflictTarget conflictTargetColumn(String column, String collation) {
+        return conflictTargetColumn(column, collation, null);
     }
 
-    public static ConflictTarget conflictTargetColumn(String indexName, String collation, String opclass) {
-        return new ConflictTarget(indexName, collation, opclass).markAsColumn();
+    /**
+     * The type represents an index column.
+     * {@link ConflictTarget} type is a part of INSERT .. ON CONFLICT clause
+     *
+     * @param column index expression
+     * @param collation collation
+     * @param opclass operator class
+     * @return conflict target type
+     */
+    public static ConflictTarget conflictTargetColumn(String column, String collation, String opclass) {
+        return new ConflictTarget(column, collation, opclass).markAsColumn();
     }
 }

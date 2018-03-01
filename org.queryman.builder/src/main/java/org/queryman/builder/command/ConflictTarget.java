@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder;
+package org.queryman.builder.command;
 
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
@@ -13,6 +13,9 @@ import org.queryman.builder.token.Expression;
 import static org.queryman.builder.PostgreSQL.asConstant;
 
 /**
+ * Conflict target belongs to
+ * INSERT .. ON CONFLICT ( { index_column_name | ( index_expression ) } [ COLLATE collation ] [ opclass ] [, ...] )
+ *
  * @author Timur Shaidullin
  */
 public class ConflictTarget implements AstVisitor {

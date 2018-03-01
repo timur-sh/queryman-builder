@@ -12,6 +12,8 @@ import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.clause.Join;
+import org.queryman.builder.command.clause.OrderBy;
 import org.queryman.builder.command.from.From;
 import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromStep;
