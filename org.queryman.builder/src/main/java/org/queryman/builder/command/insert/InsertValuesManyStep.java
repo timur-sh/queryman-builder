@@ -6,11 +6,12 @@
  */
 package org.queryman.builder.command.insert;
 
+import org.queryman.builder.Query;
+import org.queryman.builder.token.Expression;
+
 /**
  * @author Timur Shaidullin
  */
-public interface InsertColumnsManyStep extends
-   InsertOverridingStep,
-   InsertDefaultValuesStep,
-   InsertValuesManyStep {
+public interface InsertValuesManyStep extends InsertValuesStep {
+    InsertOnConflictStep values(Query query);
 }

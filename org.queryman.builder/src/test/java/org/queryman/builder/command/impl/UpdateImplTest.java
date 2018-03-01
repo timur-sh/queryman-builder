@@ -26,7 +26,7 @@ class UpdateImplTest {
            .set(asList("year", "price"), select("year", "price").from("book"))
            .from("order")
            .sql();
-        assertEquals("UPDATE book SET (id, name)=(1, 'Timur'), (year, price)=(SELECT year, price FROM book) FROM order", sql);
+        assertEquals("UPDATE book SET (id, name) = (1, 'Timur'), (year, price) = (SELECT year, price FROM book) FROM order", sql);
     }
 
     @Test
@@ -44,13 +44,13 @@ class UpdateImplTest {
     @Test
     void updateAsSetTest() {
         String sql = update("book").as("b").set("year", 2010).sql();
-        assertEquals("UPDATE book AS b SET year=2010", sql);
+        assertEquals("UPDATE book AS b SET year = 2010", sql);
     }
 
     @Test
     void updateAsSetWhereTest() {
         String sql = update("book").as("b").set("author", 1).where("b.id", "=", "1").sql();
-        assertEquals("UPDATE book AS b SET author=1 WHERE b.id = 1", sql);
+        assertEquals("UPDATE book AS b SET author = 1 WHERE b.id = 1", sql);
     }
 
     @Test
@@ -61,7 +61,7 @@ class UpdateImplTest {
         update.set("author", asQuotedName("order"))
            .where("b.id", "=", "1");
 
-        assertEquals("UPDATE book AS b SET author=\"order\" WHERE b.id = 1", update.sql());
+        assertEquals("UPDATE book AS b SET author = \"order\" WHERE b.id = 1", update.sql());
 
 
         update = update("book")
@@ -209,7 +209,7 @@ class UpdateImplTest {
            .where("b.id", "=", "1")
            .returning("*")
            .sql();
-        assertEquals("UPDATE book AS b SET author=\"order\" WHERE b.id = 1 RETURNING *", sql);
+        assertEquals("UPDATE book AS b SET author = \"order\" WHERE b.id = 1 RETURNING *", sql);
 
         sql = update("book")
            .as("b")
@@ -217,6 +217,6 @@ class UpdateImplTest {
            .where("b.id", "=", "1")
            .returning(asName("max(price)").as("price"))
            .sql();
-        assertEquals("UPDATE book AS b SET author=\"Andrew\" WHERE b.id = 1 RETURNING max(price) AS price", sql);
+        assertEquals("UPDATE book AS b SET author = \"Andrew\" WHERE b.id = 1 RETURNING max(price) AS price", sql);
     }
 }

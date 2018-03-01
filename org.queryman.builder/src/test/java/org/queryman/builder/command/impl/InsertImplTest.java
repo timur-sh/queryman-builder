@@ -3,10 +3,11 @@ package org.queryman.builder.command.impl;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.queryman.builder.PostgreSQL.asName;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.conflictTargetColumn;
+import static org.queryman.builder.PostgreSQL.conflictTargetExpression;
+import static org.queryman.builder.PostgreSQL.select;
 
 class InsertImplTest {
 
@@ -23,27 +24,27 @@ class InsertImplTest {
            .sql()
         ;
 
-        assertEquals("INSERT INTO book AS b (id, name) OVERRIDING SYSTEM VALUE VALUES(1, 'test') ON CONFLICT ON CONSTRAINT index_name DO NOTHING", sql);
+        assertEquals("INSERT INTO book AS b (id, name) OVERRIDING SYSTEM VALUE VALUES (1, 'test') ON CONFLICT ON CONSTRAINT index_name DO NOTHING", sql);
     }
 
     @Test
-    void isnertFull2() {
+    void insertFull2() {
         String sql = PostgreSQL.insertInto("book")
            .columns("id", "name")
            .overridingUserValue()
-           .values("1", asName("test"))
-           .onConflict(conflictTargetColumn("tt"))
+           .values("1", asString("test"))
+           .onConflict(conflictTargetColumn("tt", "44", "55"), conflictTargetExpression("qq"))
            .where("id", "=", "2")
            .and("id", "!=", "3")
            .doNothing()
            .returning("id")
            .sql()
         ;
-        assertEquals("INSERT INTO book AS b (id, name) OVERRIDING USER VALUE VALUES(1, 'test') ON CONFLICT (tt) WHERE id = 2 AND id != 3 DO NOTHING RETURNING id", sql);
+        assertEquals("INSERT INTO book (id, name) OVERRIDING USER VALUE VALUES (1, 'test') ON CONFLICT (tt COLLATE 44 55, (qq)) WHERE id = 2 AND id != 3 DO NOTHING RETURNING id", sql);
     }
 
     @Test
-    void insertFull2() {
+    void insertFull3() {
         String sql = PostgreSQL.insertInto("book")
            .as("b")
            .columns("id", "name")
@@ -57,7 +58,7 @@ class InsertImplTest {
            .returning("id")
            .sql()
         ;
-        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (tt) DO UPDATE SET 1, 2 WHERE id = 2 AND id != 3 RETURNING id", sql);
+        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (tt) DO UPDATE SET id = 1, name = 'test' WHERE id = 2 AND id != 3 RETURNING id", sql);
     }
 
     @Test
@@ -65,12 +66,12 @@ class InsertImplTest {
         String sql = PostgreSQL.insertInto("book")
            .as("b")
            .columns("id", "name")
-           .values("1", "2")
+           .values(select("id", "name").from("book"))
            .onConflict()
            .doNothing()
            .returning("id")
            .sql()
         ;
-        assertEquals("INSERT INTO book AS b (id, name) VALUES (1, 2) ON CONFLICT DO NOTHING RETURNING id", sql);
+        assertEquals("INSERT INTO book AS b (id, name) VALUES (SELECT id, name FROM book) ON CONFLICT DO NOTHING RETURNING id", sql);
     }
 }

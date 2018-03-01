@@ -13,6 +13,8 @@ import org.queryman.builder.token.Expression;
 import static org.queryman.builder.PostgreSQL.asConstant;
 
 /**
+ * This {@code class} represents an ORDER BY clause.
+ *
  * @author Timur Shaidullin
  */
 public final class OrderBy implements AstVisitor {

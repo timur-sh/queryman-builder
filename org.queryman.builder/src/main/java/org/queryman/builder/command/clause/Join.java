@@ -16,6 +16,8 @@ import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.ast.NodesMetadata.*;
 
 /**
+ * This {@code class} represents an JOIN clause.
+ *
  * @author Timur Shaidullin
  */
 public class Join implements AstVisitor {

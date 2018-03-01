@@ -49,6 +49,18 @@ final class TreeFormatter {
             }
         }
 
+        if (metadata.isJoinNodes() && node.getNodes().size() > 0) {
+            String[] joining = list.stream()
+               .skip(list.size() - node.getNodes().size())
+               .toArray(String[]::new);
+
+            list = list.stream()
+               .limit(list.size() - node.getNodes().size())
+               .collect(Collectors.toList());
+
+            list.add(String.join(node.getDelimiter(), joining));
+        }
+
         return new Pipeline(metadata)
            .process(list);
     }

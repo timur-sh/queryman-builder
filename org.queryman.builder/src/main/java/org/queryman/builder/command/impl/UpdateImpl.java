@@ -7,6 +7,7 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
+import org.queryman.builder.Operators;
 import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
@@ -28,6 +29,7 @@ import java.util.Map;
 import static org.queryman.builder.Keywords.SET;
 import static org.queryman.builder.Keywords.UPDATE;
 import static org.queryman.builder.Keywords.UPDATE_ONLY;
+import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asSubQuery;
@@ -87,11 +89,13 @@ public class UpdateImpl extends AbstractQuery implements
                .endNode();
 
         if (setList.size() > 0) {
-            tree.startNode(nodeMetadata(SET), ", ");
+            tree.startNode(nodeMetadata(SET).setJoinNodes(true), ", ");
 
             for (Map<Expression, Expression> map : setList)
                 for (Expression key : map.keySet())
-                    tree.addLeaves(asConstant(key.getName() + "=" + map.get(key).getName()));
+                    tree.startNode(nodeMetadata(EQUAL))
+                       .addLeaves(key, map.get(key))
+                       .endNode();
 
             tree.endNode();
         }

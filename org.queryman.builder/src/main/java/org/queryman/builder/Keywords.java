@@ -98,7 +98,19 @@ public class Keywords {
     public static final Keyword UPDATE      = keyword("UPDATE");
     public static final Keyword UPDATE_ONLY = keyword("UPDATE ONLY");
 
+    public static final Keyword INSERT_INTO             = keyword("INSERT INTO");
+    public static final Keyword OVERRIDING_SYSTEM_VALUE = keyword("OVERRIDING SYSTEM VALUE");
+    public static final Keyword OVERRIDING_USER_VALUE   = keyword("OVERRIDING USER VALUE");
+    public static final Keyword DEFAULT_VALUES          = keyword("DEFAULT VALUES");
+    public static final Keyword VALUES                  = keyword("VALUES");
+    public static final Keyword ON_CONFLICT             = keyword("ON CONFLICT");
+    public static final Keyword ON_CONSTRAINT           = keyword("ON CONSTRAINT");
+    public static final Keyword DO_NOTHING              = keyword("DO NOTHING");
+    public static final Keyword DO_UPDATE               = keyword("DO UPDATE");
+
     public static final Keyword SET = keyword("SET");
+
+    public static final Keyword COLLATE = keyword("COLLATE");
 
 
     public static final Keyword WHERE_CURRENT_OF = keyword("WHERE CURRENT OF");

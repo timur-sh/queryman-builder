@@ -6,7 +6,6 @@
  */
 package org.queryman.builder.command.insert;
 
-import org.queryman.builder.Query;
 import org.queryman.builder.token.Expression;
 
 /**
@@ -17,5 +16,4 @@ import org.queryman.builder.token.Expression;
 public interface InsertValuesStep extends InsertOnConflictStep {
     <T> InsertValuesStep values(T... values);
     InsertValuesStep values(Expression... values);
-    InsertOnConflictStep values(Query query);
 }

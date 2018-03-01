@@ -19,6 +19,7 @@ import org.queryman.builder.token.Token;
 public class NodeMetadata {
     private final Token token;
     private boolean parentheses = false;
+    private boolean joinNodes;
 
     // position in a condition, where operator is appeared
     private int position = 0;
@@ -64,5 +65,14 @@ public class NodeMetadata {
     @Override
     public String toString() {
         return token.getName();
+    }
+
+    public boolean isJoinNodes() {
+        return joinNodes;
+    }
+
+    public NodeMetadata setJoinNodes(boolean joinNodes) {
+        this.joinNodes = joinNodes;
+        return this;
     }
 }
