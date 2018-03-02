@@ -40,6 +40,7 @@ import org.queryman.builder.token.expression.ListStringExpression;
 import org.queryman.builder.token.expression.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -809,41 +810,22 @@ public class PostgreSQL {
     //----
 
     /**
-     * Constant expression:
-     * <p>
-     * <code>
-     * table_name
-     * $n1
-     * LIST[1]
-     * 234.11
-     * .50
-     * .2E+1
-     * </code>
+     * Constant expression may have as a string representation as a representation
+     * for JDBC date types.
      *
      * @param constant any constant
-     * @return a constant. e.g. 1, id, ARRAY[1] ...
+     * @return a constant
+     *
+     * @see <a href=" https://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS">PostgreSQL constants</a>
      */
     public static Expression asConstant(String constant) {
-        return new ConstantExpression(constant);
-    }
 
-    /**
-     * Prepared constant expression:
-     * <p>
-     * <code>
-     * table_name
-     * $n1
-     * LIST[1]
-     * 234.11
-     * .50
-     * .2E+1
-     * </code>
-     *
-     * @param constant any constant
-     * @return a constant. e.g. 1, id, ARRAY[1] ...
-     */
-    public static Expression asPreparedConstant(String constant) {
-        return new ConstantExpression(constant).setPrepared(true);
+        switch (((Object)constant).getClass().getName()) {
+
+        }
+
+//        return new ConstantExpression(constant);
+        return null;
     }
 
     /**
@@ -857,19 +839,6 @@ public class PostgreSQL {
      */
     public static Expression asString(String constant) {
         return new StringExpression(constant);
-    }
-
-    /**
-     * Prepared string expression:
-     * <code>
-     * 'any string is here'
-     * </code>
-     *
-     * @param constant string constant
-     * @return a string surrounded by single quote string. e.g. 'string'
-     */
-    public static Expression asPreparedString(String constant) {
-        return new StringExpression(constant).setPrepared(true);
     }
 
     /**
@@ -898,54 +867,6 @@ public class PostgreSQL {
      */
     public static Expression asDollarString(String constant, String tagName) {
         return new DollarStringExpression(constant, tagName);
-    }
-
-    /**
-     * Prepared dollar string expression:
-     * <code>
-     * $$any string is here$$
-     * </code>
-     *
-     * @param constant dollar string
-     * @return a string surrounded by dollar singes string. e.g. $$string$$
-     */
-    public static Expression asPreparedDollarString(String constant) {
-        return new DollarStringExpression(constant, "").setPrepared(true);
-    }
-
-    /**
-     * Prepared dollar string expression:
-     * <code>
-     * $$any string is here$$
-     * $tag$any string is here$tag$
-     * </code>
-     *
-     * @param constant dollar string
-     * @param tagName  tag name
-     * @return a string surrounded by dollar singes string. e.g. $tag$ string $tag$
-     */
-    public static Expression asPreparedDollarString(String constant, String tagName) {
-        return new DollarStringExpression(constant, tagName).setPrepared(true);
-    }
-
-    /**
-     * It is a synonym of {@link #asConstant(String)}
-     *
-     * @param constant numeric constant
-     * @return number.
-     */
-    public static Expression asNumber(Number constant) {
-        return new ConstantExpression(constant);
-    }
-
-    /**
-     * It is a synonym of {@link #asConstant(String)}
-     *
-     * @param constant numeric constant
-     * @return number.
-     */
-    public static Expression asPreparedNumber(Number constant) {
-        return new ConstantExpression(constant).setPrepared(true);
     }
 
     /**

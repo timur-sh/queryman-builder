@@ -3,6 +3,7 @@ package org.queryman.builder.token;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -187,5 +188,20 @@ class ExpressionTest {
 
         assertEquals("SELECT EXISTS(SELECT * FROM book) AS exists", sql);
 
+    }
+
+    @Test
+    void tt() {
+//        boolean b = true;
+//        int b = 1;
+//        byte b = 1;
+        Date b = new Date();
+
+        System.out.println(b);
+        System.out.println(((Object)b).getClass().getCanonicalName());
+        System.out.println(((Object)b).getClass().getName());
+        System.out.println(((Object)b).getClass().getPackageName());
+        System.out.println(((Object)b).getClass().getSimpleName());
+        System.out.println(((Object)b).getClass().getTypeName());
     }
 }

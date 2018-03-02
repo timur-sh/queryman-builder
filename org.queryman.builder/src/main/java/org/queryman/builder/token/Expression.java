@@ -19,7 +19,6 @@ import org.queryman.builder.utils.StringUtils;
  * <li>Array</li>
  * </ul>
  *
- * @author Timur Shaidullin
  * @see org.queryman.builder.token.expression.ArrayExpression
  * @see org.queryman.builder.token.expression.ArrayStringExpression
  * @see org.queryman.builder.token.expression.ColumnReferenceExpression
@@ -29,6 +28,8 @@ import org.queryman.builder.utils.StringUtils;
  * @see org.queryman.builder.token.expression.ListExpression
  * @see org.queryman.builder.token.expression.ListStringExpression
  * @see org.queryman.builder.token.expression.StringExpression
+ *
+ * @author Timur Shaidullin
  */
 public abstract class Expression extends AbstractToken
    implements

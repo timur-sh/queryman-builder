@@ -7,8 +7,8 @@
 package org.queryman.builder.token;
 
 /**
- * Represent keywords, examples: {@code SELECT}, {@code UPDATE}, {@code DELETE},
- * {@code INSERT}, {@code WITH}, {@code FROM}, {@code DISTINCT} etc.
+ * Represent keywords, examples: SELECT, UPDATE, DELETE,
+ * INSERT, WITH, FROM, DISTINCT etc.
  *
  * @author Timur Shaidullin
  */
