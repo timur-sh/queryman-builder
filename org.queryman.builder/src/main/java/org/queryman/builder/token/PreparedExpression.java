@@ -7,8 +7,8 @@
 package org.queryman.builder.token;
 
 /**
- * This class represents a prepared parameter. It may be used to detach a
- * user provided parameter from SQL query.
+ * This is a marker class that denotes a prepared constant and must be extended
+ * by all constant classes like numeric, string, date etc.
  *
  * @see org.queryman.builder.token.expression.ConstantExpression
  * @see org.queryman.builder.token.expression.DollarStringExpression
@@ -16,19 +16,14 @@ package org.queryman.builder.token;
  *
  * @author Timur Shaidullin
  */
-public abstract class PreparedExpression extends Expression {
-    private boolean prepared;
+public abstract class PreparedExpression<T> extends Expression {
+    protected T value;
 
-    public PreparedExpression(String constant) {
-        super(constant);
+    public PreparedExpression(T constant) {
+        super(String.valueOf(constant));
+
+        value = constant;
     }
 
-    public boolean isPrepared() {
-        return prepared;
-    }
-
-    public PreparedExpression setPrepared(boolean prepare) {
-        prepared = prepare;
-        return this;
-    }
+    protected abstract T getValue();
 }

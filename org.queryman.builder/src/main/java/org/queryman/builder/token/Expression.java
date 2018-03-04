@@ -6,28 +6,17 @@
  */
 package org.queryman.builder.token;
 
-import org.queryman.builder.utils.StringUtils;
-
 /**
- * PostgreSQL expressions:
+ *
+ * This is a representation of a PostgreSQL expression. The list below shows a
+ * implemented expressions:
+ *
  * <p>
  * <ul>
- * <li>String</li>
- * <li>Dollar string</li>
- * <li>Constant</li>
- * <li>List</li>
- * <li>Array</li>
+ *  <li>Constants. See {@link PreparedExpression} - date, numeric, string etc.</li>
+ *  <li>The list of constants</li>
+ *  <li>Array of constants</li>
  * </ul>
- *
- * @see org.queryman.builder.token.expression.ArrayExpression
- * @see org.queryman.builder.token.expression.ArrayStringExpression
- * @see org.queryman.builder.token.expression.ColumnReferenceExpression
- * @see org.queryman.builder.token.expression.ConstantExpression
- * @see org.queryman.builder.token.expression.DollarStringExpression
- * @see org.queryman.builder.token.expression.FuncExpression
- * @see org.queryman.builder.token.expression.ListExpression
- * @see org.queryman.builder.token.expression.ListStringExpression
- * @see org.queryman.builder.token.expression.StringExpression
  *
  * @author Timur Shaidullin
  */
@@ -54,7 +43,6 @@ public abstract class Expression extends AbstractToken
     public Expression(String constant) {
         super(constant);
     }
-
 
     @Override
     public String getName() {
@@ -90,11 +78,6 @@ public abstract class Expression extends AbstractToken
     }
 
     @Override
-    public boolean isEmpty() {
-        return StringUtils.isEmpty(name);
-    }
-
-    @Override
     public final Expression cast(String type) {
         this.castType = type;
         return this;
@@ -117,8 +100,8 @@ public abstract class Expression extends AbstractToken
     /**
      * Wrap the {@code name} into single quotes
      */
-    protected String toPostgresqlString(String name) {
-        if (StringUtils.isEmpty(name))
+    protected String toPostgreSQLString(String name) {
+        if (isEmpty())
             return "";
 
         return "'" + name.replaceAll("'", "''") + "'";

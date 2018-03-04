@@ -32,8 +32,6 @@ import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asString;
-import static org.queryman.builder.PostgreSQL.asStringList;
 import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionAll;
@@ -43,7 +41,6 @@ import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.conditionSome;
 import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.PostgreSQL.select;
-import static org.queryman.builder.PostgreSQL.values;
 
 /**
  * @author Timur Shaidullin
@@ -85,11 +82,11 @@ public class ConditionsImplTest {
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND id2 = 2", ast.toString());
 
-        conditions.and(asName("id4"), GT, asConstant("4"));
+        conditions.and(asName("id4"), GT, asConstant(4));
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND id2 = 2 AND id4 > 4", ast.toString());
 
-        conditions.and(condition(asName("id5"), GTE, asConstant("5")));
+        conditions.and(condition(asName("id5"), GTE, asConstant(5)));
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND id2 = 2 AND id4 > 4 AND id5 >= 5", ast.toString());
     }
@@ -102,11 +99,11 @@ public class ConditionsImplTest {
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND NOT id2 = 2", ast.toString());
 
-        conditions.andNot(asName("id4"), LT, asConstant("4"));
+        conditions.andNot(asName("id4"), LT, asConstant(4));
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id4 < 4", ast.toString());
 
-        conditions.andNot(condition(asName("id5"), LTE, asConstant("5")));
+        conditions.andNot(condition(asName("id5"), LTE, asConstant(5)));
         assembleAst(conditions);
         assertEquals("WHERE id = 3 AND NOT id2 = 2 AND NOT id4 < 4 AND NOT id5 <= 5", ast.toString());
     }
@@ -123,11 +120,11 @@ public class ConditionsImplTest {
         assembleAst(conditions);
         assertEquals("WHERE id <> 3 OR id2 <> 2", ast.toString());
 
-        conditions.or(asName("id4"), GT, asConstant("4"));
+        conditions.or(asName("id4"), GT, asConstant(4));
         assembleAst(conditions);
         assertEquals("WHERE id <> 3 OR id2 <> 2 OR id4 > 4", ast.toString());
 
-        conditions.or(condition(asName("id5"), GTE, asConstant("5")));
+        conditions.or(condition(asName("id5"), GTE, asConstant(5)));
         assembleAst(conditions);
         assertEquals("WHERE id <> 3 OR id2 <> 2 OR id4 > 4 OR id5 >= 5", ast.toString());
     }
@@ -140,11 +137,11 @@ public class ConditionsImplTest {
         assembleAst(conditions);
         assertEquals("WHERE id = 3 OR NOT id2 = 2", ast.toString());
 
-        conditions.orNot(asName("id4"), LT, asConstant("4"));
+        conditions.orNot(asName("id4"), LT, asConstant(4));
         assembleAst(conditions);
         assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id4 < 4", ast.toString());
 
-        conditions.orNot(condition(asName("id5"), LTE, asConstant("5")));
+        conditions.orNot(condition(asName("id5"), LTE, asConstant(5)));
         assembleAst(conditions);
         assertEquals("WHERE id = 3 OR NOT id2 = 2 OR NOT id4 < 4 OR NOT id5 <= 5", ast.toString());
     }
@@ -167,7 +164,8 @@ public class ConditionsImplTest {
         assertEquals("WHERE id BETWEEN 1 AND 3", ast.toString());
 
 
-        conditions.andNot(conditionBetween(asQuotedName("date"), asString("2018-03-01"), asString("2018-03-11")));
+        //todo add date constant
+        conditions.andNot(conditionBetween(asQuotedName("date"), asConstant("2018-03-01"), asConstant("2018-03-11")));
         assembleAst(conditions);
         assertEquals("WHERE id BETWEEN 1 AND 3 AND NOT \"date\" BETWEEN '2018-03-01' AND '2018-03-11'", ast.toString());
     }
@@ -189,19 +187,20 @@ public class ConditionsImplTest {
 
     @Test
     void like() {
-        Conditions conditions = condition(asName("id"), LIKE, asString("abc"));
+        Conditions conditions = condition(asName("id"), LIKE, asConstant("abc"));
         assembleAst(conditions);
         assertEquals("WHERE id LIKE 'abc'", ast.toString());
 
-        conditions.and(asQuotedName("str"), NOT_LIKE, asString("_d_"));
+        conditions.and(asQuotedName("str"), NOT_LIKE, asConstant("_d_"));
         assembleAst(conditions);
         assertEquals("WHERE id LIKE 'abc' AND \"str\" NOT LIKE '_d_'", ast.toString());
     }
 
     @Test
     void conditionList() {
+        //todo add support for list of constants
         String[]   numbers    = { "one", "two", "three", "four", "five", "six" };
-        Conditions conditions = condition(asName("number"), IN, asStringList(numbers));
+        Conditions conditions = condition(asName("number"), IN, asConstant(numbers));
         assembleAst(conditions);
         assertEquals("WHERE number IN ('one', 'two', 'three', 'four', 'five', 'six')", ast.toString());
 

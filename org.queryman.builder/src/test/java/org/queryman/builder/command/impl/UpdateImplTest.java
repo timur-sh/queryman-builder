@@ -8,11 +8,10 @@ import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.NE2;
 import static org.queryman.builder.Operators.NOT_IN;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.select;
 import static org.queryman.builder.PostgreSQL.update;
@@ -22,7 +21,7 @@ class UpdateImplTest {
     @Test
     void updateSetTest() {
         String sql = update("book")
-           .set(asList("id", "name"), asList(1, asString("Timur")))
+           .set(asList("id", "name"), asList(1, asConstant("Timur")))
            .set(asList("year", "price"), select("year", "price").from("book"))
            .from("order")
            .sql();
@@ -74,13 +73,13 @@ class UpdateImplTest {
 
         sql = update
            .where("id", "=", "1")
-           .and(asQuotedName("id2"), EQUAL, asNumber(2))
+           .and(asQuotedName("id2"), EQUAL, asConstant(2))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 AND \"id2\" = 2", sql);
 
         sql = update
            .where("id", "=", "1")
-           .and(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .and(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 AND \"id2\" = 4", sql);
 
@@ -109,13 +108,13 @@ class UpdateImplTest {
 
         sql = update
            .where("id", "=", "1")
-           .andNot(asQuotedName("id2"), EQUAL, asNumber(3))
+           .andNot(asQuotedName("id2"), EQUAL, asConstant(3))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 AND NOT \"id2\" = 3", sql);
 
         sql = update
            .where("id", "=", "1")
-           .andNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .andNot(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 AND NOT \"id2\" = 4", sql);
 
@@ -143,13 +142,13 @@ class UpdateImplTest {
 
         sql = update
            .where("id", "<>", "1")
-           .or(asQuotedName("id2"), NE2, asNumber(3))
+           .or(asQuotedName("id2"), NE2, asConstant(3))
            .sql();
         assertEquals("UPDATE book AS b WHERE id <> 1 OR \"id2\" <> 3", sql);
 
         sql = update
            .where("id", "=", "1")
-           .or(condition(asQuotedName("id2"), LT, asNumber(4)))
+           .or(condition(asQuotedName("id2"), LT, asConstant(4)))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 OR \"id2\" < 4", sql);
 
@@ -177,13 +176,13 @@ class UpdateImplTest {
 
         sql = update
            .where("id", "=", "1")
-           .orNot(asQuotedName("id2"), EQUAL, asNumber(3))
+           .orNot(asQuotedName("id2"), EQUAL, asConstant(3))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 OR NOT \"id2\" = 3", sql);
 
         sql = update
            .where("id", "=", "1")
-           .orNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .orNot(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
         assertEquals("UPDATE book AS b WHERE id = 1 OR NOT \"id2\" = 4", sql);
 

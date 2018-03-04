@@ -57,7 +57,7 @@ public class Join implements AstVisitor {
 
         if (boolConditions)
             tree.startNode(ON)
-               .addLeaf(asList(String.valueOf(boolConditions)))
+               .addLeaf(asList(boolConditions))
                .endNode();
         else if (using != null)
             tree.startNode(USING, ", ")

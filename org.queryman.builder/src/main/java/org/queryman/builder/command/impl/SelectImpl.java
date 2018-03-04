@@ -47,9 +47,9 @@ import static org.queryman.builder.Keywords.INTERSECT_DISTINCT;
 import static org.queryman.builder.Keywords.UNION;
 import static org.queryman.builder.Keywords.UNION_ALL;
 import static org.queryman.builder.Keywords.UNION_DISTINCT;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
@@ -102,7 +102,7 @@ public class SelectImpl extends AbstractQuery implements
         this(
            ast,
            Arrays.stream(columnsSelected)
-              .map(PostgreSQL::asConstant)
+              .map(PostgreSQL::asName)
               .collect(Collectors.toList())
         );
     }
@@ -165,7 +165,7 @@ public class SelectImpl extends AbstractQuery implements
         tree.startNode(EMPTY, ", ").addLeaves(COLUMNS_SELECTED).endNode();
 
         if (!FROM.isEmpty()) {
-            tree.startNode(NodesMetadata.FROM, ", ");
+            tree.startNode(NodesMetadata.FROM.setJoinNodes(true), ", ");
 
             for (From from : FROM)
                 tree.peek(from);
@@ -470,7 +470,7 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl groupBy(String... expressions) {
         Expression[] expr = Arrays.stream(expressions)
-           .map(PostgreSQL::asConstant)
+           .map(PostgreSQL::asName)
            .toArray(Expression[]::new);
 
         return groupBy(expr);
@@ -508,13 +508,13 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl limit(long limit) {
-        this.limit = asNumber(limit);
+        this.limit = asConstant(limit);
         return this;
     }
 
     @Override
     public final SelectImpl offset(long offset) {
-        this.offset = asNumber(offset);
+        this.offset = asConstant(offset);
         return this;
     }
 
@@ -617,7 +617,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl using(String... name) {
-        return using(Arrays.stream(name).map(PostgreSQL::asConstant).toArray(Expression[]::new));
+        return using(Arrays.stream(name).map(PostgreSQL::asName).toArray(Expression[]::new));
     }
 
     @Override

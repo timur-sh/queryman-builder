@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.impl;
 
+import org.queryman.builder.Keywords;
 import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
@@ -19,10 +20,10 @@ import org.queryman.builder.token.Expression;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.PostgreSQL.nodeMetadata;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 
 /**
  * Standard implementation of FROM statement.
@@ -61,24 +62,27 @@ public class FromImpl implements
         if (alias != null) {
             tableName.as(alias);
         }
-        StringBuilder builder = new StringBuilder();
 
         if (only)
-            builder.append(asName("ONLY " + tableName.getName()));
+            tree.startNode(nodeMetadata(Keywords.ONLY));
         else
-            builder.append(tableName);
+            tree.startNode(EMPTY);
+
+        tree.addLeaf(tableName);
 
         if (tableSampleMethod != null) {
-            builder.append(' ')
-               .append(asFunc("TABLESAMPLE " + tableSampleMethod, asList(tableSampleArguments)));
+            tree.startNode(EMPTY);
+            tree.addLeaf(asFunc("TABLESAMPLE " + tableSampleMethod, asList(tableSampleArguments)));
 
             if (repeatable)
-                builder
-                   .append(' ')
-                   .append(asFunc("REPEATABLE", asList(seed)));
+                tree.startNode(EMPTY)
+                   .addLeaf(asFunc("REPEATABLE", asList(seed)))
+                   .endNode();
+
+            tree.endNode();
         }
 
-        tree.addLeaves(asConstant(builder.toString()));
+        tree.endNode();
     }
 
     //----

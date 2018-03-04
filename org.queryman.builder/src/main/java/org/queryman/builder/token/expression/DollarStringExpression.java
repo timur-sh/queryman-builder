@@ -9,7 +9,9 @@ package org.queryman.builder.token.expression;
 import org.queryman.builder.token.PreparedExpression;
 
 /**
- * Represents dollar string asConstant. Variable is surrounded by single quotes:
+ * This is a representation of dollar string constant. Variable is surrounded
+ * by single quotes.
+ *
  * Example:
  * <code>
  * $$string variable is here$$
@@ -17,14 +19,14 @@ import org.queryman.builder.token.PreparedExpression;
  *
  * @author Timur Shaidullin
  */
-public class DollarStringExpression extends PreparedExpression {
+public class DollarStringExpression extends PreparedExpression<String> {
     /**
-     * Tag name is used to surround dollar string. If no tag is given, the empty
+     * Specified tag name to surround a dollar string. If no tag is given, the empty
      * {@code ""} string will be used.
      *
      * Example:
-     * With tag name {@code type}: $type$ it contains any text $type$
-     * Without tag name: $$ it contains any text $$
+     * With tag name {@code type}: <code>$type$ it contains any text $type$</code>
+     * Without tag name: <code>$$ it contains any text $$</code>
      */
     private String tagName = "";
 
@@ -46,5 +48,10 @@ public class DollarStringExpression extends PreparedExpression {
         String tag = "$" + tagName +"$";
 
         return tag + name + tag;
+    }
+
+    @Override
+    protected String getValue() {
+        return getName();
     }
 }

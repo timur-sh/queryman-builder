@@ -11,7 +11,7 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
@@ -31,9 +31,9 @@ public class ConflictTarget implements AstVisitor {
     private boolean indexColumn = true;
 
     public ConflictTarget(String name, String collation, String opclass) {
-        this.name = asConstant(name);
-        this.collation = collation != null ? asConstant(collation) : null;
-        this.opclass = opclass != null ? asConstant(opclass) : null;
+        this.name = asName(name);
+        this.collation = collation != null ? asName(collation) : null;
+        this.opclass = opclass != null ? asName(opclass) : null;
     }
 
     public ConflictTarget markAsExpression() {

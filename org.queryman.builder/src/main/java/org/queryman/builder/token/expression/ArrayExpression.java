@@ -6,12 +6,19 @@
  */
 package org.queryman.builder.token.expression;
 
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Expression;
 
+import static org.queryman.builder.PostgreSQL.asConstant;
+
 /**
- * Represent an array of constant expressions.
+ * This is a ARRAY expressions. If you would use a prepared expression, see
+ * {@link org.queryman.builder.token.PreparedExpression}
+ *
+ * Commons use:
  * <code>
- *     ARRAY[1, 2, 3 [,...]]
+ *     // ARRAY[1, 2, 3 [,...]]
+ *     PostgreSQL.asArray(1, 2, 3);
  *  </code>
  *
  * @author Timur Shaidullin
@@ -19,18 +26,14 @@ import org.queryman.builder.token.Expression;
 public class ArrayExpression<T> extends Expression {
 
     /**
-     * Contains a variables for ARRAY and LIST expressions.
+     * Contains variables for ARRAY expressions.
      */
-    private T[] arr;
-
-    private ArrayExpression(String constant) {
-        super(constant);
-    }
+    private T[] values;
 
     @SafeVarargs
     public ArrayExpression(T... constants) {
-        this("");
-        arr = constants;
+        super(null);
+        values = constants;
     }
 
     /**
@@ -38,14 +41,16 @@ public class ArrayExpression<T> extends Expression {
      */
     @Override
     protected String prepareName() {
-        if (arr == null)
+        if (values == null)
             return "ARRAY[]";
 
-        String[] result = new String[arr.length];
+        String [] result = new String[values.length];
 
-        for (int i = 0; i < arr.length; i++) {
-            result[i] = String.valueOf(arr[i]);
+        for (int i = 0; i < values.length; i++) {
+            result[i] = asConstant(values[i]).getName();
         }
+
+
 
         return "ARRAY[" + String.join(", ", result) + "]";
     }

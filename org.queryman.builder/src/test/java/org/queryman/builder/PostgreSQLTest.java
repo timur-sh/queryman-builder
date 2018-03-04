@@ -6,20 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asDollarString;
 import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asString;
 
 class PostgreSQLTest {
-    @Test
-    void asConstantTest() {
-        assertEquals("table_name", asConstant("table_name").getName());
-    }
 
     @Test
     void asStringTest() {
-        assertEquals("'Timur'", asString("Timur").getName());
-        assertEquals("'I''m Timur'", asString("I'm Timur").getName());
+        assertEquals("'Timur'", asConstant("Timur").getName());
+        assertEquals("'I''m Timur'", asConstant("I'm Timur").getName());
     }
 
     @Test
@@ -33,10 +27,10 @@ class PostgreSQLTest {
 
     @Test
     void asNumberTest() {
-        assertEquals("234.11", asNumber(234.11).getName());
-        assertEquals("0.5", asNumber(.50).getName());
-        assertEquals("0.51", asNumber(.51).getName());
-        assertEquals("5.1", asNumber(.51E+1).getName());
+        assertEquals("234.11", asConstant(234.11).getName());
+        assertEquals("0.5", asConstant(.50).getName());
+        assertEquals("0.51", asConstant(.51).getName());
+        assertEquals("5.1", asConstant(.51E+1).getName());
     }
 
     @Test

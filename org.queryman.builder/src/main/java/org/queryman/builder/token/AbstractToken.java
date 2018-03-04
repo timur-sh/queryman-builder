@@ -12,7 +12,7 @@ import org.queryman.builder.utils.StringUtils;
  * @author Timur Shaidullin
  */
 public abstract class AbstractToken implements Token {
-    protected final String name;
+    protected String name;
 
     protected AbstractToken(String name) {
         this.name = name;
@@ -25,7 +25,7 @@ public abstract class AbstractToken implements Token {
 
     @Override
     public boolean isNonEmpty() {
-        return !StringUtils.isEmpty(name);
+        return !isEmpty();
     }
 
     @Override

@@ -14,9 +14,7 @@ import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionBetween;
@@ -49,7 +47,7 @@ class SelectImplTest {
         SelectFromStep select = selectAll("id", "name");
         assertEquals("SELECT ALL id, name", select.sql());
 
-        SelectFromStep select2 = selectAll(asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
+        SelectFromStep select2 = selectAll(asQuotedName("id2"), asQuotedName("name"), asName("min(price) as min"));
         assertEquals("SELECT ALL \"id2\", \"name\", min(price) as min", select2.sql());
     }
 
@@ -58,7 +56,7 @@ class SelectImplTest {
         SelectFromStep select = selectDistinct("id", "name");
         assertEquals("SELECT DISTINCT id, name", select.sql());
 
-        select = selectDistinct(asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
+        select = selectDistinct(asQuotedName("id2"), asQuotedName("name"), asName("min(price) as min"));
         assertEquals("SELECT DISTINCT \"id2\", \"name\", min(price) as min", select.sql());
     }
 
@@ -67,7 +65,7 @@ class SelectImplTest {
         SelectFromStep select = selectDistinctOn(new String[]{ "price", "id" }, "id", "name");
         assertEquals("SELECT DISTINCT ON (price, id) id, name", select.sql());
 
-        select = selectDistinctOn(new Expression[]{ asName("price"), asName("id") }, asQuotedName("id2"), asQuotedName("name"), asConstant("min(price) as min"));
+        select = selectDistinctOn(new Expression[]{ asName("price"), asName("id") }, asQuotedName("id2"), asQuotedName("name"), asName("min(price) as min"));
         assertEquals("SELECT DISTINCT ON (price, id) \"id2\", \"name\", min(price) as min", select.sql());
     }
 
@@ -223,7 +221,7 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book WHERE id = 1 AND id2 = 2", sql);
 
         sql = select.from("book")
-           .where(asQuotedName("id"), EQUAL, asNumber(1))
+           .where(asQuotedName("id"), EQUAL, asConstant(1))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE \"id\" = 1", sql);
 
@@ -251,11 +249,11 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book WHERE id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
 
         sql = select.from("book")
-           .where(asName("id1"), EQUAL, asString("1"))
-           .or(asQuotedName("id2"), EQUAL, asNumber(2))
-           .orNot(asName("table.id3"), EQUAL, asNumber(3))
-           .and(asQuotedName("table.id4"), EQUAL, asNumber(4))
-           .andNot(asQuotedName("id5"), EQUAL, asNumber(5))
+           .where(asName("id1"), EQUAL, asConstant("1"))
+           .or(asQuotedName("id2"), EQUAL, asConstant(2))
+           .orNot(asName("table.id3"), EQUAL, asConstant(3))
+           .and(asQuotedName("table.id4"), EQUAL, asConstant(4))
+           .andNot(asQuotedName("id5"), EQUAL, asConstant(5))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
     }
@@ -269,12 +267,12 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book WHERE id BETWEEN 1 AND 2", sql);
 
         sql = select.from("book")
-           .where(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .where(conditionBetween(asQuotedName("id"), asConstant(3), asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE \"id\" BETWEEN 3 AND 4", sql);
 
         sql = select.from("book")
-           .where(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .where(conditionBetween(asQuotedName("id"), asConstant(3), asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE \"id\" BETWEEN 3 AND 4", sql);
     }
@@ -290,13 +288,13 @@ class SelectImplTest {
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .and(asQuotedName("id2"), EQUAL, asNumber(2))
+           .and(asQuotedName("id2"), EQUAL, asConstant(2))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 AND \"id2\" = 2", sql);
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .and(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .and(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 AND \"id2\" = 4", sql);
 
@@ -324,13 +322,13 @@ class SelectImplTest {
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .andNot(asQuotedName("id2"), EQUAL, asNumber(3))
+           .andNot(asQuotedName("id2"), EQUAL, asConstant(3))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 AND NOT \"id2\" = 3", sql);
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .andNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .andNot(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 AND NOT \"id2\" = 4", sql);
 
@@ -358,13 +356,13 @@ class SelectImplTest {
 
         sql = select.from("book")
            .where("id", "<>", "1")
-           .or(asQuotedName("id2"), NE2, asNumber(3))
+           .or(asQuotedName("id2"), NE2, asConstant(3))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id <> 1 OR \"id2\" <> 3", sql);
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .or(condition(asQuotedName("id2"), LT, asNumber(4)))
+           .or(condition(asQuotedName("id2"), LT, asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 OR \"id2\" < 4", sql);
 
@@ -392,13 +390,13 @@ class SelectImplTest {
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .orNot(asQuotedName("id2"), EQUAL, asNumber(3))
+           .orNot(asQuotedName("id2"), EQUAL, asConstant(3))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 OR NOT \"id2\" = 3", sql);
 
         sql = select.from("book")
            .where("id", "=", "1")
-           .orNot(condition(asQuotedName("id2"), EQUAL, asNumber(4)))
+           .orNot(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 OR NOT \"id2\" = 4", sql);
 
@@ -421,9 +419,9 @@ class SelectImplTest {
         String sql = select.from("user")
            .where(condition("name", "=", "timur")
               .and("phone", "is", "null")
-              .or("email", "=", asString("timur@shaidullin.net").getName())
+              .or("email", "=", asConstant("timur@shaidullin.net").getName())
               .and(condition("id", "!=", "3")
-                 .and("name", "is not", asString("max").getName())
+                 .and("name", "is not", asConstant("max").getName())
               )
            )
            .or("id", "=", "1")
@@ -463,7 +461,7 @@ class SelectImplTest {
            .where("year", ">", "2010")
            .orNot(
               conditionBetween("id", "1", "10")
-                 .and(asName("name"), operator("="), asString("Advanced SQL"))
+                 .and(asName("name"), operator("="), asConstant("Advanced SQL"))
            )
            .sql();
 
@@ -473,7 +471,7 @@ class SelectImplTest {
            .from("book")
            .where(
               conditionBetween("id", "1", "10")
-                 .and(asName("name"), operator("="), asString("Advanced SQL"))
+                 .and(asName("name"), operator("="), asConstant("Advanced SQL"))
            )
            .sql();
 
@@ -523,7 +521,7 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book HAVING id = 1 AND id2 = 2", sql);
 
         sql = select.from("book")
-           .having(asQuotedName("id"), EQUAL, asNumber(1))
+           .having(asQuotedName("id"), EQUAL, asConstant(1))
            .sql();
         assertEquals("SELECT id, name FROM book HAVING \"id\" = 1", sql);
 
@@ -551,11 +549,11 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book HAVING id = 1 OR NOT id3 = 3 AND NOT id2 = 2", sql);
 
         sql = select.from("book")
-           .having(asName("id1"), EQUAL, asString("1"))
-           .or(asQuotedName("id2"), EQUAL, asNumber(2))
-           .orNot(asName("table.id3"), EQUAL, asNumber(3))
-           .and(asQuotedName("table.id4"), EQUAL, asNumber(4))
-           .andNot(asQuotedName("id5"), EQUAL, asNumber(5))
+           .having(asName("id1"), EQUAL, asConstant("1"))
+           .or(asQuotedName("id2"), EQUAL, asConstant(2))
+           .orNot(asName("table.id3"), EQUAL, asConstant(3))
+           .and(asQuotedName("table.id4"), EQUAL, asConstant(4))
+           .andNot(asQuotedName("id5"), EQUAL, asConstant(5))
            .sql();
         assertEquals("SELECT id, name FROM book HAVING id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
     }
@@ -565,7 +563,7 @@ class SelectImplTest {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .where("id", "=", "1")
-           .having(asName("name"), LT, asString("Anna"))
+           .having(asName("name"), LT, asConstant("Anna"))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 HAVING name < 'Anna'", sql);
     }
@@ -579,12 +577,12 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book HAVING id BETWEEN 1 AND 2", sql);
 
         sql = select.from("book")
-           .having(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .having(conditionBetween(asQuotedName("id"), asConstant(3), asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book HAVING \"id\" BETWEEN 3 AND 4", sql);
 
         sql = select.from("book")
-           .having(conditionBetween(asQuotedName("id"), asNumber(3), asNumber(4)))
+           .having(conditionBetween(asQuotedName("id"), asConstant(3), asConstant(4)))
            .sql();
         assertEquals("SELECT id, name FROM book HAVING \"id\" BETWEEN 3 AND 4", sql);
     }
@@ -829,7 +827,7 @@ class SelectImplTest {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
            .union(select("2", "2"));
 
         assertEquals("SELECT 1, 2 FROM book WHERE 'id' BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
@@ -837,7 +835,7 @@ class SelectImplTest {
         select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
            .and("name", "IS NOT", null)
            .union(select("2", "2"));
 
@@ -849,7 +847,7 @@ class SelectImplTest {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
            .groupBy(asQuotedName("book.id"))
            .union(select("2", "2"));
 
@@ -862,7 +860,7 @@ class SelectImplTest {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asString("id"), asNumber(1), asNumber(2)))
+           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
            .groupBy(asQuotedName("book.id"))
            .union(select("2", "2"))
            .orderBy("id", "DESC");

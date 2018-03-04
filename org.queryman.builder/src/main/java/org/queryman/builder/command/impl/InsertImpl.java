@@ -195,7 +195,7 @@ public class InsertImpl extends AbstractQuery implements
 
     @Override
     public final InsertImpl columns(String... columns) {
-        return columns(Arrays.stream(columns).map(PostgreSQL::asConstant).toArray(Expression[]::new));
+        return columns(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
     }
 
     @Override
@@ -226,7 +226,7 @@ public class InsertImpl extends AbstractQuery implements
     @SafeVarargs
     public final <T> InsertImpl values(T... values) {
         return values(Arrays.stream(values)
-           .map(v -> asConstant(v.toString()))
+           .map(PostgreSQL::asConstant)
            .toArray(Expression[]::new));
     }
 
@@ -473,7 +473,7 @@ public class InsertImpl extends AbstractQuery implements
 
     @Override
     public final <T> InsertImpl set(String column, T value) {
-        return set(asName(column), asConstant(String.valueOf(value)));
+        return set(asName(column), asConstant(value));
     }
 
     @Override

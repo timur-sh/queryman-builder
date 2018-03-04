@@ -13,6 +13,7 @@ import org.queryman.builder.ast.TreeFactory;
 import org.queryman.builder.boot.ServiceRegister;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.ConflictTarget;
+import org.queryman.builder.command.create_sequence.SequenceAsStep;
 import org.queryman.builder.command.delete.DeleteAsStep;
 import org.queryman.builder.command.from.FromFirstStep;
 import org.queryman.builder.command.impl.ConditionsImpl;
@@ -24,23 +25,22 @@ import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.impl.UpdateImpl;
 import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
-import org.queryman.builder.command.create_sequence.SequenceAsStep;
 import org.queryman.builder.command.update.UpdateAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.expression.ArrayExpression;
-import org.queryman.builder.token.expression.ArrayStringExpression;
+import org.queryman.builder.token.expression.BooleanExpression;
 import org.queryman.builder.token.expression.ColumnReferenceExpression;
-import org.queryman.builder.token.expression.ConstantExpression;
 import org.queryman.builder.token.expression.DollarStringExpression;
+import org.queryman.builder.token.expression.DoubleExpression;
 import org.queryman.builder.token.expression.FuncExpression;
+import org.queryman.builder.token.expression.IntegerExpression;
 import org.queryman.builder.token.expression.ListExpression;
-import org.queryman.builder.token.expression.ListStringExpression;
+import org.queryman.builder.token.expression.LongExpression;
 import org.queryman.builder.token.expression.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -810,35 +810,31 @@ public class PostgreSQL {
     //----
 
     /**
-     * Constant expression may have as a string representation as a representation
-     * for JDBC date types.
+     * Using a class name of constant creates an appropriate Expression.
      *
      * @param constant any constant
-     * @return a constant
+     * @return a constant of appropriate type.
+     * @throws IllegalArgumentException if constant is not supported
      *
      * @see <a href=" https://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS">PostgreSQL constants</a>
      */
-    public static Expression asConstant(String constant) {
-
+    public static <T> Expression asConstant(T constant) {
         switch (((Object)constant).getClass().getName()) {
-
+            case "java.lang.String":
+                return new StringExpression((String) constant);
+            case "java.lang.Boolean":
+                return new BooleanExpression((Boolean) constant);
+            case "java.lang.Integer":
+                return new IntegerExpression((Integer) constant);
+            case "java.lang.Long":
+                return new LongExpression((Long) constant);
+            case "java.lang.Double":
+                return new DoubleExpression((Double) constant);
         }
 
-//        return new ConstantExpression(constant);
-        return null;
-    }
 
-    /**
-     * String expression:
-     * <code>
-     * 'any string is here'
-     * </code>
-     *
-     * @param constant string constant
-     * @return a string surrounded by single quote string. e.g. 'string'
-     */
-    public static Expression asString(String constant) {
-        return new StringExpression(constant);
+
+        throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getName());
     }
 
     /**
@@ -901,36 +897,6 @@ public class PostgreSQL {
     //----
 
     /**
-     * List of string expression.
-     * Example:
-     * <code>
-     * asStringList(1, 2, 3); // ('1', '2', '3')
-     * </code>
-     *
-     * @param constants values
-     * @return (...), where {@code ...} are values of string concatenated by comma.
-     */
-    @SafeVarargs
-    public static <T> Expression asStringList(T... constants) {
-        return new ListStringExpression<>(constants);
-    }
-
-    /**
-     * List of string expression.
-     * Example:
-     * <code>
-     * asString(List.of(1, 2, 3,)); // ('1', '2', '3')
-     * </code>
-     *
-     * @param constants list of values
-     * @return (...), where {@code ...} are values of string concatenated by comma.
-     * @see #asStringList(T...)
-     */
-    public static <T> Expression asStringList(List<T> constants) {
-        return asStringList(constants.toArray());
-    }
-
-    /**
      * List expression.
      * Example:
      * <code>
@@ -990,33 +956,6 @@ public class PostgreSQL {
         return asArray(arr.toArray());
     }
 
-    /**
-     * Array of string expression:
-     * <code>
-     * asArray(1, 2); // ARRAY[1, 2]
-     * </code>
-     *
-     * @param arr - string values of array
-     * @return ARRAY[...], where {@code ...} are values concatenated by comma.
-     */
-    @SafeVarargs
-    public static <T> Expression asStringArray(T... arr) {
-        return new ArrayStringExpression<>(arr);
-    }
-
-    /**
-     * Array of string expression:
-     * <code>
-     * asArray(List.of(1, 2)); // ARRAY['1', '2']
-     * </code>
-     *
-     * @param arr - string values of array
-     * @return ARRAY[...], where {@code ...} are values concatenated by comma.
-     */
-    public static <T> Expression asStringArray(List<T> arr) {
-        return asStringArray(arr.toArray());
-    }
-
     //----
     // FUNCTION EXPRESSIONS
     //----
@@ -1033,9 +972,7 @@ public class PostgreSQL {
      * @return a combine of {@code name} and {@code expression} objects
      *
      * @see #asArray(Object[])
-     * @see #asStringArray(Object[])
      * @see #asList(Object[])
-     * @see #asStringList(List)
      */
     public static Expression asFunc(String name, Expression expression) {
         return new FuncExpression(name, expression);
@@ -1081,9 +1018,7 @@ public class PostgreSQL {
      * @return a combine of {@code name} and {@code expression} objects
      *
      * @see #asArray(Object[])
-     * @see #asStringArray(Object[])
      * @see #asList(Object[])
-     * @see #asStringList(List)
      *
      * @see #asFunc(String, Expression)
      */
@@ -1121,7 +1056,6 @@ public class PostgreSQL {
      * @return VALUES expression
      *
      * @see #asList(Object[])
-     * @see #asStringList(Object[])
      */
     public static Expression values(Expression... expressions) {
        return new FuncExpression("VALUES", expressions);

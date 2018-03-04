@@ -10,7 +10,7 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asName;
 
 /**
  * This {@code class} represents an ORDER BY clause.
@@ -32,9 +32,9 @@ public final class OrderBy implements AstVisitor {
 
     public OrderBy(String name, String sorting, String nulls) {
         this(
-           asConstant(name),
-           sorting != null ? asConstant(sorting) : null,
-           nulls != null ? asConstant(nulls) : null
+           asName(name),
+           sorting != null ? asName(sorting) : null,
+           nulls != null ? asName(nulls) : null
         );
     }
 

@@ -9,17 +9,25 @@ package org.queryman.builder.token.expression;
 import org.queryman.builder.token.PreparedExpression;
 
 /**
- * Represents string asConstant. Variable is surrounded by single quotes:
+ * This class is representation of string constant. The variable is surrounded
+ * by single quotes.
+ *
  * Example:
  * <code>
  * 'string variable is here'
  * 'string variable''s here'
  * </code>
+ *
  * @author Timur Shaidullin
  */
-public class StringExpression extends PreparedExpression {
+public class StringExpression extends PreparedExpression<String> {
     public StringExpression(String constant) {
         super(constant);
+    }
+
+    @Override
+    protected String getValue() {
+        return getName();
     }
 
     /**
@@ -31,6 +39,6 @@ public class StringExpression extends PreparedExpression {
             return null;
         }
 
-        return toPostgresqlString(name);
+        return toPostgreSQLString(name);
     }
 }

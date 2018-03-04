@@ -16,6 +16,7 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.getTree;
@@ -119,7 +120,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions and(String leftValue, String operator, String rightValue) {
-        and(asConstant(leftValue), operator(operator), asConstant(rightValue));
+        and(asName(leftValue), operator(operator), asName(rightValue));
         return this;
     }
 
@@ -149,7 +150,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions andNot(String leftValue, String operator, String rightValue) {
-        andNot(asConstant(leftValue), operator(operator), asConstant(rightValue));
+        andNot(asName(leftValue), operator(operator), asName(rightValue));
         return this;
     }
 
@@ -179,7 +180,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions or(String leftValue, String operator, String rightValue) {
-        or(asConstant(leftValue), operator(operator), asConstant(rightValue));
+        or(asName(leftValue), operator(operator), asName(rightValue));
         return this;
     }
 
@@ -210,7 +211,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final Conditions orNot(String leftValue, String operator, String rightValue) {
-        orNot(asConstant(leftValue), operator(operator), asConstant(rightValue));
+        orNot(asName(leftValue), operator(operator), asName(rightValue));
         return this;
     }
 

@@ -36,7 +36,6 @@ import static org.queryman.builder.Keywords.START;
 import static org.queryman.builder.Keywords.START_WITH;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asNumber;
 import static org.queryman.builder.PostgreSQL.nodeMetadata;
 
 /**
@@ -95,7 +94,7 @@ public class SequenceImpl extends AbstractQuery implements
 
     @Override
     public final SequenceImpl increment(long increment) {
-        this.increment = asNumber(increment);
+        this.increment = asConstant(increment);
         return this;
     }
 
@@ -108,31 +107,31 @@ public class SequenceImpl extends AbstractQuery implements
 
     @Override
     public final SequenceImpl minvalue(long minvalue) {
-        this.minvalue = asNumber(minvalue);
+        this.minvalue = asConstant(minvalue);
         return this;
     }
 
     @Override
     public final SequenceImpl noMinvalue() {
-        minvalue = asConstant("NO MINVALUE");
+        minvalue = asName("NO MINVALUE");
         return this;
     }
 
     @Override
     public final SequenceImpl maxvalue(long maxvalue) {
-        this.maxvalue = asNumber(maxvalue);
+        this.maxvalue = asConstant(maxvalue);
         return this;
     }
 
     @Override
     public final SequenceImpl noMaxvalue() {
-        maxvalue = asConstant("NO MAXVALUE");
+        maxvalue = asName("NO MAXVALUE");
         return this;
     }
 
     @Override
     public final SequenceImpl start(long start) {
-        this.start = asNumber(start);
+        this.start = asConstant(start);
         return this;
     }
 
@@ -145,19 +144,19 @@ public class SequenceImpl extends AbstractQuery implements
 
     @Override
     public final SequenceImpl cache(long cache) {
-        this.cache = asNumber(cache);
+        this.cache = asConstant(cache);
         return this;
     }
 
     @Override
     public final SequenceImpl cycle() {
-        cycle = asConstant(String.valueOf(true));
+        cycle = asConstant(true);
         return this;
     }
 
     @Override
     public final SequenceImpl noCycle() {
-        cycle = asConstant(String.valueOf(false));
+        cycle = asConstant(false);
         return this;
     }
 

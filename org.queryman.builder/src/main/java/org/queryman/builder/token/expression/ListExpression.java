@@ -6,7 +6,10 @@
  */
 package org.queryman.builder.token.expression;
 
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Expression;
+
+import static org.queryman.builder.PostgreSQL.*;
 
 /**
  * Represent a list of value expressions.
@@ -45,7 +48,7 @@ public class ListExpression<T> extends Expression {
         String[] result = new String[arr.length];
 
         for (int i = 0; i < arr.length; i++) {
-            result[i] = String.valueOf(arr[i]);
+            result[i] = asConstant(arr[i]).getName();
         }
 
         return "(" + String.join(", ", result) + ")";

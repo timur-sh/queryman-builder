@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.asString;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.conflictTargetColumn;
 import static org.queryman.builder.PostgreSQL.conflictTargetExpression;
 import static org.queryman.builder.PostgreSQL.select;
@@ -17,7 +17,7 @@ class InsertImplTest {
            .as("b")
            .columns("id", "name")
            .overridingSystemValue()
-           .values("1", asString("test"))
+           .values(1, "test")
            .onConflict()
            .onConstraint("index_name")
            .doNothing()
@@ -32,7 +32,7 @@ class InsertImplTest {
         String sql = PostgreSQL.insertInto("book")
            .columns("id", "name")
            .overridingUserValue()
-           .values("1", asString("test"))
+           .values(1, "test")
            .onConflict(conflictTargetColumn("tt", "44", "55"), conflictTargetExpression("qq"))
            .where("id", "=", "2")
            .and("id", "!=", "3")
@@ -52,7 +52,7 @@ class InsertImplTest {
            .onConflict(conflictTargetColumn("tt"))
            .doUpdate()
            .set("id", 1)
-           .set("name", asString("test"))
+           .set("name", asConstant("test"))
            .where("id", "=", "2")
            .and("id", "!=", "3")
            .returning("id")

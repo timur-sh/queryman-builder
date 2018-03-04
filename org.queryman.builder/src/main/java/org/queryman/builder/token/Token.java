@@ -7,9 +7,8 @@
 package org.queryman.builder.token;
 
 /**
- * PostgreSQL token can be a key word, an identifier(that is splitted on unqualifiedName
- * and qualifiedName), a asConstant, an operator. Any of above tokens must be based
- * on this interface.
+ * A PostgreSQL token can be a key word, an identifier, an operator, any of
+ * constants, an operator. Any of above tokens must be based on this interface.
  *
  * @see Keyword
  * @see Operator
