@@ -70,26 +70,26 @@ class ExpressionTest {
         assertEquals("('1', '2', '3', '4', '5', '6')", chars.getName());
 
         Expression integers = asList(1, 0x1a);
-        assertEquals("('1', '26')", integers.getName());
+        assertEquals("(1, 26)", integers.getName());
 
         Expression floats = asList(1f, 2e1);
-        assertEquals("('1.0', '20.0')", floats.getName());
+        assertEquals("(1.0, 20.0)", floats.getName());
 
         Expression doubles = asList(1d, 2e-3);
-        assertEquals("('1.0', '0.002')", doubles.getName());
+        assertEquals("(1.0, 0.002)", doubles.getName());
 
         Expression longs = asList(1L, 2L, 0xFF_EC_DE_5E, 1_2_3L);
-        assertEquals("('1', '2', '-1253794', '123')", longs.getName());
+        assertEquals("(1, 2, -1253794, 123)", longs.getName());
 
         assertEquals("('one', 'two')", asList(List.of("one", "two")).getName());
 
         assertEquals("('1', '2')", asList(List.of('1', '2')).getName());
 
-        assertEquals("('1', '2')", asList(List.of(1, 2)).getName());
+        assertEquals("(1, 2)", asList(List.of(1, 2)).getName());
 
-        assertEquals("('1.0', '2.0')", asList(List.of(1f, 2f)).getName());
+        assertEquals("(1.0, 2.0)", asList(List.of(1f, 2f)).getName());
 
-        assertEquals("('1.0', '2.0')", asList(List.of(1d, 2d)).getName());
+        assertEquals("(1.0, 2.0)", asList(List.of(1d, 2d)).getName());
     }
 
     @Test

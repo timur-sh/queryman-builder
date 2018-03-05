@@ -6,13 +6,16 @@
  */
 package org.queryman.builder.token;
 
+import org.queryman.builder.token.expression.prepared.DollarStringExpression;
+import org.queryman.builder.token.expression.prepared.StringExpression;
+
 /**
  * This is a marker class that denotes a prepared constant and must be extended
  * by all constant classes like numeric, string, date etc.
  *
  * @see org.queryman.builder.token.expression.ConstantExpression
- * @see org.queryman.builder.token.expression.DollarStringExpression
- * @see org.queryman.builder.token.expression.StringExpression
+ * @see DollarStringExpression
+ * @see StringExpression
  *
  * @author Timur Shaidullin
  */

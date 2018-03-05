@@ -4,17 +4,17 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.token.expression;
+package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
 
 /**
- * This class is representation of integer constant.
+ * This class is representation of float constant.
  *
  * @author Timur Shaidullin
  */
-public class IntegerExpression extends PreparedExpression<Integer> {
-    public IntegerExpression(Integer constant) {
+public class FloatExpression extends PreparedExpression<Float> {
+    public FloatExpression(Float constant) {
         super(constant);
     }
 
@@ -24,7 +24,7 @@ public class IntegerExpression extends PreparedExpression<Integer> {
     }
 
     @Override
-    protected Integer getValue() {
+    protected Float getValue() {
         return value;
     }
 }

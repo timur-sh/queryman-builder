@@ -30,15 +30,16 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.expression.ArrayExpression;
-import org.queryman.builder.token.expression.BooleanExpression;
+import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.ColumnReferenceExpression;
-import org.queryman.builder.token.expression.DollarStringExpression;
-import org.queryman.builder.token.expression.DoubleExpression;
+import org.queryman.builder.token.expression.prepared.DollarStringExpression;
+import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.FuncExpression;
-import org.queryman.builder.token.expression.IntegerExpression;
+import org.queryman.builder.token.expression.prepared.FloatExpression;
+import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.ListExpression;
-import org.queryman.builder.token.expression.LongExpression;
-import org.queryman.builder.token.expression.StringExpression;
+import org.queryman.builder.token.expression.prepared.LongExpression;
+import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 
 import java.util.Arrays;
@@ -821,7 +822,8 @@ public class PostgreSQL {
     public static <T> Expression asConstant(T constant) {
         switch (((Object)constant).getClass().getName()) {
             case "java.lang.String":
-                return new StringExpression((String) constant);
+            case "java.lang.Character":
+                return new StringExpression(String.valueOf(constant));
             case "java.lang.Boolean":
                 return new BooleanExpression((Boolean) constant);
             case "java.lang.Integer":
@@ -830,9 +832,12 @@ public class PostgreSQL {
                 return new LongExpression((Long) constant);
             case "java.lang.Double":
                 return new DoubleExpression((Double) constant);
+            case "java.lang.Float":
+                return new FloatExpression((Float) constant);
         }
 
-
+        if (constant instanceof Expression)
+            return (Expression) constant;
 
         throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getName());
     }

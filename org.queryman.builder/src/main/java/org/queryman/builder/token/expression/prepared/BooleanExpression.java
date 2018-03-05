@@ -4,17 +4,17 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.token.expression;
+package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
 
 /**
- * This class is representation of double constant.
+ * This class is representation of boolean constant.
  *
  * @author Timur Shaidullin
  */
-public class DoubleExpression extends PreparedExpression<Double> {
-    public DoubleExpression(Double constant) {
+public class BooleanExpression extends PreparedExpression<Boolean> {
+    public BooleanExpression(Boolean constant) {
         super(constant);
     }
 
@@ -24,7 +24,7 @@ public class DoubleExpression extends PreparedExpression<Double> {
     }
 
     @Override
-    protected Double getValue() {
+    protected Boolean getValue() {
         return value;
     }
 }
