@@ -30,6 +30,7 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.expression.prepared.ArrayExpression;
+import org.queryman.builder.token.expression.prepared.BigDecimalExpression;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.ColumnReferenceExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
@@ -42,6 +43,7 @@ import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.ListExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
+import org.queryman.builder.token.expression.prepared.NullExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
@@ -49,6 +51,7 @@ import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
 import org.queryman.builder.utils.ArraysUtils;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -830,6 +833,9 @@ public class PostgreSQL {
      * @see <a href=" https://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS">PostgreSQL constants</a>
      */
     public static <T> Expression asConstant(T constant) {
+        if (constant == null)
+            return new NullExpression(null);
+
         switch (((Object)constant).getClass().getCanonicalName()) {
             case "java.lang.String":
             case "java.lang.Character":
@@ -857,6 +863,8 @@ public class PostgreSQL {
                 return new TimeExpression((Time) constant);
             case "java.sql.Timestamp":
                 return new TimestampExpression((Timestamp) constant);
+            case "java.math.BigDecimal":
+                return new BigDecimalExpression((BigDecimal) constant);
             case "byte[]":
                 return asConstant(ArraysUtils.toWrapper((byte[]) constant));
         }
@@ -864,10 +872,14 @@ public class PostgreSQL {
         if (constant instanceof Expression)
             return (Expression) constant;
 
+        //todo logging of below the constant to object type
         throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getCanonicalName());
     }
 
     public static <T> Expression asConstant(T[] constants) {
+        if (constants == null)
+            return new NullExpression(null);
+
         constants.getClass().isArray();
         switch (constants.getClass().getCanonicalName()) {
             case "java.lang.Byte[]":

@@ -2,6 +2,7 @@ package org.queryman.builder.token;
 
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.token.expression.prepared.BigDecimalExpression;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
 import org.queryman.builder.token.expression.prepared.BytesExpression;
@@ -10,10 +11,12 @@ import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
+import org.queryman.builder.token.expression.prepared.NullExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -67,6 +70,12 @@ class ExpressionTest {
         assertTrue(asConstant(new Time(System.currentTimeMillis())) instanceof TimeExpression);
 
         assertTrue(asConstant(new Timestamp(System.currentTimeMillis())) instanceof TimestampExpression);
+
+        assertEquals("NULL", asConstant(null).getName());
+        assertTrue(asConstant(null) instanceof NullExpression);
+
+        assertEquals("1", asConstant(new BigDecimal(1)).getName());
+        assertTrue(asConstant(new BigDecimal(1)) instanceof BigDecimalExpression);
     }
 
     @Test
