@@ -543,7 +543,7 @@ public class PostgreSQL {
      * @see #condition(Expression, Operator, Expression)
      */
     public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return condition(asName(leftValue), Operators.map(operator), asName(rightValue));
+        return condition(asName(leftValue), operator(operator), asName(rightValue));
     }
 
     /**
@@ -557,7 +557,7 @@ public class PostgreSQL {
      * @see #condition(Expression, Operator, Expression)
      */
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
-        return condition(leftValue, Operators.map(operator), rightValue);
+        return condition(leftValue, operator(operator), rightValue);
     }
 
     /**
@@ -641,7 +641,7 @@ public class PostgreSQL {
      * @see #select(Object[])
      */
     public static Conditions condition(String field, String operator, Query query) {
-        return condition(asName(field), Operators.map(operator), query);
+        return condition(asName(field), operator(operator), query);
     }
 
     /**

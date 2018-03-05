@@ -9,32 +9,28 @@ import static org.queryman.builder.Operators.NOT_LIKE;
 import static org.queryman.builder.Operators.LIKE;
 import static org.queryman.builder.Operators.NOT_SIMILAR_TO;
 import static org.queryman.builder.Operators.SIMILAR_TO;
-import static org.queryman.builder.Operators.map;
+import static org.queryman.builder.PostgreSQL.*;
 
 class OperatorsTest {
     @Test
     void like() {
         assertEquals(NOT_LIKE.getName(), "NOT LIKE");
         assertEquals(LIKE.getName(), "LIKE");
-        assertEquals("LIKE", map("LIKE").getName());
-        assertEquals("LIKE", map("like").getName());
+        assertEquals("LIKE", operator("LIKE").getName());
     }
 
     @Test
     void ilike() {
         assertEquals(NOT_ILIKE.getName(), "NOT ILIKE");
         assertEquals(ILIKE.getName(), "ILIKE");
-        assertEquals("ILIKE", map("ILIKE").getName());
-        assertEquals("ILIKE", map("ilike").getName());
+        assertEquals("ILIKE", operator("ILIKE").getName());
     }
 
     @Test
     void similarTo() {
         assertEquals(NOT_SIMILAR_TO.getName(), "NOT SIMILAR TO");
         assertEquals(SIMILAR_TO.getName(), "SIMILAR TO");
-        assertEquals("SIMILAR TO", map("SIMILAR TO").getName());
-        assertEquals("SIMILAR TO", map("similar to").getName());
-        assertEquals("NOT SIMILAR TO", map("not similar to").getName());
+        assertEquals("SIMILAR TO", operator("SIMILAR TO").getName());
     }
 
 }

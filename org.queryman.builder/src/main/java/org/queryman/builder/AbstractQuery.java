@@ -42,6 +42,7 @@ public abstract class AbstractQuery implements Query, AstVisitor {
 
     @Override
     public PreparedStatement buildPreparedStatement(Connection conn) {
+        //todo
         return null;
     }
 }

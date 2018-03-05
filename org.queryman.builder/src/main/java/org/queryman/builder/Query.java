@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 
 /**
  * It represents a query object allowing either to build a SQL query string,
- * or to prepared a {@link PreparedStatement} object.
+ * or to prepare a {@link PreparedStatement} object.
  *
  * @author Timur Shaidullin
  */

@@ -62,47 +62,4 @@ public class Operators {
     public static final Operator EQUAL = operator("=");
     public static final Operator NE    = operator("!=");
     public static final Operator NE2   = operator("<>");
-
-    public static final Operator map(String operator) {
-        Map<String, Operator> operators = Map.ofEntries(
-           entry(AND.getName(), AND),
-           entry(NOT.getName(), NOT),
-           entry(AND_NOT.getName(), AND_NOT),
-           entry(OR.getName(), OR),
-           entry(OR_NOT.getName(), OR_NOT),
-
-           entry(LIKE.getName(), LIKE),
-           entry(NOT_LIKE.getName(), NOT_LIKE),
-
-           entry(ILIKE.getName(), ILIKE),
-           entry(NOT_ILIKE.getName(), NOT_ILIKE),
-
-           entry(NOT_SIMILAR_TO.getName(), NOT_SIMILAR_TO),
-           entry(SIMILAR_TO.getName(), SIMILAR_TO),
-
-           entry(IN.getName(), IN),
-           entry(NOT_IN.getName(), NOT_IN),
-
-           entry(IS.getName(), IS),
-           entry(IS_NOT.getName(), IS_NOT),
-           entry(ISNULL.getName(), ISNULL),
-           entry(NOTNULL.getName(), NOTNULL),
-
-           entry(BETWEEN.getName(), BETWEEN),
-           entry(NOT_BETWEEN.getName(), NOT_BETWEEN),
-           entry(IS_DISTINCT_FROM.getName(), IS_DISTINCT_FROM),
-           entry(IS_NOT_DISTINCT_FROM.getName(), IS_NOT_DISTINCT_FROM),
-           entry(BETWEEN_SYMMETRIC.getName(), BETWEEN_SYMMETRIC),
-           entry(NOT_BETWEEN_SYMMETRIC.getName(), NOT_BETWEEN_SYMMETRIC),
-
-           entry(LT.getName(), LT),
-           entry(LTE.getName(), LTE),
-           entry(GT.getName(), GT),
-           entry(EQUAL.getName(), EQUAL),
-           entry(NE.getName(), NE),
-           entry(NE2.getName(), NE2)
-        );
-
-        return operators.getOrDefault(operator.toUpperCase(), operator(operator));
-    }
 }
