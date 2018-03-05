@@ -57,10 +57,10 @@ class UpdateImplTest {
         UpdateSetStep update = update("book")
            .as("b");
 
-        update.set("author", asQuotedName("order"))
+        update.set("author", asConstant("order"))
            .where("b.id", "=", "1");
 
-        assertEquals("UPDATE book AS b SET author = \"order\" WHERE b.id = 1", update.sql());
+        assertEquals("UPDATE book AS b SET author = 'order' WHERE b.id = 1", update.sql());
 
 
         update = update("book")
@@ -204,18 +204,18 @@ class UpdateImplTest {
     void updateAsUsingWhereReturningTest() {
         String sql = update("book")
            .as("b")
-           .set("author", asQuotedName("order"))
+           .set("author", asConstant("order"))
            .where("b.id", "=", "1")
            .returning("*")
            .sql();
-        assertEquals("UPDATE book AS b SET author = \"order\" WHERE b.id = 1 RETURNING *", sql);
+        assertEquals("UPDATE book AS b SET author = 'order' WHERE b.id = 1 RETURNING *", sql);
 
         sql = update("book")
            .as("b")
-           .set("author", asQuotedName("Andrew"))
+           .set("author", asConstant("Andrew"))
            .where("b.id", "=", "1")
            .returning(asName("max(price)").as("price"))
            .sql();
-        assertEquals("UPDATE book AS b SET author = \"Andrew\" WHERE b.id = 1 RETURNING max(price) AS price", sql);
+        assertEquals("UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price", sql);
     }
 }

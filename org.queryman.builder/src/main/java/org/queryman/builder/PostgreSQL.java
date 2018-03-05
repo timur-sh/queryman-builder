@@ -64,10 +64,11 @@ import static org.queryman.builder.ast.NodesMetadata.EXISTS;
 import static org.queryman.builder.ast.NodesMetadata.SOME;
 
 /**
- * Entry point of all parts of PostgreSQL. This contains a full collection of
- * SQL statements like the SELECT, UPDATE, DELETE.
- * Also other parts of SQL clauses are encapsulated here, such as any conditions clause
- * (AND, OR, OR NOT, etc), FROM clause, any expressions,
+ * The entry point to all parts of PostgreSQL clauses. This contains a full
+ * collection of SQL statements like the SELECT, UPDATE, DELETE etc.
+ *
+ * Also other parts of SQL clauses are encapsulated here, such as conditions clause
+ * (AND, OR, OR NOT, etc), FROM clause, etc.
  *
  * @author Timur Shaidullin
  */
@@ -75,17 +76,25 @@ public class PostgreSQL {
     private static TreeFactory treeFactory;
 
     static {
-        treeFactory = new ServiceRegister()
+        TreeFactory t = new ServiceRegister()
            .makeDefaults()
            .treeFactory();
+
+        setTreeFactory(t);
     }
 
+    /**
+     * Sets a {@link TreeFactory} explicitly, otherwise it is set implicitly
+     * via the static block above.
+     *
+     * @param factory tree factory
+     */
     public static void setTreeFactory(TreeFactory factory) {
         treeFactory = factory;
     }
 
     /**
-     * @return tree
+     * @return an abstract syntax three
      */
     public static AbstractSyntaxTree getTree() {
         return treeFactory.getTree();
@@ -104,7 +113,7 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
     @SafeVarargs
     public static <T> SelectFromStep select(T... columns) {
@@ -123,14 +132,14 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
     public static SelectFromStep select(Expression... columns) {
         return new SelectImpl(getTree(), columns);
     }
 
     /**
-     * SELECT statement.
+     * SELECT ALL statement.
      * Example:
      * <code>
      *     selectAll("id", "name"); // SELECT ALL id, name
@@ -138,14 +147,17 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
-    public static SelectFromStep selectAll(String... columns) {
-        return selectAll(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+    @SafeVarargs
+    public static <T> SelectFromStep selectAll(T... columns) {
+        return selectAll(Arrays.stream(columns)
+           .map(v -> asName(String.valueOf(v)))
+           .toArray(Expression[]::new));
     }
 
     /**
-     * SELECT statement.
+     * SELECT ALL statement.
      * Example:
      * <code>
      *     select(asName("id"), asName("name")); // SELECT id, name
@@ -153,14 +165,14 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
     public static SelectFromStep selectAll(Expression... columns) {
         return new SelectImpl(getTree(), columns).all();
     }
 
     /**
-     * SELECT statement.
+     * SELECT DISTINCT statement.
      * Example:
      * <code>
      *     selectDistinct("id", "name"); // SELECT DISTINCT id, name
@@ -168,14 +180,17 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
-    public static SelectFromStep selectDistinct(String... columns) {
-        return selectDistinct(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+    @SafeVarargs
+    public static <T> SelectFromStep selectDistinct(T... columns) {
+        return selectDistinct(Arrays.stream(columns)
+           .map(v -> asName(String.valueOf(v)))
+           .toArray(Expression[]::new));
     }
 
     /**
-     * SELECT statement.
+     * SELECT DISTINCT statement.
      * Example:
      * <code>
      *     selectDistinct(asName("id"), asName("name")); // SELECT DISTINCT id, name
@@ -183,14 +198,14 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
     public static SelectFromStep selectDistinct(Expression... columns) {
         return new SelectImpl(getTree(), columns).distinct();
     }
 
     /**
-     * SELECT statement.
+     * SELECT DISTINCT ON (..) .. statement.
      * Example:
      * <code>
      *     String[] distinct = {"id"};
@@ -199,17 +214,20 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
-    public static SelectFromStep selectDistinctOn(String[] distinct, String... columns) {
+    @SafeVarargs
+    public static <T> SelectFromStep selectDistinctOn(String[] distinct, T... columns) {
         return selectDistinctOn(
            Arrays.stream(distinct).map(PostgreSQL::asName).toArray(Expression[]::new),
-           Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new)
+           Arrays.stream(columns)
+              .map(v -> asName(String.valueOf(v)))
+              .toArray(Expression[]::new)
         );
     }
 
     /**
-     * SELECT statement.
+     * SELECT DISTINCT ON (..) .. statement.
      * Example:
      * <code>
      *     Expression[] distinct = {"id"};
@@ -218,7 +236,7 @@ public class PostgreSQL {
      *
      * @param columns output columns
      *
-     * @return select instance
+     * @return select from step
      */
     public static SelectFromStep selectDistinctOn(Expression[] distinct, Expression... columns) {
         return new SelectImpl(getTree(), columns).distinctOn(distinct);
@@ -229,7 +247,7 @@ public class PostgreSQL {
     //----
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
      *     createSequence("book_seq")
@@ -252,10 +270,10 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
-     *     createSequence("book_seq")
+     *     createSequence(asName("book_seq"))
      *      .as("smallint")
      *      .incrementBy(1)
      *      .minvalue(0)
@@ -275,7 +293,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a create_sequence.
+     * Creates a create_sequence.
      * Example:
      * <code>
      *     createTempSequence("book_seq")
@@ -298,10 +316,10 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
-     *     createTempSequence("book_seq")
+     *     createTempSequence(asName("book_seq"))
      *      .as("smallint")
      *      .incrementBy(1)
      *      .minvalue(0)
@@ -321,7 +339,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
      *     createTempSequenceIfNotExists("book_seq")
@@ -344,10 +362,10 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
-     *     createTempSequenceIfNotExists("book_seq")
+     *     createTempSequenceIfNotExists(asName("book_seq"))
      *      .as("smallint")
      *      .incrementBy(1)
      *      .minvalue(0)
@@ -367,7 +385,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
      *     createSequenceIfNotExists("book_seq")
@@ -390,10 +408,10 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a sequence.
+     * Creates a sequence.
      * Example:
      * <code>
-     *     createSequenceIfNotExists("book_seq")
+     *     createSequenceIfNotExists(asName("book_seq"))
      *      .as("smallint")
      *      .incrementBy(1)
      *      .minvalue(0)
@@ -424,18 +442,82 @@ public class PostgreSQL {
     // DELETE
     //----
 
+    /**
+     * DELETE statement.
+     *
+     * <code>
+     *     // DELETE FROM book AS b USING author, order WHERE b.id = 1 RETURNING id
+     *     deleteFrom("book")
+     *      .as("b")
+     *      .using("author", "order")
+     *      .where("b.id", "=", "1")
+     *      .returning(asName("id")
+     *      .sql()
+     * </code>
+     *
+     * @param name target table name
+     * @return delete AS step
+     */
     public static DeleteAsStep deleteFrom(String name) {
         return deleteFrom(asName(name));
     }
 
+    /**
+     * DELETE statement.
+     *
+     * <code>
+     *     // DELETE FROM book AS b USING author, order WHERE b.id = 1 RETURNING id
+     *     deleteFrom(asName("book"))
+     *      .as("b")
+     *      .using("author", "order")
+     *      .where("b.id", "=", "1")
+     *      .returning(asName("id")
+     *      .sql()
+     * </code>
+     *
+     * @param name target table name
+     * @return delete AS step
+     */
     public static DeleteAsStep deleteFrom(Expression name) {
         return new DeleteImpl(getTree(), name);
     }
 
+    /**
+     * DELETE statement.
+     *
+     * <code>
+     *     // DELETE FROM ONLY book AS b USING author, order WHERE b.id = 1 RETURNING id
+     *     deleteFromOnly("book")
+     *      .as("b")
+     *      .using("author", "order")
+     *      .where("b.id", "=", "1")
+     *      .returning(asName("id")
+     *      .sql()
+     * </code>
+     *
+     * @param name target table name
+     * @return delete AS step
+     */
     public static DeleteAsStep deleteFromOnly(String name) {
         return deleteFromOnly(asName(name));
     }
 
+    /**
+     * DELETE statement.
+     *
+     * <code>
+     *     // DELETE FROM ONLY book AS b USING author, order WHERE b.id = 1 RETURNING id
+     *     deleteFromOnly(asName("book"))
+     *      .as("b")
+     *      .using("author", "order")
+     *      .where("b.id", "=", "1")
+     *      .returning(asName("id")
+     *      .sql()
+     * </code>
+     *
+     * @param name target table name
+     * @return delete AS step
+     */
     public static DeleteAsStep deleteFromOnly(Expression name) {
         return new DeleteImpl(getTree(), name, true);
     }
@@ -447,12 +529,15 @@ public class PostgreSQL {
     /**
      * UPDATE statement.
      *
-     * update("book")
-     *  .as("b")
-     *  .set("author", asQuotedName("Andrew"))
-     *  .where("b.id", "=", "1")
-     *  .returning(asName("max(price)").as("price"))
-     *  .sql();
+     * <code>
+     *     // UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price
+     *     update("book")
+     *      .as("b")
+     *      .set("author", asConstant("Andrew"))
+     *      .where("b.id", "=", 1)
+     *      .returning(asName("max(price)").as("price"))
+     *      .sql();
+     * </code>
      *
      * @param name name of the table ot update
      * @return update as step
@@ -461,16 +546,18 @@ public class PostgreSQL {
         return update(asName(name));
     }
 
-
     /**
      * UPDATE statement.
      *
-     * update("book")
-     *  .as("b")
-     *  .set("author", asQuotedName("Andrew"))
-     *  .where("b.id", "=", "1")
-     *  .returning(asName("max(price)").as("price"))
-     *  .sql();
+     * <code>
+     *     // UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price
+     *     update(asName("book"))
+     *      .as("b")
+     *      .set("author", asConstant("Andrew"))
+     *      .where("b.id", "=", 1)
+     *      .returning(asName("max(price)").as("price"))
+     *      .sql();
+     * </code>
      *
      * @param name name of the table ot update
      * @return update as step
@@ -482,12 +569,15 @@ public class PostgreSQL {
     /**
      * UPDATE statement.
      *
-     * updateOnly("book")
-     *  .as("b")
-     *  .set("author", asQuotedName("Andrew"))
-     *  .where("b.id", "=", "1")
-     *  .returning(asName("max(price)").as("price"))
-     *  .sql();
+     * <code>
+     *     // UPDATE ONLY book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price
+     *     updateOnly("book")
+     *      .as("b")
+     *      .set("author", asConstant("Andrew"))
+     *      .where("b.id", "=", 1)
+     *      .returning(asName("max(price)").as("price"))
+     *      .sql();
+     * </code>
      *
      * @param name name of the table ot update
      * @return update as step
@@ -499,12 +589,15 @@ public class PostgreSQL {
     /**
      * UPDATE statement.
      *
-     * updateOnly("book")
-     *  .as("b")
-     *  .set("author", asQuotedName("Andrew"))
-     *  .where("b.id", "=", "1")
-     *  .returning(asName("max(price)").as("price"))
-     *  .sql();
+     * <code>
+     *     // UPDATE ONLY book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price
+     *     updateOnly(asName("book"))
+     *      .as("b")
+     *      .set("author", asConstant("Andrew"))
+     *      .where("b.id", "=", 1)
+     *      .returning(asName("max(price)").as("price"))
+     *      .sql();
+     * </code>
      *
      * @param name name of the table ot update
      * @return update as step
@@ -514,26 +607,46 @@ public class PostgreSQL {
     }
 
     //----
-    // UPDATE
+    // INSERT
     //----
 
     /**
-     * Creates an INSERT INTO statement.
+     * INSERT INTO statement.
+     * <code>
+     *     insertInto("book")
+     *      .as("b")
+     *      .columns("id", "name")
+     *      .overridingSystemValue()
+     *      .values(1, "test")
+     *      .onConflict()
+     *      .onConstraint("index_name")
+     *      .doNothing()
+     *      .sql()
+     * </code>
      *
      * @param table target table name
-     * @return insert as step of INSERT INTO statement
-     *
-     * @see #insertInto(Expression)
+     * @return insert AS step
      */
     public static InsertAsStep insertInto(String table) {
         return insertInto(asName(table));
     }
 
     /**
-     * Creates an INSERT INTO statement.
+     * INSERT INTO statement.
+     * <code>
+     *     insertInto(asName("book"))
+     *      .as("b")
+     *      .columns("id", "name")
+     *      .overridingSystemValue()
+     *      .values(1, "test")
+     *      .onConflict()
+     *      .onConstraint("index_name")
+     *      .doNothing()
+     *      .sql()
+     * </code>
      *
      * @param table target table name
-     * @return insert as step of INSERT INTO statement
+     * @return insert AS step
      */
     public static InsertAsStep insertInto(Expression table) {
         return new InsertImpl(getTree(), table);
@@ -544,15 +657,19 @@ public class PostgreSQL {
     //----
 
     /**
-     * Create a condition
+     * Creates a condition
+     * <code>
+     *     ...
+     *     .where(condition("id", "=", "author_id"))
+     *     ...
+     * </code>
      *
      * @param leftValue  left operand
      * @param operator   operator
      * @param rightValue right operand
+     *
      * @return {@link Conditions}
-     * @see #operator(String)
-     * @see #asName(String)
-     * @see #asName(String)
+     *
      * @see #condition(Expression, Operator, Expression)
      */
     public static Conditions condition(String leftValue, String operator, String rightValue) {
@@ -560,12 +677,19 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a condition
+     * Creates a condition
+     * <code>
+     *     ...
+     *     .where(condition(asName("id"), "=", asConstant(1)))
+     *     ...
+     * </code>
      *
      * @param leftValue  left operand
      * @param operator   operator
      * @param rightValue right operand
+     *
      * @return {@link Conditions}
+     *
      * @see #operator(String)
      * @see #condition(Expression, Operator, Expression)
      */
@@ -574,12 +698,19 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a condition
+     * Creates a condition
+     * <code>
+     *     ...
+     *     .where(condition(asName("id"), operator("="), asConstant(1)))
+     *     ...
+     * </code>
      *
      * @param leftValue  left operand
      * @param operator   operator
      * @param rightValue right operand
+     *
      * @return {@link Conditions}
+     *
      * @see #operator(String)
      */
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
@@ -591,12 +722,21 @@ public class PostgreSQL {
     //----
 
     /**
-     * Create a condition: field BETWEEN value1 AND value2.
+     * Creates a BETWEEN condition
+     * <code>
+     *     ...
+     *     .where(conditionBetween(asName("id"), asConstant(2), asConstant(10)))
+     *     ...
+     * </code>
      *
-     * @param field  seeking operand
-     * @param value1 operand before AND
-     * @param value2 operand after AND
+     * @param field  field
+     * @param value1 left value of AND
+     * @param value2 right value of AND
+     *
      * @return {@link Conditions}
+     *
+     * @see #operator(String)
+     *
      * @see #conditionBetween(String, String, String)
      */
     public static Conditions conditionBetween(Expression field, Expression value1, Expression value2) {
@@ -604,13 +744,20 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a condition: field BETWEEN value1 AND value2.
+     * Creates a BETWEEN condition
+     * <code>
+     *     ...
+     *     .where(conditionBetween("id", "2", "10"))
+     *     ...
+     * </code>
      *
-     * @param field  seeking operand
-     * @param value1 operand before AND
-     * @param value2 operand after AND
+     * @param field  field
+     * @param value1 left value of AND
+     * @param value2 right value of AND
+     *
      * @return {@link Conditions}
-     * @see #conditionBetween(Expression, Expression, Expression)
+     *
+     * @see #conditionBetween(String, String, String)
      */
     public static Conditions conditionBetween(String field, String value1, String value2) {
         return conditionBetween(asName(field), asName(value1), asName(value2));
@@ -625,7 +772,7 @@ public class PostgreSQL {
      * <p>
      * Example:
      * <code>
-     * condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
+     *  condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
      * </code>
      *
      * @param field    left operand
@@ -644,7 +791,7 @@ public class PostgreSQL {
      * <p>
      * Example:
      * <code>
-     * condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
+     *      condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
      * </code>
      *
      * @param field    left operand
@@ -659,9 +806,9 @@ public class PostgreSQL {
 
     /**
      * Creates a condition.
-     * Example:
+     *
      * <code>
-     * conditionExists(select(1, 2)); // EXISTS (SELECT 1, 2);
+     *      conditionExists(select(1, 2)); // EXISTS (SELECT 1, 2);
      * </code>
      *
      * @param query subquery
@@ -675,7 +822,7 @@ public class PostgreSQL {
      * Creates a condition.
      * Example:
      * <code>
-     * conditionSome(asName("id"), operator("="), select(1)); // id = SOME (SELECT 1);
+     *      conditionSome(asName("id"), operator("="), select(1)); // id = SOME (SELECT 1);
      * </code>
      *
      * @param field    left operand
@@ -691,7 +838,7 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     * conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
+     *      conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
      * </code>
      *
      * @param field    left operand
@@ -708,7 +855,7 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     * conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
+     *      conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
      * </code>
      *
      * @param field    left operand
@@ -724,7 +871,7 @@ public class PostgreSQL {
      * Create a condition.
      * Example:
      * <code>
-     * conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
+     *      conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
      * </code>
      *
      * @param field    left operand
@@ -741,7 +888,7 @@ public class PostgreSQL {
      * Creates a condition.
      * Example:
      * <code>
-     * conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
+     *      conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
      * </code>
      *
      * @param field    left operand
@@ -758,7 +905,7 @@ public class PostgreSQL {
      * Creates a condition.
      * Example:
      * <code>
-     * conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
+     *      conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
      * </code>
      *
      * @param field    left operand
@@ -778,8 +925,16 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
+     * <code>
+     *     from("book")
+     *      .as(b)
+     *      .tablesample("BERNOULLI", "1")
+     *      .repeatable(1)
+     * </code>
+     *
      * @param tableName is a table name.
      * @return first step of FROM clause.
+     *
      * @see #from(Expression)
      */
     public static FromFirstStep from(String tableName) {
@@ -789,9 +944,17 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
-     * @param tableName - is a table name
+     * <code>
+     *     from(asName("book"))
+     *      .as(b)
+     *      .tablesample("BERNOULLI", "1")
+     *      .repeatable(1)
+     * </code>
+     *
+     * @param tableName is a table name.
      * @return first step of FROM clause.
-     * @see #from(String)
+     *
+     * @see #from(Expression)
      */
     public static FromFirstStep from(Expression tableName) {
         return new FromImpl(tableName);
@@ -800,8 +963,16 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
-     * @param tableName is a table name
+     * <code>
+     *     fromOnly("book")
+     *      .as(b)
+     *      .tablesample("BERNOULLI", "1")
+     *      .repeatable(1)
+     * </code>
+     *
+     * @param tableName is a table name.
      * @return first step of FROM clause.
+     *
      * @see #fromOnly(Expression)
      */
     public static FromFirstStep fromOnly(String tableName) {
@@ -811,9 +982,16 @@ public class PostgreSQL {
     /**
      * FROM clause can be used as a part of other SQL statements.
      *
-     * @param tableName is a table name
+     * <code>
+     *     from(asName("book"))
+     *      .as(b)
+     *      .tablesample("BERNOULLI", "1")
+     *      .repeatable(1)
+     * </code>
+     *
+     * @param tableName is a table name.
      * @return first step of FROM clause.
-     * @see #fromOnly(String)
+     *
      */
     public static FromFirstStep fromOnly(Expression tableName) {
         return new FromImpl(tableName, true);
@@ -824,7 +1002,7 @@ public class PostgreSQL {
     //----
 
     /**
-     * Using a class name of constant creates an appropriate Expression.
+     * Using a class name of constant it creates an appropriate Expression object.
      *
      * @param constant any constant
      * @return a constant of appropriate type.
@@ -876,6 +1054,15 @@ public class PostgreSQL {
         throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getCanonicalName());
     }
 
+    /**
+     * Creates an array exrpression. If constant if Byte[] type, the ByteExpression
+     * is created.
+     *
+     * @param constants array constant
+     * @return array expression
+     *
+     * @see #asConstant(Object)
+     */
     public static <T> Expression asConstant(T[] constants) {
         if (constants == null)
             return new NullExpression(null);
@@ -892,7 +1079,7 @@ public class PostgreSQL {
     /**
      * Dollar string expression:
      * <code>
-     * $$any string is here$$
+     *      $$any string is here$$
      * </code>
      *
      * @param constant dollar string
@@ -905,8 +1092,8 @@ public class PostgreSQL {
     /**
      * Dollar string expression:
      * <code>
-     * $$any string is here$$
-     * $tag$any string is here$tag$
+     *      $$any string is here$$
+     *      $tag$any string is here$tag$
      * </code>
      *
      * @param constant dollar string
@@ -920,8 +1107,8 @@ public class PostgreSQL {
     /**
      * Column reference expression:
      * <code>
-     * table.column
-     * (complex_type).field
+     *      table.column
+     *      (complex_type).field
      * </code>
      *
      * @param constant column reference string
@@ -934,7 +1121,7 @@ public class PostgreSQL {
     /**
      * Quoted column reference expression:
      * <code>
-     * "table"."column"
+     *      "table"."column"
      * </code>
      *
      * @param constant column reference string
@@ -1128,7 +1315,7 @@ public class PostgreSQL {
     //----
 
     /**
-     * Create an operator which ordinarily is used by condition.
+     * Creates an operator which ordinarily is used by condition.
      *
      * @param operator LIKE, ILIKE, =, !=, @> etc.
      * @return instance of {@link Operator}.
@@ -1141,7 +1328,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Create a keyword which ordinarily is used to build SQL query.
+     * Creates a keyword which ordinarily is used to build SQL query.
      *
      * @param keyword SELECT, UPDATE, FROM, JOIN etc.
      * @return instance of {@link Keyword}

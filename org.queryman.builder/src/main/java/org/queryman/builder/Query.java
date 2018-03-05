@@ -27,7 +27,8 @@ public interface Query extends AstVisitor {
     String sql();
 
     /**
-     * Builds a prepare statement, including into it a SQL string and values.
+     * Builds a prepare statement, including into it a SQL string and parameters
+     * associates with the SQL string.
      *
      * @param conn connection
      * @return a completed prepared statement contains a SQL string and

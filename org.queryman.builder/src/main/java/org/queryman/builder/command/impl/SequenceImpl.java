@@ -9,10 +9,10 @@ package org.queryman.builder.command.impl;
 import org.queryman.builder.AbstractQuery;
 import org.queryman.builder.Keywords;
 import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.command.create_sequence.SequenceAsStep;
 import org.queryman.builder.command.create_sequence.SequenceCacheStep;
 import org.queryman.builder.command.create_sequence.SequenceCycleStep;
 import org.queryman.builder.command.create_sequence.SequenceFinalStep;
-import org.queryman.builder.command.create_sequence.SequenceAsStep;
 import org.queryman.builder.command.create_sequence.SequenceIncrementStep;
 import org.queryman.builder.command.create_sequence.SequenceMaxValueStep;
 import org.queryman.builder.command.create_sequence.SequenceMinValueStep;
@@ -65,7 +65,7 @@ public class SequenceImpl extends AbstractQuery implements
     private Expression minvalue;
     private Expression maxvalue;
     private Expression cache;
-    private Expression    cycle;
+    private Expression cycle;
     private Expression ownedBy;
 
     private Expression start;
@@ -195,7 +195,7 @@ public class SequenceImpl extends AbstractQuery implements
                .endNode();
 
         if (increment != null)
-            tree.startNode(nodeMetadata(incrementBy ? INCREMENT_BY :INCREMENT))
+            tree.startNode(nodeMetadata(incrementBy ? INCREMENT_BY : INCREMENT))
                .addLeaf(increment)
                .endNode();
 
