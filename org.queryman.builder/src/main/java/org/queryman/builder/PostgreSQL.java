@@ -34,6 +34,7 @@ import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.ColumnReferenceExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
 import org.queryman.builder.token.expression.prepared.BytesExpression;
+import org.queryman.builder.token.expression.prepared.DateExpression;
 import org.queryman.builder.token.expression.prepared.DollarStringExpression;
 import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.FuncExpression;
@@ -46,6 +47,7 @@ import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 import org.queryman.builder.utils.ArraysUtils;
 
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 
@@ -842,6 +844,11 @@ public class PostgreSQL {
                 return new DoubleExpression((Double) constant);
             case "java.lang.Float":
                 return new FloatExpression((Float) constant);
+            case "java.util.Date":
+                java.util.Date d = (java.util.Date) constant;
+                return new DateExpression(new Date(d.getTime()));
+            case "java.sql.Date":
+                return new DateExpression((Date) constant);
             case "byte[]":
                 return asConstant(ArraysUtils.toWrapper((byte[]) constant));
         }

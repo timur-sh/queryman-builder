@@ -5,6 +5,7 @@ import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
 import org.queryman.builder.token.expression.prepared.BytesExpression;
+import org.queryman.builder.token.expression.prepared.DateExpression;
 import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
@@ -50,6 +51,14 @@ class ExpressionTest {
 
         assertEquals("true", asConstant(true).getName());
         assertTrue(asConstant(true) instanceof BooleanExpression);
+
+        Date d1 = new Date();
+        assertEquals("2018-03-05", asConstant(d1).getName());
+        assertTrue(asConstant(d1) instanceof DateExpression);
+
+        java.sql.Date d2 = new java.sql.Date(d1.getTime());
+        assertEquals("2018-03-05", asConstant(d2).getName());
+        assertTrue(asConstant(d2) instanceof DateExpression);
     }
 
     @Test
