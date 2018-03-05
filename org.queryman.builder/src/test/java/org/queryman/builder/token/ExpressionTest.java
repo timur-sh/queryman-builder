@@ -2,11 +2,20 @@ package org.queryman.builder.token;
 
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.token.expression.prepared.BooleanExpression;
+import org.queryman.builder.token.expression.prepared.ByteExpression;
+import org.queryman.builder.token.expression.prepared.BytesExpression;
+import org.queryman.builder.token.expression.prepared.DoubleExpression;
+import org.queryman.builder.token.expression.prepared.FloatExpression;
+import org.queryman.builder.token.expression.prepared.IntegerExpression;
+import org.queryman.builder.token.expression.prepared.LongExpression;
+import org.queryman.builder.token.expression.prepared.ShortExpression;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.queryman.builder.PostgreSQL.asArray;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asDollarString;
@@ -19,12 +28,40 @@ import static org.queryman.builder.PostgreSQL.select;
 
 class ExpressionTest {
     @Test
-    void defaultExpression() {
+    void constantExpression() {
         assertEquals("table_name", asName("table_name").getName());
-        assertEquals("234.11", asConstant(234.11).getName());
-        assertEquals("0.5", asConstant(.50).getName());
-        assertEquals("0.51", asConstant(.51).getName());
-        assertEquals("5.1", asConstant(.51E+1).getName());
+        assertEquals("234.11", asConstant(234.11d).getName());
+        assertTrue(asConstant(234.11d) instanceof DoubleExpression);
+
+        assertEquals("0.5", asConstant(.50f).getName());
+        assertTrue(asConstant(.50f) instanceof FloatExpression);
+
+        assertEquals("1", asConstant((byte) 1).getName());
+        assertTrue(asConstant((byte) 1) instanceof ByteExpression);
+
+        assertEquals("1", asConstant(1).getName());
+        assertTrue(asConstant(1) instanceof IntegerExpression);
+
+        assertEquals("1", asConstant(1L).getName());
+        assertTrue(asConstant(1L) instanceof LongExpression);
+
+        assertEquals("1", asConstant((short) 1).getName());
+        assertTrue(asConstant((short) 1) instanceof ShortExpression);
+
+        assertEquals("true", asConstant(true).getName());
+        assertTrue(asConstant(true) instanceof BooleanExpression);
+    }
+
+    @Test
+    void constantArrayExpression() {
+        byte[] b = { 1, 2, 3 };
+        Byte[] b1 = { 1, 2, 3 };
+
+        assertEquals("ARRAY[1, 2, 3]", asConstant(b).getName());
+        assertTrue(asConstant(b) instanceof BytesExpression);
+
+        assertEquals("ARRAY[1, 2, 3]", asConstant(b1).getName());
+        assertTrue(asConstant(b1) instanceof BytesExpression);
     }
 
     @Test

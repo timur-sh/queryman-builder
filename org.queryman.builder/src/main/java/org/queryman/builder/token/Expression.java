@@ -7,9 +7,15 @@
 package org.queryman.builder.token;
 
 /**
+ * The expression is a main part of query. Queryman Builder provides expressions
+ * showing in the list below:
+ * <ul>
+ *     <li>constant expression</li>
+ *     <li>function call expression</li>
+ *     <li>list expression</li>
+ *     <li>subquery expression</li>
+ * </ul>
  *
- * This is a representation of a PostgreSQL expression. Any prepared expression
- * behaves itself as a simple string in case, when it is used in SQL string.
  *
  * @author Timur Shaidullin
  */
@@ -24,7 +30,7 @@ public abstract class Expression extends AbstractToken
     protected String outputName;
 
     /**
-     * Specified a type for explicitly casting.
+     * Specified type for explicitly casting.
      */
     private String castType;
 

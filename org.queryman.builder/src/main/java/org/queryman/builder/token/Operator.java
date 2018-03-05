@@ -7,6 +7,8 @@
 package org.queryman.builder.token;
 
 /**
+ * PostgreSQL operators.
+ *
  * Immutable object.
  *
  * @author Timur Shaidullin
@@ -27,6 +29,11 @@ public class Operator extends Keyword {
         return position;
     }
 
+    /**
+     *
+     * @param position position between operands where {@code operator} appears
+     * @return itself
+     */
     public Operator setPosition(int position) {
         return new Operator(name, position);
     }

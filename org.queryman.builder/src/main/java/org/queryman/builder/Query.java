@@ -10,6 +10,7 @@ import org.queryman.builder.ast.AstVisitor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * It represents a query object allowing either to build a SQL query string,
@@ -32,5 +33,5 @@ public interface Query extends AstVisitor {
      * @return a completed prepared statement contains a SQL string and
      *  necessaries values
      */
-    PreparedStatement buildPreparedStatement(Connection conn);
+    PreparedStatement buildPreparedStatement(Connection conn) throws SQLException;
 }

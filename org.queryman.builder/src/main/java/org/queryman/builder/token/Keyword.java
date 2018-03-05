@@ -7,7 +7,7 @@
 package org.queryman.builder.token;
 
 /**
- * Represent keywords, examples: SELECT, UPDATE, DELETE,
+ * PostgreSQL keyword. Examples: SELECT, UPDATE, DELETE,
  * INSERT, WITH, FROM, DISTINCT etc.
  *
  * @author Timur Shaidullin

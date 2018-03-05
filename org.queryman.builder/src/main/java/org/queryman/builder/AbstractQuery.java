@@ -11,6 +11,7 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Standard implementation of {@link Query}.
@@ -41,8 +42,9 @@ public abstract class AbstractQuery implements Query, AstVisitor {
     }
 
     @Override
-    public PreparedStatement buildPreparedStatement(Connection conn) {
-        //todo
-        return null;
+    public PreparedStatement buildPreparedStatement(Connection conn) throws SQLException {
+        PreparedStatement statement = conn.prepareStatement("");
+
+        return statement;
     }
 }

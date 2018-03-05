@@ -8,7 +8,6 @@ package org.queryman.builder.testing;
 
 import org.queryman.builder.Bootstrap;
 import org.queryman.builder.JDBCException;
-import org.queryman.builder.JdbcException;
 import org.queryman.builder.Query;
 
 import javax.sql.DataSource;
@@ -56,7 +55,7 @@ public class JDBC {
         try (Statement statement = connection.createStatement()) {
             statement.executeQuery(query.sql());
         } catch (SQLException e) {
-            throw new JdbcException(e.getMessage());
+            throw new JDBCException(e.getMessage());
         }
     }
 }

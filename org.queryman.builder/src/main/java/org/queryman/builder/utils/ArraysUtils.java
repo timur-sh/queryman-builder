@@ -17,4 +17,19 @@ public class ArraysUtils {
 
         return false;
     }
+
+    /**
+     * Wrapping a bytes array to wrapper object.
+     *
+     * @param bytes
+     * @return
+     */
+    public static Byte[] toWrapper(byte[] bytes) {
+        Byte[] b = new Byte[bytes.length];
+
+        for (int i = 0; i < bytes.length; i++)
+            b[i] = (Byte) bytes[i];
+
+        return b;
+    }
 }

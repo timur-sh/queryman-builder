@@ -4,16 +4,18 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.token.expression;
+package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
+
+import java.util.Arrays;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
 
 /**
  * This is a ARRAY expressions. If you would use a prepared expression, see
  * {@link org.queryman.builder.token.PreparedExpression}
- *
+ * <p>
  * Commons use:
  * <code>
  *     // ARRAY[1, 2, 3 [,...]]
@@ -30,6 +32,7 @@ public class ArrayExpression<T> extends PreparedExpression {
     private T[] values;
 
     @SafeVarargs
+    @SuppressWarnings("unchecked")
     public ArrayExpression(T... constants) {
         super(null);
         values = constants;
@@ -43,19 +46,15 @@ public class ArrayExpression<T> extends PreparedExpression {
         if (values == null)
             return "ARRAY[]";
 
-        String [] result = new String[values.length];
-
-        for (int i = 0; i < values.length; i++) {
-            result[i] = asConstant(values[i]).getName();
-        }
-
-
+        String[] result = Arrays.stream(values)
+           .map(v -> asConstant(v).getName())
+           .toArray(String[]::new);
 
         return "ARRAY[" + String.join(", ", result) + "]";
     }
 
     @Override
-    protected Object getValue() {
+    protected Object[] getValue() {
         return values;
     }
 }

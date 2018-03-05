@@ -6,10 +6,9 @@
  */
 package org.queryman.builder.token.expression;
 
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.*;
+import static org.queryman.builder.PostgreSQL.asConstant;
 
 /**
  * Represent a list of value expressions.

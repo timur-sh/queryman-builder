@@ -29,9 +29,11 @@ import org.queryman.builder.command.update.UpdateAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
-import org.queryman.builder.token.expression.ArrayExpression;
+import org.queryman.builder.token.expression.prepared.ArrayExpression;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.ColumnReferenceExpression;
+import org.queryman.builder.token.expression.prepared.ByteExpression;
+import org.queryman.builder.token.expression.prepared.BytesExpression;
 import org.queryman.builder.token.expression.prepared.DollarStringExpression;
 import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.FuncExpression;
@@ -39,8 +41,10 @@ import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.ListExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
+import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
+import org.queryman.builder.utils.ArraysUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -820,28 +824,42 @@ public class PostgreSQL {
      * @see <a href=" https://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS">PostgreSQL constants</a>
      */
     public static <T> Expression asConstant(T constant) {
-        switch (((Object)constant).getClass().getName()) {
+        switch (((Object)constant).getClass().getCanonicalName()) {
             case "java.lang.String":
             case "java.lang.Character":
                 return new StringExpression(String.valueOf(constant));
             case "java.lang.Boolean":
                 return new BooleanExpression((Boolean) constant);
             case "java.lang.Integer":
-            case "java.lang.Byte":
-            case "java.lang.Short":
                 return new IntegerExpression((Integer) constant);
+            case "java.lang.Byte":
+                return new ByteExpression((Byte) constant);
+            case "java.lang.Short":
+                return new ShortExpression((Short) constant);
             case "java.lang.Long":
                 return new LongExpression((Long) constant);
             case "java.lang.Double":
                 return new DoubleExpression((Double) constant);
             case "java.lang.Float":
                 return new FloatExpression((Float) constant);
+            case "byte[]":
+                return asConstant(ArraysUtils.toWrapper((byte[]) constant));
         }
 
         if (constant instanceof Expression)
             return (Expression) constant;
 
-        throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getName());
+        throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getCanonicalName());
+    }
+
+    public static <T> Expression asConstant(T[] constants) {
+        constants.getClass().isArray();
+        switch (constants.getClass().getCanonicalName()) {
+            case "java.lang.Byte[]":
+                return new BytesExpression((Byte[])constants);
+        }
+
+        return asArray(constants);
     }
 
     /**
