@@ -198,15 +198,10 @@ public class ConditionsImplTest {
 
     @Test
     void conditionList() {
-        //todo add support for list of constants
         String[]   numbers    = { "one", "two", "three", "four", "five", "six" };
-        Conditions conditions = condition(asName("number"), IN, asConstant(numbers));
+        Conditions conditions = condition(asName("number"), IN, asList(numbers));
         assembleAst(conditions);
         assertEquals("WHERE number IN ('one', 'two', 'three', 'four', 'five', 'six')", ast.toString());
-
-        Conditions conditions2 = condition(asName("number"), IN, asList(numbers));
-        assembleAst(conditions2);
-        assertEquals("WHERE number IN (one, two, three, four, five, six)", ast.toString());
 
         Conditions conditions3 = condition(asName("number"), NOT_IN, asList(List.of(1, 2)));
         assembleAst(conditions3);

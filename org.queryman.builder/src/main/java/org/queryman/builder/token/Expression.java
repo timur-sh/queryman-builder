@@ -8,15 +8,8 @@ package org.queryman.builder.token;
 
 /**
  *
- * This is a representation of a PostgreSQL expression. The list below shows a
- * implemented expressions:
- *
- * <p>
- * <ul>
- *  <li>Constants. See {@link PreparedExpression} - date, numeric, string etc.</li>
- *  <li>The list of constants</li>
- *  <li>Array of constants</li>
- * </ul>
+ * This is a representation of a PostgreSQL expression. Any prepared expression
+ * behaves itself as a simple string in case, when it is used in SQL string.
  *
  * @author Timur Shaidullin
  */

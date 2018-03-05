@@ -8,16 +8,29 @@ package org.queryman.builder;
 
 import org.queryman.builder.ast.AstVisitor;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 /**
- * Provides a methods for working with sql query.
+ * It represents a query object allowing either to build a SQL query string,
+ * or to prepared a {@link PreparedStatement} object.
  *
  * @author Timur Shaidullin
  */
 public interface Query extends AstVisitor {
     /**
-     * Assembles tree from query parts then return its string representation.
+     * Builds a SQL string from a query object.
      *
      * @return SQL as string
      */
     String sql();
+
+    /**
+     * Builds a prepare statement, including into it a SQL string and values.
+     *
+     * @param conn connection
+     * @return a completed prepared statement contains a SQL string and
+     *  necessaries values
+     */
+    PreparedStatement buildPreparedStatement(Connection conn);
 }

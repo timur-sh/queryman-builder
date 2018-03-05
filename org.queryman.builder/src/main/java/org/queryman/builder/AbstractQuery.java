@@ -9,6 +9,9 @@ package org.queryman.builder;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 /**
  * Standard implementation of {@link Query}.
  *
@@ -35,5 +38,10 @@ public abstract class AbstractQuery implements Query, AstVisitor {
     @Override
     public String toString() {
         return sql();
+    }
+
+    @Override
+    public PreparedStatement buildPreparedStatement(Connection conn) {
+        return null;
     }
 }

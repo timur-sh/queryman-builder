@@ -21,8 +21,8 @@ class UpdateImplTest {
     @Test
     void updateSetTest() {
         String sql = update("book")
-           .set(asList("id", "name"), asList(1, asConstant("Timur")))
-           .set(asList("year", "price"), select("year", "price").from("book"))
+           .set(asList(asName("id"), asName("name")), asList(1, asConstant("Timur")))
+           .set(asList(asName("year"), asName("price")), select("year", "price").from("book"))
            .from("order")
            .sql();
         assertEquals("UPDATE book SET (id, name) = (1, 'Timur'), (year, price) = (SELECT year, price FROM book) FROM order", sql);

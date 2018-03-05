@@ -6,16 +6,18 @@
  */
 package org.queryman.builder.token;
 
-import org.queryman.builder.token.expression.prepared.DollarStringExpression;
-import org.queryman.builder.token.expression.prepared.StringExpression;
+import java.sql.Connection;
 
 /**
- * This is a marker class that denotes a prepared constant and must be extended
- * by all constant classes like numeric, string, date etc.
+ * Any prepared expression behaves itself as a simple string in case, when
+ * it is used in SQL string.
  *
- * @see org.queryman.builder.token.expression.ConstantExpression
- * @see DollarStringExpression
- * @see StringExpression
+ * Another behavior of it is distinct from the above, this is a prepared statement.
+ * The value of a expression is replaced by placeholder <code>?</code>, then
+ * the value of the expression is invoked included {@link java.sql.PreparedStatement}
+ * using one of <code>setXXX</code> methods.
+ *
+ * @see org.queryman.builder.Query#buildPreparedStatement(Connection)
  *
  * @author Timur Shaidullin
  */
@@ -28,5 +30,17 @@ public abstract class PreparedExpression<T> extends Expression {
         value = constant;
     }
 
+    /**
+     * Returns a placeholder to use in SQL string.
+     *
+     * @return a placeholder
+     */
+    public String getPlaceholder() {
+        return "?";
+    }
+
+    /**
+     * @return value of prepared expression
+     */
     protected abstract T getValue();
 }

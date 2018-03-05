@@ -12,7 +12,7 @@ import org.queryman.builder.utils.StringUtils;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asName;
 
 /**
  * @author Timur Shaidullin
@@ -36,7 +36,7 @@ public class FuncExpression extends Expression {
 
         Objects.requireNonNull(expression);
         String[] expr = Arrays.stream(expression).map(Expression::getName).toArray(String[]::new);
-        this.expression = asConstant(String.join(", ", expr));
+        this.expression = asName(String.join(", ", expr));
     }
 
     @Override

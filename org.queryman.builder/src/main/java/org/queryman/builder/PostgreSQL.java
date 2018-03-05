@@ -827,6 +827,8 @@ public class PostgreSQL {
             case "java.lang.Boolean":
                 return new BooleanExpression((Boolean) constant);
             case "java.lang.Integer":
+            case "java.lang.Byte":
+            case "java.lang.Short":
                 return new IntegerExpression((Integer) constant);
             case "java.lang.Long":
                 return new LongExpression((Long) constant);
@@ -1005,7 +1007,9 @@ public class PostgreSQL {
      */
     @SafeVarargs
     public static <T> Expression asFunc(String name, T... arguments) {
-        String[] args = Arrays.stream(arguments).map(String::valueOf).toArray(String[]::new);
+        Expression[] args = Arrays.stream(arguments)
+           .map(v -> PostgreSQL.asName(String.valueOf(v)))
+           .toArray(Expression[]::new);
         return asFunc(name, asList(args));
     }
 

@@ -6,8 +6,7 @@
  */
 package org.queryman.builder.token.expression;
 
-import org.queryman.builder.PostgreSQL;
-import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
 
@@ -23,7 +22,7 @@ import static org.queryman.builder.PostgreSQL.asConstant;
  *
  * @author Timur Shaidullin
  */
-public class ArrayExpression<T> extends Expression {
+public class ArrayExpression<T> extends PreparedExpression {
 
     /**
      * Contains variables for ARRAY expressions.
@@ -53,5 +52,10 @@ public class ArrayExpression<T> extends Expression {
 
 
         return "ARRAY[" + String.join(", ", result) + "]";
+    }
+
+    @Override
+    protected Object getValue() {
+        return values;
     }
 }

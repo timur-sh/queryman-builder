@@ -100,10 +100,10 @@ class ExpressionTest {
         assertEquals("(1, 2)", asList(numbers2).getName());
 
         Expression strings = asList("1", "2");
-        assertEquals("(1, 2)", strings.getName());
+        assertEquals("('1', '2')", strings.getName());
 
         Expression chars = asList('1', '2', '3', '4', '5', '6');
-        assertEquals("(1, 2, 3, 4, 5, 6)", chars.getName());
+        assertEquals("('1', '2', '3', '4', '5', '6')", chars.getName());
 
         Expression integers = asList(1, 0x1a);
         assertEquals("(1, 26)", integers.getName());
@@ -117,9 +117,9 @@ class ExpressionTest {
         Expression longs = asList(1L, 2L, 0xFF_EC_DE_5E, 1_2_3L);
         assertEquals("(1, 2, -1253794, 123)", longs.getName());
 
-        assertEquals("(one, two)", asList(List.of("one", "two")).getName());
+        assertEquals("('one', 'two')", asList(List.of("one", "two")).getName());
 
-        assertEquals("(1, 2)", asList(List.of('1', '2')).getName());
+        assertEquals("('1', '2')", asList(List.of('1', '2')).getName());
 
         assertEquals("(1, 2)", asList(List.of(1, 2)).getName());
 
@@ -132,7 +132,7 @@ class ExpressionTest {
     void arrayTest() {
         assertEquals("ARRAY[]", asArray().getName());
 
-        int[] numbers = { 1, 2 };
+        Integer[] numbers = { 1, 2 };
         assertEquals("ARRAY[1, 2]", asArray(numbers).getName());
         assertEquals("ARRAY[1, 2]::bigint[]", asArray(numbers).cast("bigint[]").getName());
         assertEquals("ARRAY[1, 2]::bigint[]", asArray(numbers).cast("bigint[]").getName());
