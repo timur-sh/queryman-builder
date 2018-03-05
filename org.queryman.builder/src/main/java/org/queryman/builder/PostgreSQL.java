@@ -1034,13 +1034,13 @@ public class PostgreSQL {
                 return new FloatExpression((Float) constant);
             case "java.util.Date":
                 java.util.Date d = (java.util.Date) constant;
-                return new DateExpression(new Date(d.getTime()));
+                return asDate(new Date(d.getTime()));
             case "java.sql.Date":
-                return new DateExpression((Date) constant);
+                return asDate(constant);
             case "java.sql.Time":
-                return new TimeExpression((Time) constant);
+                return asTime(constant);
             case "java.sql.Timestamp":
-                return new TimestampExpression((Timestamp) constant);
+                return asTimestamp(constant);
             case "java.math.BigDecimal":
                 return new BigDecimalExpression((BigDecimal) constant);
             case "byte[]":
@@ -1055,7 +1055,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Creates an array exrpression. If constant if Byte[] type, the ByteExpression
+     * Creates an array expression. If constant if Byte[] type, the ByteExpression
      * is created.
      *
      * @param constants array constant
@@ -1074,6 +1074,36 @@ public class PostgreSQL {
         }
 
         return asArray(constants);
+    }
+
+    /**
+     * Creates a Date type.
+     *
+     * @param date date
+     * @return {@link DateExpression}
+     */
+    public static <T> Expression asDate(T date) {
+        return new DateExpression((Date) date);
+    }
+
+    /**
+     * Creates a Time type.
+     *
+     * @param time time
+     * @return {@link TimeExpression}
+     */
+    public static <T> Expression asTime(T time) {
+        return new TimeExpression((Time) time);
+    }
+
+    /**
+     * Creates a Timestamp type.
+     *
+     * @param timestamp time
+     * @return {@link TimestampExpression}
+     */
+    public static <T> Expression asTimestamp(T timestamp) {
+        return new TimestampExpression((Timestamp) timestamp);
     }
 
     /**
