@@ -45,9 +45,13 @@ import org.queryman.builder.token.expression.prepared.LongExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
+import org.queryman.builder.token.expression.prepared.TimeExpression;
+import org.queryman.builder.token.expression.prepared.TimestampExpression;
 import org.queryman.builder.utils.ArraysUtils;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -849,6 +853,10 @@ public class PostgreSQL {
                 return new DateExpression(new Date(d.getTime()));
             case "java.sql.Date":
                 return new DateExpression((Date) constant);
+            case "java.sql.Time":
+                return new TimeExpression((Time) constant);
+            case "java.sql.Timestamp":
+                return new TimestampExpression((Timestamp) constant);
             case "byte[]":
                 return asConstant(ArraysUtils.toWrapper((byte[]) constant));
         }

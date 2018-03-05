@@ -11,7 +11,11 @@ import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
+import org.queryman.builder.token.expression.prepared.TimeExpression;
+import org.queryman.builder.token.expression.prepared.TimestampExpression;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -59,6 +63,10 @@ class ExpressionTest {
         java.sql.Date d2 = new java.sql.Date(d1.getTime());
         assertEquals("2018-03-05", asConstant(d2).getName());
         assertTrue(asConstant(d2) instanceof DateExpression);
+
+        assertTrue(asConstant(new Time(System.currentTimeMillis())) instanceof TimeExpression);
+
+        assertTrue(asConstant(new Timestamp(System.currentTimeMillis())) instanceof TimestampExpression);
     }
 
     @Test
