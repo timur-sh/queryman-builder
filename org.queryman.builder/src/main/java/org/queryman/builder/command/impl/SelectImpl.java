@@ -40,14 +40,10 @@ import java.util.stream.Collectors;
 
 import static org.queryman.builder.Keywords.EXCEPT;
 import static org.queryman.builder.Keywords.EXCEPT_ALL;
-import static org.queryman.builder.Keywords.EXCEPT_DISTINCT;
 import static org.queryman.builder.Keywords.INTERSECT;
 import static org.queryman.builder.Keywords.INTERSECT_ALL;
-import static org.queryman.builder.Keywords.INTERSECT_DISTINCT;
 import static org.queryman.builder.Keywords.UNION;
 import static org.queryman.builder.Keywords.UNION_ALL;
-import static org.queryman.builder.Keywords.UNION_DISTINCT;
-import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.condition;
@@ -508,13 +504,24 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl limit(long limit) {
-        this.limit = asConstant(limit);
+        return limit(asName(String.valueOf(limit)));
+    }
+
+    @Override
+    public final SelectImpl limit(Expression limit) {
+        this.limit = limit;
         return this;
     }
 
     @Override
     public final SelectImpl offset(long offset) {
-        this.offset = asConstant(offset);
+        return offset(asName(String.valueOf(offset)));
+    }
+
+
+    @Override
+    public final SelectImpl offset(Expression offset) {
+        this.offset = offset;
         return this;
     }
 
@@ -674,12 +681,6 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl unionDistinct(SelectFinalStep select) {
-        COMBINING_QUERY.add(new CombiningQuery(UNION_DISTINCT, select));
-        return this;
-    }
-
-    @Override
     public final SelectImpl intersect(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(INTERSECT, select));
         return this;
@@ -692,12 +693,6 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl intersectDistinct(SelectFinalStep select) {
-        COMBINING_QUERY.add(new CombiningQuery(INTERSECT_DISTINCT, select));
-        return this;
-    }
-
-    @Override
     public final SelectImpl except(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(EXCEPT, select));
         return this;
@@ -706,12 +701,6 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl exceptAll(SelectFinalStep select) {
         COMBINING_QUERY.add(new CombiningQuery(EXCEPT_ALL, select));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl exceptDistinct(SelectFinalStep select) {
-        COMBINING_QUERY.add(new CombiningQuery(EXCEPT_DISTINCT, select));
         return this;
     }
 

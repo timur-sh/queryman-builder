@@ -6,9 +6,13 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.token.Expression;
+
 /**
  * @author Timur Shaidullin
  */
 public interface SelectLimitStep extends SelectOffsetStep {
     SelectOffsetStep limit(long limit);
+
+    SelectOffsetStep limit(Expression limit);
 }

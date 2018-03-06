@@ -24,11 +24,6 @@ public interface SelectCombiningQueryStep extends SelectOrderByStep {
     SelectCombiningQueryStep unionAll(SelectFinalStep select);
 
     /**
-     * Combine main query with {@code select} query using UNION DISTINCT.
-     */
-    SelectCombiningQueryStep unionDistinct(SelectFinalStep select);
-
-    /**
      * Combine main query with {@code select} query using INTERSECT.
      */
     SelectCombiningQueryStep intersect(SelectFinalStep select);
@@ -39,11 +34,6 @@ public interface SelectCombiningQueryStep extends SelectOrderByStep {
     SelectCombiningQueryStep intersectAll(SelectFinalStep select);
 
     /**
-     * Combine main query with {@code select} query using INTERSECT DISTINCT.
-     */
-    SelectCombiningQueryStep intersectDistinct(SelectFinalStep select);
-
-    /**
      * Combine main query with {@code select} query using EXCEPT.
      */
     SelectCombiningQueryStep except(SelectFinalStep select);
@@ -52,9 +42,4 @@ public interface SelectCombiningQueryStep extends SelectOrderByStep {
      * Combine main query with {@code select} query using EXCEPT ALL.
      */
     SelectCombiningQueryStep exceptAll(SelectFinalStep select);
-
-    /**
-     * Combine main query with {@code select} query using EXCEPT DISTINCT.
-     */
-    SelectCombiningQueryStep exceptDistinct(SelectFinalStep select);
 }

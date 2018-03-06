@@ -7,6 +7,7 @@
 package org.queryman.builder.token.expression;
 
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
 
 import static org.queryman.builder.PostgreSQL.asConstant;
 
@@ -19,7 +20,7 @@ import static org.queryman.builder.PostgreSQL.asConstant;
  *
  * @author Timur Shaidullin
  */
-public class ListExpression<T> extends Expression {
+public class ListExpression<T> extends PreparedExpression {
 
     /**
      * Contains a variables for ARRAY and LIST expressions.
@@ -51,5 +52,27 @@ public class ListExpression<T> extends Expression {
         }
 
         return "(" + String.join(", ", result) + ")";
+    }
+
+    @Override
+    public String getPlaceholder() {
+        if (arr == null)
+            return "()";
+
+        String[] result = new String[arr.length];
+
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] instanceof PreparedExpression)
+                result[i] = ((PreparedExpression)asConstant(arr[i])).getPlaceholder();
+            else
+                result[i] = asConstant(arr[i]).getName();
+        }
+
+        return "(" + String.join(", ", result) + ")";
+    }
+
+    @Override
+    protected Object[] getValue() {
+        return arr;
     }
 }

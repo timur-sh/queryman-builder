@@ -1,6 +1,7 @@
 package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.Query;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.token.Expression;
@@ -25,10 +26,12 @@ import static org.queryman.builder.PostgreSQL.select;
 import static org.queryman.builder.PostgreSQL.selectAll;
 import static org.queryman.builder.PostgreSQL.selectDistinct;
 import static org.queryman.builder.PostgreSQL.selectDistinctOn;
+import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
 class SelectImplTest {
+
     @Test
-    void selectTest() {
+    void selectTest() throws NoSuchFieldException, IllegalAccessException {
         SelectFromStep select = select("id", 2, .4, "name");
 
         assertEquals("SELECT id, 2, 0.4, name", select.sql());
@@ -791,9 +794,17 @@ class SelectImplTest {
     //---
 
     @Test
-    void selectUnion() {
-        String sql = select("1", "2").union(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 UNION SELECT 2, 2", sql);
+    void selectUnion() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select("1", "2")
+           .from("book")
+           .where(asName("id"), operator("="), asConstant(1))
+           .union(select("2", "2")
+              .from("book")
+              .where(asName("id"), operator("="), asConstant(1))
+           );
+        String sql = query.sql();
+        assertEquals("SELECT 1, 2 FROM book WHERE id = 1 UNION SELECT 2, 2 FROM book WHERE id = 1", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id = ? UNION SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
     }
 
     @Test
@@ -827,58 +838,62 @@ class SelectImplTest {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
+           .where(conditionBetween(asName("id"), asConstant(1), asConstant(2)))
            .union(select("2", "2"));
 
-        assertEquals("SELECT 1, 2 FROM book WHERE 'id' BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
 
         select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
+           .where(conditionBetween(asName("id"), asConstant(1), asConstant(2)))
            .and("name", "IS NOT", null)
            .union(select("2", "2"));
 
-        assertEquals("SELECT 1, 2 FROM book WHERE 'id' BETWEEN 1 AND 2 AND name IS NOT null UNION SELECT 2, 2", select.sql());
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 AND name IS NOT null UNION SELECT 2, 2", select.sql());
     }
 
     @Test
-    void selectFromWhereGroupByUnion() {
+    void selectFromWhereGroupByUnion() throws NoSuchFieldException, IllegalAccessException {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
+           .where(conditionBetween(asName("id"), asConstant(1), asConstant(2)))
            .groupBy(asQuotedName("book.id"))
            .union(select("2", "2"));
 
         String sql = select.sql();
-        assertEquals("SELECT 1, 2 FROM book WHERE 'id' BETWEEN 1 AND 2 GROUP BY \"book\".\"id\" UNION SELECT 2, 2", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 GROUP BY \"book\".\"id\" UNION SELECT 2, 2", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN ? AND ? GROUP BY \"book\".\"id\" UNION SELECT 2, 2", buildPreparedSQL(select));
     }
 
     @Test
-    void selectFromWhereGroupByUnionOrderBy() {
+    void selectFromWhereGroupByUnionOrderBy() throws NoSuchFieldException, IllegalAccessException {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
-           .where(conditionBetween(asConstant("id"), asConstant(1), asConstant(2)))
+           .where(conditionBetween(asName("id"), asConstant(1), asConstant(2)))
            .groupBy(asQuotedName("book.id"))
            .union(select("2", "2"))
            .orderBy("id", "DESC");
 
         String sql = select.sql();
-        assertEquals("SELECT 1, 2 FROM book WHERE 'id' BETWEEN 1 AND 2 GROUP BY \"book\".\"id\" UNION SELECT 2, 2 ORDER BY id DESC", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 GROUP BY \"book\".\"id\" UNION SELECT 2, 2 ORDER BY id DESC", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN ? AND ? GROUP BY \"book\".\"id\" UNION SELECT 2, 2 ORDER BY id DESC", buildPreparedSQL(select));
     }
 
     @Test
-    void selectUnionAll() {
-        String sql = select("1", "2").unionAll(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 UNION ALL SELECT 2, 2", sql);
-    }
-
-    @Test
-    void selectUnionDistinct() {
-        String sql = select("1", "2").unionDistinct(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 UNION DISTINCT SELECT 2, 2", sql);
+    void selectUnionAll() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select("1", "2")
+           .from("book")
+           .where(asName("id"), operator("="), asConstant(1))
+           .unionAll(select("2", "2")
+              .from("book")
+              .where(asName("id"), operator("="), asConstant(1))
+           );
+        String sql = query.sql();
+        assertEquals("SELECT 1, 2 FROM book WHERE id = 1 UNION ALL SELECT 2, 2 FROM book WHERE id = 1", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id = ? UNION ALL SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
     }
 
     //---
@@ -886,43 +901,64 @@ class SelectImplTest {
     //---
 
     @Test
-    void selectIntersect() {
-        String sql = select("1", "2").intersect(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 INTERSECT SELECT 2, 2", sql);
+    void selectIntersect() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select("1", "2")
+           .from("book")
+           .where(asName("id"), operator("="), asConstant(1))
+           .intersect(select("2", "2")
+              .from("book")
+              .where(asName("id"), operator("="), asConstant(1))
+           );
+        String sql = query.sql();
+        assertEquals("SELECT 1, 2 FROM book WHERE id = 1 INTERSECT SELECT 2, 2 FROM book WHERE id = 1", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id = ? INTERSECT SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
     }
 
     @Test
-    void selectIntersectAll() {
-        String sql = select("1", "2").intersectAll(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 INTERSECT ALL SELECT 2, 2", sql);
+    void selectIntersectAll() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select("1", "2")
+           .from("book")
+           .where(asName("id"), operator("="), asConstant(1))
+           .intersectAll(select("2", "2")
+              .from("book")
+              .where(asName("id"), operator("="), asConstant(1))
+           );
+        String sql = query.sql();
+        assertEquals("SELECT 1, 2 FROM book WHERE id = 1 INTERSECT ALL SELECT 2, 2 FROM book WHERE id = 1", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id = ? INTERSECT ALL SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
     }
 
-    @Test
-    void selectIntersectDistinct() {
-        String sql = select("1", "2").intersectDistinct(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 INTERSECT DISTINCT SELECT 2, 2", sql);
-    }
 
     //---
     // EXCEPT
     //---
 
     @Test
-    void selectExcept() {
-        String sql = select("1", "2").except(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 EXCEPT SELECT 2, 2", sql);
+    void selectExcept() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select("1", "2")
+           .from("book")
+           .where(asName("id"), operator("="), asConstant(1))
+           .except(select("2", "2")
+              .from("book")
+              .where(asName("id"), operator("="), asConstant(1))
+           );
+        String sql = query.sql();
+        assertEquals("SELECT 1, 2 FROM book WHERE id = 1 EXCEPT SELECT 2, 2 FROM book WHERE id = 1", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id = ? EXCEPT SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
     }
 
     @Test
-    void selectExceptAll() {
-        String sql = select("1", "2").exceptAll(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 EXCEPT ALL SELECT 2, 2", sql);
-    }
-
-    @Test
-    void selectExceptDistinct() {
-        String sql = select("1", "2").exceptDistinct(select("2", "2")).sql();
-        assertEquals("SELECT 1, 2 EXCEPT DISTINCT SELECT 2, 2", sql);
+    void selectExceptAll() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select("1", "2")
+           .from("book")
+           .where(asName("id"), operator("="), asConstant(1))
+           .exceptAll(select("2", "2")
+              .from("book")
+              .where(asName("id"), operator("="), asConstant(1))
+           );
+        String sql = query.sql();
+        assertEquals("SELECT 1, 2 FROM book WHERE id = 1 EXCEPT ALL SELECT 2, 2 FROM book WHERE id = 1", sql);
+        assertEquals("SELECT 1, 2 FROM book WHERE id = ? EXCEPT ALL SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
     }
 
 
