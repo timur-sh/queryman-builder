@@ -19,6 +19,8 @@ import org.queryman.builder.token.expression.prepared.TimestampExpression;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -60,11 +62,13 @@ class ExpressionTest {
         assertTrue(asConstant(true) instanceof BooleanExpression);
 
         Date d1 = new Date();
-        assertEquals("2018-03-05", asConstant(d1).getName());
+        SimpleDateFormat format = new SimpleDateFormat("Y-MM-dd");
+
+        assertEquals(format.format(d1), asConstant(d1).getName());
         assertTrue(asConstant(d1) instanceof DateExpression);
 
         java.sql.Date d2 = new java.sql.Date(d1.getTime());
-        assertEquals("2018-03-05", asConstant(d2).getName());
+        assertEquals(format.format(d2), asConstant(d2).getName());
         assertTrue(asConstant(d2) instanceof DateExpression);
 
         assertTrue(asConstant(new Time(System.currentTimeMillis())) instanceof TimeExpression);

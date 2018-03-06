@@ -8,6 +8,7 @@ package org.queryman.builder;
 
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.TreeFormatterUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,8 +44,6 @@ public abstract class AbstractQuery implements Query, AstVisitor {
 
     @Override
     public PreparedStatement buildPreparedStatement(Connection conn) throws SQLException {
-        PreparedStatement statement = conn.prepareStatement("");
-
-        return statement;
+        return TreeFormatterUtil.buildPreparedStatement(tree, conn);
     }
 }

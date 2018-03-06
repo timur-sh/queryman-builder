@@ -21,13 +21,16 @@ import static org.queryman.builder.ast.NodeUtil.node;
  * the new node is added as a child of latest node of {@link #NODES} stack,
  * then the new node is pushed to this stack.
  *
+ * Each node must be started with {@link #startNode(NodeMetadata)} and ended
+ * with {@link #endNode()}. If this rule is not completed, the
+ * {@link BrokenTreeException} will raise when {@link #getRootNode()} is called.
+ *
  * @author Timur Shaidullin
  */
 class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
     private Node root;
 
-    private       Stack<Node>   NODES     = new Stack<>();
-    private final TreeFormatter FORMATTER = new TreeFormatter();
+    private Stack<Node> NODES = new Stack<>();
 
     @Override
     public AbstractSyntaxTree startNode(NodeMetadata metadata) {
@@ -107,18 +110,18 @@ class AbstractSyntaxTreeImpl implements AbstractSyntaxTree {
 
     @Override
     public Node getRootNode() {
-        if (root == null)
+        if (NODES.size() != 0)
             throw new BrokenTreeException();
+
+        if (root == null) {
+            throw new BrokenTreeException();
+        }
 
         return root;
     }
 
     @Override
     public String toString() {
-        if (NODES.size() != 0) {
-            throw new BrokenTreeException();
-        }
-
-        return FORMATTER.treeToString(root);
+        return TreeFormatterUtil.getSQL(this);
     }
 }
