@@ -72,7 +72,7 @@ public class ListExpression<T> extends PreparedExpression {
     }
 
     @Override
-    protected Object[] getValue() {
+    public Object[] getValue() {
         return arr;
     }
 }

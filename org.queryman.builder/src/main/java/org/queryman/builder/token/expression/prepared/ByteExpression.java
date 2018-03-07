@@ -24,7 +24,7 @@ public class ByteExpression extends PreparedExpression<Byte> {
     }
 
     @Override
-    protected Byte getValue() {
+    public Byte getValue() {
         return value;
     }
 }

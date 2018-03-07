@@ -24,7 +24,7 @@ public class IntegerExpression extends PreparedExpression<Integer> {
     }
 
     @Override
-    protected Integer getValue() {
+    public Integer getValue() {
         return value;
     }
 }

@@ -42,5 +42,5 @@ public abstract class PreparedExpression<T> extends Expression {
     /**
      * @return value of prepared expression
      */
-    protected abstract T getValue();
+    public abstract T getValue();
 }

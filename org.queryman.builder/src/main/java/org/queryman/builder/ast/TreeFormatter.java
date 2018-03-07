@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * @author Timur Shaidullin
  */
 final class TreeFormatter {
-    private final Map<Integer, Expression> parameters = new Hashtable<>();
+    private final Map<Integer, PreparedExpression> parameters = new Hashtable<>();
 
     String buildSQL(Node node) {
         return buildSQL(node, false);
@@ -85,7 +85,7 @@ final class TreeFormatter {
                 list.add(expression.getPlaceholder());
 
                 synchronized (parameters) {
-                    parameters.put(parameters.size(), expression);
+                    parameters.put(parameters.size() + 1, expression);
                 }
 
             } else {
@@ -96,7 +96,7 @@ final class TreeFormatter {
         return list;
     }
 
-    public Map<Integer, Expression> getParameters() {
+    public Map<Integer, PreparedExpression> getParameters() {
         return parameters;
     }
 

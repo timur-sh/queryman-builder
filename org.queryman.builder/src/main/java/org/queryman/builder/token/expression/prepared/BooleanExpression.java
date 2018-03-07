@@ -24,7 +24,7 @@ public class BooleanExpression extends PreparedExpression<Boolean> {
     }
 
     @Override
-    protected Boolean getValue() {
+    public Boolean getValue() {
         return value;
     }
 }

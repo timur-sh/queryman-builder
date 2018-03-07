@@ -51,7 +51,7 @@ public class DollarStringExpression extends PreparedExpression<String> {
     }
 
     @Override
-    protected String getValue() {
+    public String getValue() {
         return getName();
     }
 }

@@ -27,7 +27,7 @@ public class TimeExpression extends PreparedExpression<Time> {
     }
 
     @Override
-    protected Time getValue() {
+    public Time getValue() {
         return value;
     }
 }

@@ -27,7 +27,7 @@ public class DateExpression extends PreparedExpression<Date> {
     }
 
     @Override
-    protected Date getValue() {
+    public Date getValue() {
         return value;
     }
 }

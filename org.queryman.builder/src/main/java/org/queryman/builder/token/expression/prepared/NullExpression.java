@@ -27,7 +27,7 @@ public class NullExpression extends PreparedExpression<Object> {
     }
 
     @Override
-    protected Object getValue() {
+    public Object getValue() {
         return null;
     }
 }

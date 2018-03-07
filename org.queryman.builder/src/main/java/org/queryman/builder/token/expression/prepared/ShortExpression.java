@@ -24,7 +24,7 @@ public class ShortExpression extends PreparedExpression<Short> {
     }
 
     @Override
-    protected Short getValue() {
+    public Short getValue() {
         return value;
     }
 }

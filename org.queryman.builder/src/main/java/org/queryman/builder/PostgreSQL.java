@@ -1004,6 +1004,12 @@ public class PostgreSQL {
     /**
      * Using a class name of constant it creates an appropriate Expression object.
      *
+     * {@link java.util.Date} is could not be convert to particular expression,
+     * you should use ad hoc methods to convert it to any expression of DATE type:
+     * * {@link #asDate(Object)}
+     * * {@link #asTime(Object)}
+     * * {@link #asTimestamp(Object)}
+     *
      * @param constant any constant
      * @return a constant of appropriate type.
      * @throws IllegalArgumentException if constant is not supported
@@ -1077,7 +1083,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Creates a Date type.
+     * Creates a Date expression.
      *
      * @param date date
      * @return {@link DateExpression}
@@ -1087,7 +1093,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Creates a Time type.
+     * Creates a Time expression.
      *
      * @param time time
      * @return {@link TimeExpression}
@@ -1097,7 +1103,7 @@ public class PostgreSQL {
     }
 
     /**
-     * Creates a Timestamp type.
+     * Creates a Timestamp expression.
      *
      * @param timestamp time
      * @return {@link TimestampExpression}

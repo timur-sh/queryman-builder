@@ -24,7 +24,7 @@ public class DoubleExpression extends PreparedExpression<Double> {
     }
 
     @Override
-    protected Double getValue() {
+    public Double getValue() {
         return value;
     }
 }

@@ -35,7 +35,7 @@ public class BytesExpression extends ArrayExpression<Byte> {
     }
 
     @Override
-    protected Byte[] getValue() {
+    public Byte[] getValue() {
         return values;
     }
 }

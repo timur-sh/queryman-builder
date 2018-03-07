@@ -37,10 +37,12 @@ public class TreeFormatterUtil {
        throws SQLException {
 
         TreeFormatter formatter = new TreeFormatter();
-        String sql = formatter.buildSQL(tree.getRootNode(), false);
+        String sql = formatter.buildSQL(tree.getRootNode(), true);
+        System.out.println(sql);
 
         PreparedStatement statement = conn.prepareStatement(sql);
 
-        return PrepareStatementUtil.bind(statement, formatter.getParameters());
+        JavaTypeToJdbc mapping = new JavaTypeToJdbc(conn, statement);
+        return mapping.bind(formatter.getParameters());
     }
 }

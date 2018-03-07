@@ -19,7 +19,7 @@ public class ArraysUtils {
     }
 
     /**
-     * Wrapping a bytes array to wrapper object.
+     * Wrapping a bytes[] to Byte array.
      *
      * @param bytes
      * @return
@@ -28,7 +28,22 @@ public class ArraysUtils {
         Byte[] b = new Byte[bytes.length];
 
         for (int i = 0; i < bytes.length; i++)
-            b[i] = (Byte) bytes[i];
+            b[i] = bytes[i];
+
+        return b;
+    }
+
+    /**
+     * Wrapping a Byte array to bytes[].
+     *
+     * @param bytes
+     * @return
+     */
+    public static byte[] toWrapper(Byte[] bytes) {
+        byte[] b = new byte[bytes.length];
+
+        for (int i = 0; i < bytes.length; i++)
+            b[i] = bytes[i];
 
         return b;
     }

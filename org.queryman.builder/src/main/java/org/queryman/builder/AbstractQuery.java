@@ -44,6 +44,7 @@ public abstract class AbstractQuery implements Query, AstVisitor {
 
     @Override
     public PreparedStatement buildPreparedStatement(Connection conn) throws SQLException {
+        assembleTree();
         return TreeFormatterUtil.buildPreparedStatement(tree, conn);
     }
 }

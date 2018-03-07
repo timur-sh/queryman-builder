@@ -27,7 +27,7 @@ public class BigDecimalExpression extends PreparedExpression<BigDecimal> {
     }
 
     @Override
-    protected BigDecimal getValue() {
-        return null;
+    public BigDecimal getValue() {
+        return value;
     }
 }

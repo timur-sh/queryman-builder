@@ -24,7 +24,7 @@ public class LongExpression extends PreparedExpression<Long> {
     }
 
     @Override
-    protected Long getValue() {
+    public Long getValue() {
         return value;
     }
 }

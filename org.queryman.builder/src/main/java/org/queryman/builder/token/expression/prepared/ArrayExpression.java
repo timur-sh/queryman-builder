@@ -54,7 +54,7 @@ public class ArrayExpression<T> extends PreparedExpression {
     }
 
     @Override
-    protected Object[] getValue() {
+    public Object[] getValue() {
         return values;
     }
 }

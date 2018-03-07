@@ -24,7 +24,7 @@ public class FloatExpression extends PreparedExpression<Float> {
     }
 
     @Override
-    protected Float getValue() {
+    public Float getValue() {
         return value;
     }
 }

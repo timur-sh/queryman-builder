@@ -27,7 +27,7 @@ public class TimestampExpression extends PreparedExpression<Timestamp> {
     }
 
     @Override
-    protected Timestamp getValue() {
+    public Timestamp getValue() {
         return value;
     }
 }
