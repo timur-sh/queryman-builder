@@ -49,6 +49,7 @@ import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
+import org.queryman.builder.token.expression.prepared.UUIDExpression;
 import org.queryman.builder.utils.ArraysUtils;
 
 import java.math.BigDecimal;
@@ -57,6 +58,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.queryman.builder.ast.NodesMetadata.ALL;
 import static org.queryman.builder.ast.NodesMetadata.ANY;
@@ -1019,8 +1021,9 @@ public class PostgreSQL {
     public static <T> Expression asConstant(T constant) {
         if (constant == null)
             return new NullExpression(null);
+        Class<?> cl = ((Object)constant).getClass();
 
-        switch (((Object)constant).getClass().getCanonicalName()) {
+        switch (cl.getCanonicalName()) {
             case "java.lang.String":
             case "java.lang.Character":
                 return new StringExpression(String.valueOf(constant));
@@ -1049,14 +1052,23 @@ public class PostgreSQL {
                 return asTimestamp(constant);
             case "java.math.BigDecimal":
                 return new BigDecimalExpression((BigDecimal) constant);
+            case "java.util.UUID":
+                return new UUIDExpression((UUID) constant);
             case "byte[]":
                 return asConstant(ArraysUtils.toWrapper((byte[]) constant));
+            case "int[]":
+                return asConstant(ArraysUtils.toWrapper((int[]) constant));
+            case "short[]":
+                return asConstant(ArraysUtils.toWrapper((short[]) constant));
+            case "long[]":
+                return asConstant(ArraysUtils.toWrapper((long[]) constant));
+            case "float[]":
+                return asConstant(ArraysUtils.toWrapper((float[]) constant));
         }
 
         if (constant instanceof Expression)
             return (Expression) constant;
 
-        //todo logging of below the constant to object type
         throw new IllegalArgumentException("Unsupported type " + ((Object)constant).getClass().getCanonicalName());
     }
 

@@ -6,7 +6,6 @@
  */
 package org.queryman.builder.ast;
 
-import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
 import org.queryman.builder.token.expression.ListExpression;
 import org.queryman.builder.token.expression.prepared.ArrayExpression;
@@ -25,6 +24,7 @@ import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
+import org.queryman.builder.token.expression.prepared.UUIDExpression;
 import org.queryman.builder.utils.ArraysUtils;
 
 import java.sql.Array;
@@ -32,8 +32,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,73 +49,74 @@ class JavaTypeToJdbc {
     PreparedStatement bind(Map<Integer, PreparedExpression> params) throws SQLException {
         for (Map.Entry<Integer, PreparedExpression> expr : params.entrySet()) {
 
-
             if (expr.getValue() instanceof NullExpression)
                 statement.setNull(expr.getKey(), Types.NULL);
-
-            if (expr.getValue() instanceof BooleanExpression)
+            else if (expr.getValue() instanceof BooleanExpression)
                 statement.setBoolean(expr.getKey(), ((BooleanExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof ShortExpression)
+            else if (expr.getValue() instanceof ShortExpression)
                 statement.setShort(expr.getKey(), ((ShortExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof ByteExpression)
+            else if (expr.getValue() instanceof ByteExpression)
                 statement.setByte(expr.getKey(), ((ByteExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof IntegerExpression)
+            else if (expr.getValue() instanceof IntegerExpression)
                 statement.setInt(expr.getKey(), ((IntegerExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof LongExpression)
+            else if (expr.getValue() instanceof LongExpression)
                 statement.setLong(expr.getKey(), ((LongExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof FloatExpression)
+            else if (expr.getValue() instanceof FloatExpression)
                 statement.setFloat(expr.getKey(), ((FloatExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof DoubleExpression)
+            else if (expr.getValue() instanceof DoubleExpression)
                 statement.setDouble(expr.getKey(), ((DoubleExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof BigDecimalExpression)
+            else if (expr.getValue() instanceof BigDecimalExpression)
                 statement.setBigDecimal(expr.getKey(), ((BigDecimalExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof StringExpression)
+            else if (expr.getValue() instanceof StringExpression)
                 statement.setString(expr.getKey(), ((StringExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof DollarStringExpression)
+            else if (expr.getValue() instanceof DollarStringExpression)
                 statement.setString(expr.getKey(), ((DollarStringExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof DateExpression)
+            else if (expr.getValue() instanceof DateExpression)
                 statement.setDate(expr.getKey(), ((DateExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof TimeExpression)
+            else if (expr.getValue() instanceof TimeExpression)
                 statement.setTime(expr.getKey(), ((TimeExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof TimestampExpression)
+            else if (expr.getValue() instanceof TimestampExpression)
                 statement.setTimestamp(expr.getKey(), ((TimestampExpression) expr.getValue()).getValue());
 
-            if (expr.getValue() instanceof ArrayExpression) {
+            else if (expr.getValue() instanceof UUIDExpression)
+                statement.setObject(expr.getKey(), ((UUIDExpression) expr.getValue()).getValue());
+
+            else if (expr.getValue() instanceof ArrayExpression) {
                 ArrayExpression arrayExpression = ((ArrayExpression) expr.getValue());
 
+                String typeName = arrayExpression.getValue().getClass().getComponentType().getSimpleName();
                 Array arr = connection.createArrayOf(
-                   String.valueOf(arrayExpression.hashCode()),
+                   typeName.toLowerCase(),
                    arrayExpression.getValue()
                 );
 
                 statement.setArray(expr.getKey(), arr);
             }
 
-            if (expr.getValue() instanceof BytesExpression) {
+            else if (expr.getValue() instanceof BytesExpression) {
                 Byte[] bytes = ((BytesExpression) expr.getValue()).getValue();
-                statement.setBytes(expr.getKey(), ArraysUtils.toWrapper(bytes));
+                statement.setBytes(expr.getKey(), ArraysUtils.toPrimitive(bytes));
             }
 
-            if (expr.getValue() instanceof ListExpression) {
+            else if (expr.getValue() instanceof ListExpression) {
                 throw new RuntimeException("It's needed to implement");
             }
 
         }
         // bind parameters
         /*
-        setObject
         setRef
         setBlob
         setClob

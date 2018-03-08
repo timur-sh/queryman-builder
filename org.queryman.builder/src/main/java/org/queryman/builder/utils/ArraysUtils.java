@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.utils;
 
+import java.util.Arrays;
+
 /**
  * @author Timur Shaidullin
  */
@@ -19,10 +21,19 @@ public class ArraysUtils {
     }
 
     /**
+     * Wrapping a Byte array to bytes[].
+     */
+    public static byte[] toPrimitive(Byte[] bytes) {
+        byte[] b = new byte[bytes.length];
+
+        for (int i = 0; i < bytes.length; i++)
+            b[i] = bytes[i];
+
+        return b;
+    }
+
+    /**
      * Wrapping a bytes[] to Byte array.
-     *
-     * @param bytes
-     * @return
      */
     public static Byte[] toWrapper(byte[] bytes) {
         Byte[] b = new Byte[bytes.length];
@@ -34,17 +45,47 @@ public class ArraysUtils {
     }
 
     /**
-     * Wrapping a Byte array to bytes[].
-     *
-     * @param bytes
-     * @return
+     * Wrapping a float[] to Float array.
      */
-    public static byte[] toWrapper(Byte[] bytes) {
-        byte[] b = new byte[bytes.length];
+    public static Float[] toWrapper(float[] arr) {
+        Float[] b = new Float[arr.length];
 
-        for (int i = 0; i < bytes.length; i++)
-            b[i] = bytes[i];
+        for (int i = 0; i < arr.length; i++)
+            b[i] = arr[i];
 
         return b;
+    }
+
+    /**
+     * Wrapping a short[] to Short array.
+     */
+    public static Short[] toWrapper(short[] arr) {
+        Short[] b = new Short[arr.length];
+
+        for (int i = 0; i < arr.length; i++)
+            b[i] = arr[i];
+
+        return b;
+    }
+
+    /**
+     * Wrapping a integer[] to Integer array.
+     */
+    public static Integer[] toWrapper(int[] arr) {
+        return Arrays.stream(arr).boxed().toArray(Integer[]::new);
+    }
+
+    /**
+     * Wrapping a long[] to Long array.
+     */
+    public static Long[] toWrapper(long[] arr) {
+        return Arrays.stream(arr).boxed().toArray(Long[]::new);
+    }
+
+    /**
+     * Wrapping a double[] to Double array.
+     */
+    public static Double[] toWrapper(double[] arr) {
+        return Arrays.stream(arr).boxed().toArray(Double[]::new);
     }
 }
