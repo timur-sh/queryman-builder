@@ -56,6 +56,17 @@ public abstract class Expression extends AbstractToken
                .append(outputName)
                ;
 
+        builder.append(getCastExpression());
+
+        return builder.toString();
+    }
+
+    /**
+     * @return string with expression of explicitly casting
+     */
+    String getCastExpression() {
+        StringBuilder builder = new StringBuilder();
+
         if (castType != null)
             builder.append("::").append(castType);
 

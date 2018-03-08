@@ -23,7 +23,7 @@ public class TimeExpression extends PreparedExpression<Time> {
 
     @Override
     protected String prepareName() {
-        return name;
+        return String.format("'%s'", name);
     }
 
     @Override

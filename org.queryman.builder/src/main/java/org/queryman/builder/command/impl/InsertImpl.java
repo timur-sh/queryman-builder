@@ -7,13 +7,12 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.Keywords;
 import org.queryman.builder.PostgreSQL;
-import org.queryman.builder.ast.NodesMetadata;
-import org.queryman.builder.command.ConflictTarget;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.command.ConflictTarget;
 import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.insert.InsertColumnsManyStep;
 import org.queryman.builder.command.insert.InsertColumnsStep;
@@ -49,8 +48,11 @@ import static org.queryman.builder.Keywords.OVERRIDING_USER_VALUE;
 import static org.queryman.builder.Keywords.SET;
 import static org.queryman.builder.Keywords.VALUES;
 import static org.queryman.builder.Operators.EQUAL;
-import static org.queryman.builder.PostgreSQL.*;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.PostgreSQL.asSubQuery;
+import static org.queryman.builder.PostgreSQL.condition;
+import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
@@ -75,22 +77,22 @@ public class InsertImpl extends AbstractQuery implements
    InsertDoUpdateWhereFirstStep,
    InsertDoUpdateWhereManyStep {
 
-    private final Expression   table;
+    private final Expression table;
     private final List<Map<Expression, Expression>> setList = new ArrayList<>();
-    private       Expression   alias;
-    private       Expression[] columns;
-    private boolean overridingSystemValue;
-    private boolean overridingUserValue;
-    private boolean      defaultValues;
-    private Expression[] values;
-    private Query        queryValues;
+    private Expression       alias;
+    private Expression[]     columns;
+    private boolean          overridingSystemValue;
+    private boolean          overridingUserValue;
+    private boolean          defaultValues;
+    private Expression[]     values;
+    private Query            queryValues;
     private boolean          onConflict;
     private ConflictTarget[] conflictTargets;
     private Expression       onConstraint;
-    private boolean doNothing;
-    private boolean doUpdate;
-    private Conditions onConflictConditions;
-    private Conditions conflictActionCondition;
+    private boolean          doNothing;
+    private boolean          doUpdate;
+    private Conditions       onConflictConditions;
+    private Conditions       conflictActionCondition;
     private boolean onConflictProcessing     = true;
     private boolean conflictActionProcessing = false;
     private Expression[] returning;
@@ -232,6 +234,10 @@ public class InsertImpl extends AbstractQuery implements
 
     @Override
     public final InsertImpl values(Expression... values) {
+        for (int i = 0; i < values.length; i++)
+            if (values[i] == null)
+                values[i] = asConstant(null);
+
         this.values = values;
         return this;
     }

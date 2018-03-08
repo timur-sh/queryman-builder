@@ -21,7 +21,10 @@ public class TreeFormatterUtil {
      * @return SQL string
      */
     static String getSQL(AbstractSyntaxTree tree) {
-        return new TreeFormatter().buildSQL(tree.getRootNode());
+        String sql = new TreeFormatter().buildSQL(tree.getRootNode());
+        //todo move to the logger
+        System.out.println(sql);
+        return sql;
     }
 
     /**
@@ -38,6 +41,7 @@ public class TreeFormatterUtil {
 
         TreeFormatter formatter = new TreeFormatter();
         String sql = formatter.buildSQL(tree.getRootNode(), true);
+        //todo move to the logger
         System.out.println(sql);
 
         PreparedStatement statement = conn.prepareStatement(sql);

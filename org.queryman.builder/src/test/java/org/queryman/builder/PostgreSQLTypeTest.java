@@ -6,21 +6,20 @@
  */
 package org.queryman.builder;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.command.insert.InsertFinalStep;
-import org.queryman.builder.command.insert.InsertValuesStep;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.insertInto;
 
@@ -111,20 +110,18 @@ public class PostgreSQLTypeTest extends BaseTest {
               "text"
            )
            .values(
-              asConstant(1),
-              '2',
-              "adasdas"
+              asConstant(1).cast("varchar"),
+              asConstant('2').cast("char"),
+              asConstant("adasdas").cast("text")
            );
 
         try (Statement statement = connection.createStatement()) {
-            System.out.println(insert.sql());
             statement.execute(insert.sql());
         }
 
-//        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-//            statement.execute();
-//        }
-
+        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
+            statement.execute();
+        }
     }
 
     @Test
@@ -134,19 +131,13 @@ public class PostgreSQLTypeTest extends BaseTest {
               "timestamp",
               "date",
               "time",
-              "interval",
-              "cidr",
-              "inet",
-              "macaddr",
-              "bit",
-              "bit_varying",
-              "uuid",
-              "xml",
-              "arr_int"
+              "interval"
            )
            .values(
-//              asConstant(1),
-//              asConstant(2),
+              asConstant(new Timestamp(System.currentTimeMillis())),
+              asConstant(new Date(System.currentTimeMillis())),
+              asConstant(new Time(System.currentTimeMillis())),
+              null
            );
 
         try (Statement statement = connection.createStatement()) {
@@ -154,7 +145,7 @@ public class PostgreSQLTypeTest extends BaseTest {
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-//            statement
+            statement.execute();
         }
     }
 

@@ -36,7 +36,7 @@ public abstract class PreparedExpression<T> extends Expression {
      * @return a placeholder
      */
     public String getPlaceholder() {
-        return "?";
+        return "?" + getCastExpression();
     }
 
     /**

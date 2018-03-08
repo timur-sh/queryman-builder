@@ -27,7 +27,7 @@ public class StringExpression extends PreparedExpression<String> {
 
     @Override
     public String getValue() {
-        return getName();
+        return name;
     }
 
     /**
