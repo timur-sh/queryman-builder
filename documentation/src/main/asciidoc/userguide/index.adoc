@@ -1,6 +1,6 @@
 = User guide
 :toc2:
-:toclevels: 3
+:toclevels: 4
 :sectanchors:
 :source-highlighter: prettify
 
@@ -18,10 +18,10 @@ include::./settings.adoc[]
 == Domain
 
 === Introduction
-The entry point is `org.queryman.builder.PostgreSQL`. Which provides as the PostgreSQL's
-statements, as an ease-to-use methods to build an auxiliary clauses such as `FROM`,
- different conditions for `WHERE`, `HAVING` and other clauses using a conditions,
- any expressions etc.
+The entry point is `org.queryman.builder.PostgreSQL`. Which provides as an entry
+point to the PostgreSQL's statements, as an ease-to-use methods to build
+an auxiliary clauses such as `FROM`, different conditions for `WHERE`, `HAVING`
+and other clauses using a conditions, any expressions etc.
 
 include::./expressions.adoc[]
 

@@ -6,15 +6,20 @@
  */
 package org.queryman.builder;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asDollarString;
 import static org.queryman.builder.PostgreSQL.asFunc;
 import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asNumber;
+import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asOperator;
-import static org.queryman.builder.PostgreSQL.asString;
 import static org.queryman.builder.PostgreSQL.asSubQuery;
+import static org.queryman.builder.PostgreSQL.asTime;
+import static org.queryman.builder.PostgreSQL.insertInto;
 import static org.queryman.builder.PostgreSQL.select;
 
 /**
@@ -27,26 +32,35 @@ public class PostgreSQLExamples {
         PostgreSQL.asName("book.id").as("b_id");
         //end::alias[]
 
+        //tag::select-alias[]
+        // SELECT b.id FROM book AS b
+        PostgreSQL.select("b.id")
+           .from(asName("book").as("b"));
+        //end::select-alias[]
+
         //tag::cast[]
         // ARRAY[1, 2, 3]::integer[] AS arr
         PostgreSQL.asArray(1, 2, 3).cast("integer[]").as("arr");
         //end::cast[]
 
-        //tag::leverage[]
-        // ARRAY[$$one$$, 'two', '3']
-        PostgreSQL.asStringArray(asDollarString("one"), asString("two"), asNumber(3));
-        //end::leverage[]
 
+        long ms = System.currentTimeMillis();
+        /*
+        //tag::prepared[]
+        // SELECT * FROM book WHERE time = ?::time
+        PostgreSQL.select("*")
+           .from("schedule")
+           .where("time", "=", asTime(new Time(ms)).cast("time"))
+        //end::prepared[]
+        */
     }
 
     public void constants() {
         //tag::constant[]
-        // 1
-        PostgreSQL.asConstant("1");
         // 20
-        PostgreSQL.asNumber(20);
+        PostgreSQL.asConstant(20);
         // 'a string'
-        PostgreSQL.asStringArray("a string");
+        PostgreSQL.asConstant("a string");
         // $$a dollar string$$
         PostgreSQL.asDollarString("a dollar string");
         // $tag$a dollar string$tag$
@@ -67,44 +81,39 @@ public class PostgreSQLExamples {
         //end::column-reference[]
     }
 
+    public void prepares() {
+        //tag::insert-prepared[]
+        // SELECT INTO book (name) VALUES (?) RETURNING *
+        insertInto("book")
+           .columns(
+              "name"
+           )
+           .values(
+              asConstant("Queryman builder")
+           )
+           .returning("*");
+        //end::insert-prepared[]
+    }
+
     public void array() {
         //tag::array[]
         // ARRAY[1, 2, 3]
-        PostgreSQL.asArray("1");
+        PostgreSQL.asArray(1, 2, 3);
         // ARRAY[1, 2, 3]
         PostgreSQL.asArray(List.of(1, 2, 3));
-        // ARRAY['a', 'b']
-        PostgreSQL.asStringArray("a", "b");
-        // ARRAY['1', '2', '3']
-        PostgreSQL.asStringArray(List.of(1, 2, 3));
         //end::array[]
-
-        //tag::array-expression[]
-        // ARRAY[1, 2]
-        PostgreSQL.asArray(PostgreSQL.asNumber(1), PostgreSQL.asNumber(2));
-        //end::array-expression[]
     }
 
     public void list() {
         //tag::list[]
         // (1, 2, 3)
-        PostgreSQL.asList(1, 2, 3);
+        PostgreSQL.asList(1, 2, 3, asConstant(4));
         // (1, 2, 3)
         PostgreSQL.asList(List.of(1, 2, 3));
-        // ('1', '2', '3')
-        PostgreSQL.asStringList(1, 2, 3);
-        // ('1', '2', '3')
-        PostgreSQL.asStringList(List.of(1, 2, 3));
         //end::list[]
-
-        //tag::list-expression[]
-        // (1, 2)
-        PostgreSQL.asList(PostgreSQL.asNumber(1), PostgreSQL.asNumber(2));
-        //end::list-expression[]
     }
 
     public void func() {
-        /*
         //tag::func[]
         // concat('price', 1, 2)
         PostgreSQL.asFunc("concat", PostgreSQL.asList("'price'", 2, ".", 1));
@@ -115,7 +124,6 @@ public class PostgreSQLExamples {
         // (VALUES(1, 2), (3, 4)) AS point(x, y)
         PostgreSQL.values(asList(1, 2), asList(3, 4)).as("point", "x", "y");
         //end::func[]
-        */
     }
 
     public void query() {

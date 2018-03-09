@@ -4,82 +4,114 @@
 include::./../variable.adoc[]
 :example: ../{mainJavaDir}/PostgreSQLExamples.java
 
-The expression are used in a variety context, almost by all of clauses, like
+The expressions are used in a variety context, almost by all of clauses, like
 output list in SELECT clause, table name or subquery in FROM clause, WHERE clause operates
 scalar, row, subquery expressions etc in its own conditions.
 
-`PostgreSQL` provides a convenient methods creating an any expressions. Some examples
-described below.
+The `PostgreSQL` class provides convenient methods creating any expressions. Some examples
+described a creation of expression are below. But, before starting a explanation
+of them, look at common methods such as AS and CAST which all expressions are possessed.
 
-There are common methods that are implemented by each expression. The expression may have
-an alias:
+
+==== Alias
+
+A brief introduction into PostgreSQL aliases. The alias can be applied for any expression
+such as a column, a table, a subquery, etc. The alias hides an original name
+of object for which it is used. In other words, it becomes a new reference on
+object.
+
+Alias is applicable for all expressions. The common example is:
 [source,java]
+```
 include::{example}[tag=alias]
+```
 
-Also you can explicitly casting the expression to particular type:
+Keeping on the above definition look at the below example. If change the alias
+name `b` on table name `book` in the SELECT output list, the error will occurs:
+```
+[42P01] ERROR: invalid reference to FROM-clause entry for table "book"
+```
+[source,java]
+```
+include::{example}[tag=select-alias]
+```
+
+
+==== Explicitly casting
+
+Queryman allows an explicitly casting any expression to particular type:
 [source,java]
 include::{example}[tag=cast]
 
-Expression can be leveraged by other expressions creating a more complex expression:
+One more feature is a use explicit casting for building prepared statement:
 [source,java]
-include::{example}[tag=leverage]
+include::{example}[tag=prepared]
 
-Expression are implemented in `PostgreSQL`:
 
-* link:#constant[a constant (numeric, string, dollar-string etc.)]
-* link:#column-reference[a column reference]
-* link:#list[a list]
-* link:#array[an array constructor]
-* link:#subquery[a subquery expression]
-* link:#function-calls[a function calls]
+==== Expression methods
 
-[[constant]]
-====  Constant (numeric, string, dollar-string etc.)
-Actually, here, the constant expression is a kind of expressions that do not
-require additional handling. Exception of these are string and dollar string expressions.
+Queryman provides several helpful methods to work with different date types
+
+
+===== Constants: PostgreSQL.asConstant() and other constant-methods
+
+PostgreSQL constants are numeric, string, date/time, arrays and other data types.
+
+This method allows working with the following Java types:
+
+* primitives and their wrappers
+* `java.sql.Date`, `java.sql.Time`, `java.sql.Timestamp`, `java.util.Date`
+* `java.math.BigDecimal`
+* arrays
+* UUID
+
+The `java.util.Date` type is converted into `java.sql.Date`. If you wish to
+be in control into which PostgreSQL type it is converted, use one of ad hoc methods:
+
+* `PostgreSQL.asDate`
+* `PostgreSQL.asTime`
+* `PostgreSQL.asTimestamp`
 
 Some of examples of constant expressions are:
 [source,java]
 include::{example}[tag=constant]
 
 
-[[column-reference]]
-==== Column reference
-Examples of column reference expression:
+There are a few other useful methods deal constants:
+
+* `PostgreSQL.asDollarString`
+* `PostgreSQL.asArray`
+
+
+Example using of `asArray` method:
+[source,java]
+include::{example}[tag=array]
+
+All Queryman constants may be used for building a string SQL or a SQL that contains
+prepared statement.
+
+[source,java]
+include::{example}[tag=insert-prepared]
+
+
+===== Column reference: PostgreSQL.asName, PostgreSQL.asQuotedName
+
+These methods are used to denote name of object. The passed argument into them
+may be a a string contains one of qualified name or an unqualified name.
+
+The output of them is either quoted name or unquoted name.
 [source,java]
 include::{example}[tag=column-reference]
 
-
-[[list]]
-==== List constructor
-The list constructor takes arguments and builds them into PostgreSQL's list
-compatible form. The PostgreSQL's list is a values are separated by comma,
-then the got value is surrounded by parentheses
+===== List constructor: PostgreSQL.asList
+The list constructor takes list of arguments and builds them into PostgreSQL's list
+compatible form. The PostgreSQL's list is values are separated by commas and
+surrounded by parentheses. An argument may be any type.
 
 [source,java]
 include::{example}[tag=list]
 
-The other expressions can be used by `asList` expression.
-[source,java]
-include::{example}[tag=list-expression]
-
-Even `asList` expression can used by other expressions. For example, the `list`
-expression is used by link:#function-calls[`function calls`]
-
-
-[[array]]
-==== Array constructor
-The described above rules are applicable for the ARRAY expression too, except
-the last step. The formatted value from the previous step is surrounded by
-square brackets, then preceded by ARRAY keyword.
-[source,java]
-include::{example}[tag=array]
-
-[source,java]
-include::{example}[tag=array-expression]
-
-[[subquery]]
-==== Subquery
+===== Subquery: PostgreSQL.asSubquery
 Subquery are used in a variety statements. Its common using is:
 [source,java]
 include::{example}[tag=query]
@@ -92,16 +124,14 @@ EXISTS clause using subquery:
 [source,java]
 include::{example}[tag=exists-query]
 
-
-[[function-calls]]
-==== Function calls
+===== Function calls
 Examples of function expression:
 [source,java]
 ```
 include::{example}[tag=func]
 ```
 
-==== Extending expression
+===== Extending expression
 
 You may easily add your own expression implementation by extending the
 `org.queryman.builder.token.Expressing` class.

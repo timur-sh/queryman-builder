@@ -1085,7 +1085,6 @@ public class PostgreSQL {
         if (constants == null)
             return new NullExpression(null);
 
-        constants.getClass().isArray();
         switch (constants.getClass().getCanonicalName()) {
             case "java.lang.Byte[]":
                 return new BytesExpression((Byte[])constants);

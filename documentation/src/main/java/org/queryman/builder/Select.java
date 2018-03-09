@@ -9,6 +9,11 @@ package org.queryman.builder;
 
 import org.queryman.builder.command.select.SelectFromStep;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import static org.queryman.builder.Operators.*;
 import static org.queryman.builder.PostgreSQL.*;
 import static org.queryman.builder.PostgreSQL.select;
 
@@ -16,10 +21,10 @@ import static org.queryman.builder.PostgreSQL.select;
  * @author Timur Shaidullin
  */
 public class Select {
-    void selectTest() {
+    void selectTest() throws SQLException {
         //tag::simple-select[]
         PostgreSQL.select("id", "name")
-           .from("books", "author")
+           .from("book", "author")
            .where("id", "=", "2")
            .orderBy("year")
            .sql();
@@ -27,15 +32,27 @@ public class Select {
 
         //tag::simple-select2[]
         PostgreSQL.select("id", "name")
-           .from(fromOnly("books").as("b"))
-           .innerJoin(asName("authors").as("a"))
-           .on("a.id", "=", "b.author_id")
-           .where("b.id", "=", "2")
-           .orderBy("b.year")
+           .from("book")
+           .innerJoin(asName("author").as("a"))
+           .on("a.id", "=", "author_id")
+           .where("author_id", "=", "2")
+           .orderBy("author_id.year")
            .limit(25)
            .offset(10)
            .sql();
         //end::simple-select2[]
+
+
+        //tag::select-prepare[]
+        Connection conn = DriverManager.getConnection(
+           "jdbc:postgresql://localhost:5432/name", "user", "pass");
+
+        // SELECT * FROM book WHERE author_id = ?
+        PostgreSQL.select("*")
+           .from("book")
+           .where(asName("author_id"), EQUAL, asConstant(10))
+           .buildPreparedStatement(conn);
+        //end::select-prepare[]
     }
 
     void selectGroupBy() {

@@ -14,7 +14,7 @@ By default the settings can be derived either in xml file (is named `queryman-bu
 [source,java]
 include::{example}[tag=simple-register]
 
-You can change name of the above files using one of below ways:
+You can change a name of the above files following one of below ways:
 [source,java]
 ```
 include::{example}[tag=change-xml-file]
@@ -25,9 +25,9 @@ The settings files must locate in *resource* catalog
 
 *How configuration is loaded.*
 
-First, `ServiceRegister` tries to load the *xml* configuration. If this attempt is failed,
-then it will try to load a configuration from *properties* file. If this attempt is
-failed too, the default configuration will be used.
+Firstly, `ServiceRegister` tries to load the *xml* configuration. If this attempt is failed,
+then it will try to load a configuration from the *properties* file. If this attempt is
+failed too, then the default configuration will be used.
 
 There after, you should provide `TreeFactory` into `PostgreSQL`:
 [source,java]

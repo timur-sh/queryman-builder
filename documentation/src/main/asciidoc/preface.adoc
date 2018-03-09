@@ -4,13 +4,24 @@ include::variable.adoc[]
 
 :selectExamples: {mainJavaDir}/Select.java
 
-Queryman Builder provides a simple SQL builder for PostgreSQL databases.
- It keeps a fluent SQL API that allows to build a query in object
+Queryman Builder provides a simple, intuitive SQL builder for PostgreSQL databases.
+ It keeps a fluid SQL API that allows to build a query in object
  oriented way, such as:
 
 [source, java]
+```
 include::{selectExamples}[tag=simple-select]
+```
 
 Or
 [source, java]
+```
 include::{selectExamples}[tag=simple-select2]
+```
+
+It's also possible to get a PreparedStatement, passing a Connection object
+to `buildPreparedStatement` method:
+[source, java]
+```
+include::{selectExamples}[tag=select-prepare]
+```
