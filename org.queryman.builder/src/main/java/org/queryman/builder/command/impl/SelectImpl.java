@@ -30,7 +30,6 @@ import org.queryman.builder.command.select.SelectWhereStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
-import org.queryman.builder.utils.ArraysUtils;
 import org.queryman.builder.utils.Tools;
 
 import java.util.Arrays;
@@ -49,12 +48,14 @@ import static org.queryman.builder.PostgreSQL.asList;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
+import static org.queryman.builder.PostgreSQL.operator;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.ON;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
-import static org.queryman.builder.utils.ArraysUtils.toExpression;
+import static org.queryman.builder.utils.ArrayUtils.toExpression;
+import static org.queryman.builder.utils.ExpressionUtil.getOrConvert;
 
 /**
  * @author Timur Shaidullin
@@ -636,18 +637,13 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl on(String left, String operator, String right) {
-        return on(condition(left, operator, right));
+    public final <T> SelectImpl on(T left, T operator, T right) {
+        return on(condition(getOrConvert(left), operator(operator), getOrConvert(right)));
     }
 
     @Override
-    public final SelectImpl on(Expression left, Operator operator, Expression right) {
-        return on(condition(left, operator, right));
-    }
-
-    @Override
-    public final SelectImpl on(Expression field, Operator operator, Query query) {
-        return on(condition(field, operator, query));
+    public final <T> SelectImpl on(T field, T operator, Query query) {
+        return on(condition(getOrConvert(field), operator(operator), query));
     }
 
     @Override

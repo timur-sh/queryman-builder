@@ -25,7 +25,7 @@ import org.queryman.builder.PostgreSQL;
  * </ul>
  *
  * Each condition is built from operands and operator returning a boolean type
- * value (=, !=, IN, IS, IS NOT etc). Internally, any operand is being a {@link Expression}
+ * value (=, !=, IN, IS, IS NOT etc). Internally, any operand1 is being a {@link Expression}
  * object. And operator is being {@link Operator} object. For convenience sake
  * it's possible to use a {@code String} representation of them, which will
  * convert into needful type.
@@ -60,19 +60,6 @@ public interface Conditions extends AstVisitor {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND id = 1
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .and("id", "=", "1")
-     *  .sql()
-     * </code>
-     */
-    Conditions and(String leftField, String operator, String rightField);
-
-    /**
-     * Example:
-     * <code>
      * // SELECT * FROM book WHERE year > 2010 AND "id" = 1
      * select("*")
      *  .from("book")
@@ -81,7 +68,7 @@ public interface Conditions extends AstVisitor {
      *  .sql()
      * </code>
      */
-    Conditions and(Expression leftField, Operator operator, Expression rightField);
+    <T>Conditions and(T operand1, T operator, T operand2);
 
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
@@ -103,7 +90,7 @@ public interface Conditions extends AstVisitor {
      *
      * @see org.queryman.builder.Operators#IN
      */
-    Conditions and(Expression field, Operator operator, Query query);
+    <T> Conditions and(T field, T operator, Query query);
 
     /**
      * Example:
@@ -182,20 +169,7 @@ public interface Conditions extends AstVisitor {
      *  .sql()
      * </code>
      */
-    Conditions andNot(Expression leftField, Operator operator, Expression rightField);
-
-    /**
-     * Example:
-     * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND NOT id = 1
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .andNot("id", "=", "1")
-     *  .sql()
-     * </code>
-     */
-    Conditions andNot(String leftField, String operator, String rightField);
+    <T> Conditions andNot(T operand1, T operator, T operand2);
 
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
@@ -217,7 +191,7 @@ public interface Conditions extends AstVisitor {
      *
      * @see org.queryman.builder.Operators#IN
      */
-    Conditions andNot(Expression field, Operator operator, Query query);
+    <T> Conditions andNot(T field, T operator, Query query);
 
     /**
      * Example:
@@ -296,20 +270,7 @@ public interface Conditions extends AstVisitor {
      *  .sql()
      * </code>
      */
-    Conditions or(String leftField, String operator, String rightField);
-
-    /**
-     * Example:
-     * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR "id" = 1
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .or(asQuotedName("id"), operator("="), asNumber(1))
-     *  .sql()
-     * </code>
-     */
-    Conditions or(Expression leftField, Operator operator, Expression rightField);
+    <T> Conditions or(T operand1, T operator, T operand2);
 
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
@@ -331,7 +292,7 @@ public interface Conditions extends AstVisitor {
      *
      * @see org.queryman.builder.Operators#IN
      */
-    Conditions or(Expression field, Operator operator, Query query);
+    <T> Conditions or(T field, T operator, Query query);
 
     /**
      * Example:
@@ -406,24 +367,11 @@ public interface Conditions extends AstVisitor {
      * select("*")
      *  .from("book")
      *  .where("year", ">", "2010")
-     *  .orNot(asQuotedName("id"), operator("="), asNumber(1))
+     *  .orNot(asQuotedName("id"), "=", 1)
      *  .sql()
      * </code>
      */
-    Conditions orNot(Expression leftField, Operator operator, Expression rightField);
-
-    /**
-     * Example:
-     * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR NOT id = 1
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .orNot("id", "=", "1")
-     *  .sql()
-     * </code>
-     */
-    Conditions orNot(String leftField, String operator, String rightField);
+    <T> Conditions orNot(T operand1, T operator, T operand2);
 
     /**
      * Subquery condition. It is used primarily by {@code IN} expression:
@@ -445,7 +393,7 @@ public interface Conditions extends AstVisitor {
      *
      * @see org.queryman.builder.Operators#IN
      */
-    Conditions orNot(Expression field, Operator operator, Query query);
+    <T> Conditions orNot(T field, T operator, Query query);
 
     /**
      * Example:

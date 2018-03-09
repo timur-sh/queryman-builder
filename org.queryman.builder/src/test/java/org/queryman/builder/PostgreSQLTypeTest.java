@@ -9,7 +9,7 @@ package org.queryman.builder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.command.insert.InsertFinalStep;
-import org.queryman.builder.utils.ArraysUtils;
+import org.queryman.builder.utils.ArrayUtils;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -290,7 +290,7 @@ public class PostgreSQLTypeTest extends BaseTest {
             while (rs.next()) {
                 assertEquals(uuid, rs.getObject("uuid"));
                 assertEquals(xml, rs.getString("xml"));
-                assertArrayEquals(ArraysUtils.toWrapper(arr), (Integer[])rs.getArray("arr_int").getArray());
+                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[])rs.getArray("arr_int").getArray());
             }
         }
 
@@ -301,7 +301,7 @@ public class PostgreSQLTypeTest extends BaseTest {
             while (rs.next()) {
                 assertEquals(uuid, rs.getObject("uuid"));
                 assertEquals(xml, rs.getString("xml"));
-                assertArrayEquals(ArraysUtils.toWrapper(arr), (Integer[])rs.getArray("arr_int").getArray());
+                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[])rs.getArray("arr_int").getArray());
             }
         }
     }

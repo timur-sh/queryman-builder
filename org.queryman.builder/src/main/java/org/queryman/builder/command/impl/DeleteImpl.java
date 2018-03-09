@@ -7,7 +7,6 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.command.Conditions;
@@ -19,9 +18,6 @@ import org.queryman.builder.command.delete.DeleteWhereFirstStep;
 import org.queryman.builder.command.delete.DeleteWhereManyStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
-import org.queryman.builder.utils.ArraysUtils;
-
-import java.util.Arrays;
 
 import static org.queryman.builder.Keywords.DELETE_FROM;
 import static org.queryman.builder.Keywords.DELETE_FROM_ONLY;
@@ -34,7 +30,7 @@ import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.USING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
-import static org.queryman.builder.utils.ArraysUtils.*;
+import static org.queryman.builder.utils.ArrayUtils.*;
 
 /**
  * DELETE statement.

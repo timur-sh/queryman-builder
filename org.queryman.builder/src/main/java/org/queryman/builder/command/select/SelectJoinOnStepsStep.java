@@ -18,7 +18,7 @@ import org.queryman.builder.token.Operator;
  */
 public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
     /**
-     * For full information see the {@link Conditions#and(String, String, String)} method.
+     * For full information see the {@link Conditions#and(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
@@ -28,7 +28,7 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
     SelectJoinOnStepsStep and(String left, String operator, String right);
 
     /**
-     * For full information see the {@link Conditions#and(Expression, Operator, Expression)} method.
+     * For full information see the {@link Conditions#and(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
@@ -65,7 +65,7 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
 
 
     /**
-     * For full information see the {@link Conditions#andNot(String, String, String)} method.
+     * For full information see the {@link Conditions#andNot(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
@@ -75,7 +75,7 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
     SelectJoinOnStepsStep andNot(String left, String operator, String right);
 
     /**
-     * For full information see the {@link Conditions#andNot(Expression, Operator, Expression)} method.
+     * For full information see the {@link Conditions#andNot(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
@@ -112,7 +112,7 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
 
 
     /**
-     * For full information see the {@link Conditions#or(String, String, String)} method.
+     * For full information see the {@link Conditions#or(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
@@ -122,7 +122,7 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
     SelectJoinOnStepsStep or(String left, String operator, String right);
 
     /**
-     * For full information see the {@link Conditions#or(Expression, Operator, Expression)} method.
+     * For full information see the {@link Conditions#or(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
@@ -132,7 +132,7 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
     SelectJoinOnStepsStep or(Expression left, Operator operator, Expression right);
 
     /**
-     * For full information see the {@link Conditions#or(Expression, Operator, Query)} method.
+     * For full information see the {@link Conditions#or(Object, Object, Query)} method.
      *
      * @param field field
      * @param operator operator
@@ -159,27 +159,17 @@ public interface SelectJoinOnStepsStep extends SelectJoinManyStepsStep {
 
 
     /**
-     * For full information see the {@link Conditions#orNot(String, String, String)} method.
+     * For full information see the {@link Conditions#orNot(Object, Object, Object)} method.
      *
      * @param left left operand
      * @param operator operator
      * @param right right operand
      * @return itself
      */
-    SelectJoinOnStepsStep orNot(String left, String operator, String right);
+    <T> SelectJoinOnStepsStep orNot(T left, T operator, T right);
 
     /**
-     * For full information see the {@link Conditions#orNot(Expression, Operator, Expression)} method.
-     *
-     * @param left left operand
-     * @param operator operator
-     * @param right right operand
-     * @return itself
-     */
-    SelectJoinOnStepsStep orNot(Expression left, Operator operator, Expression right);
-
-    /**
-     * For full information see the {@link Conditions#orNot(Expression, Operator, Query)} method.
+     * For full information see the {@link Conditions#orNot(Object, Object, Query)} method.
      *
      * @param field field
      * @param operator operator

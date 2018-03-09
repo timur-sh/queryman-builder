@@ -50,7 +50,7 @@ import org.queryman.builder.token.expression.SubQueryExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
 import org.queryman.builder.token.expression.prepared.UUIDExpression;
-import org.queryman.builder.utils.ArraysUtils;
+import org.queryman.builder.utils.ArrayUtils;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -692,7 +692,7 @@ public class PostgreSQL {
      *
      * @return {@link Conditions}
      *
-     * @see #operator(String)
+     * @see #operator(Object)
      * @see #condition(Expression, Operator, Expression)
      */
     public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
@@ -713,7 +713,7 @@ public class PostgreSQL {
      *
      * @return {@link Conditions}
      *
-     * @see #operator(String)
+     * @see #operator(Object)
      */
     public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
         return new ConditionsImpl(leftValue, new NodeMetadata(operator), rightValue);
@@ -737,7 +737,7 @@ public class PostgreSQL {
      *
      * @return {@link Conditions}
      *
-     * @see #operator(String)
+     * @see #operator(Object)
      *
      * @see #conditionBetween(String, String, String)
      */
@@ -1055,15 +1055,15 @@ public class PostgreSQL {
             case "java.util.UUID":
                 return new UUIDExpression((UUID) constant);
             case "byte[]":
-                return asConstant(ArraysUtils.toWrapper((byte[]) constant));
+                return asConstant(ArrayUtils.toWrapper((byte[]) constant));
             case "int[]":
-                return asConstant(ArraysUtils.toWrapper((int[]) constant));
+                return asConstant(ArrayUtils.toWrapper((int[]) constant));
             case "short[]":
-                return asConstant(ArraysUtils.toWrapper((short[]) constant));
+                return asConstant(ArrayUtils.toWrapper((short[]) constant));
             case "long[]":
-                return asConstant(ArraysUtils.toWrapper((long[]) constant));
+                return asConstant(ArrayUtils.toWrapper((long[]) constant));
             case "float[]":
-                return asConstant(ArraysUtils.toWrapper((float[]) constant));
+                return asConstant(ArrayUtils.toWrapper((float[]) constant));
         }
 
         if (constant instanceof Expression)
@@ -1370,8 +1370,11 @@ public class PostgreSQL {
      * Most useful operators are collected there:
      * @see Operators
      */
-    public static Operator operator(String operator) {
-        return new Operator(operator);
+    public static <T> Operator operator(T operator) {
+        if (operator instanceof Operator)
+            return (Operator) operator;
+
+        return new Operator(String.valueOf(operator));
     }
 
     /**

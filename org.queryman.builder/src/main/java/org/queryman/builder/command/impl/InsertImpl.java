@@ -30,10 +30,8 @@ import org.queryman.builder.command.insert.InsertValuesManyStep;
 import org.queryman.builder.command.insert.InsertValuesStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
-import org.queryman.builder.utils.ArraysUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -58,7 +56,7 @@ import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
-import static org.queryman.builder.utils.ArraysUtils.toExpression;
+import static org.queryman.builder.utils.ArrayUtils.toExpression;
 
 /**
  * @author Timur Shaidullin

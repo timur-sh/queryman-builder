@@ -17,7 +17,7 @@ import static org.queryman.builder.PostgreSQL.asName;
 /**
  * @author Timur Shaidullin
  */
-public class ArraysUtils {
+public class ArrayUtils {
     public static <T> boolean inArray(T needle, T[] arr) {
         for (T t : arr)
             if (needle == t)

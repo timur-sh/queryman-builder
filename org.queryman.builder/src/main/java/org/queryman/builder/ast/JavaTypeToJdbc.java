@@ -25,7 +25,7 @@ import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
 import org.queryman.builder.token.expression.prepared.UUIDExpression;
-import org.queryman.builder.utils.ArraysUtils;
+import org.queryman.builder.utils.ArrayUtils;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -107,7 +107,7 @@ class JavaTypeToJdbc {
 
             else if (expr.getValue() instanceof BytesExpression) {
                 Byte[] bytes = ((BytesExpression) expr.getValue()).getValue();
-                statement.setBytes(expr.getKey(), ArraysUtils.toPrimitive(bytes));
+                statement.setBytes(expr.getKey(), ArrayUtils.toPrimitive(bytes));
             }
 
             else if (expr.getValue() instanceof ListExpression) {

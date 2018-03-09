@@ -14,6 +14,7 @@ import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.utils.ExpressionUtil;
 
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.condition;
@@ -24,6 +25,7 @@ import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
+import static org.queryman.builder.utils.ExpressionUtil.getOrConvert;
 
 /**
  * @author Timur Shaidullin
@@ -118,14 +120,8 @@ public final class ConditionsImpl implements
     //----
 
     @Override
-    public final Conditions and(String leftValue, String operator, String rightValue) {
-        and(asName(leftValue), operator(operator), asName(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions and(Expression leftField, Operator operator, Expression rightField) {
-        and(condition(leftField, operator, rightField));
+    public final <T> Conditions and(T leftValue, T operator, T rightValue) {
+        and(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
         return this;
     }
 
@@ -136,8 +132,8 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public Conditions and(Expression field, Operator operator, Query query) {
-        and(condition(field, operator, query));
+    public <T> Conditions and(T field, T operator, Query query) {
+        and(condition(getOrConvert(field), operator(operator), query));
         return this;
     }
 
@@ -148,14 +144,8 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public final Conditions andNot(String leftValue, String operator, String rightValue) {
-        andNot(asName(leftValue), operator(operator), asName(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions andNot(Expression leftField, Operator operator, Expression rightField) {
-        andNot(condition(leftField, operator, rightField));
+    public final <T> Conditions andNot(T leftValue, T operator, T rightValue) {
+        andNot(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
         return this;
     }
 
@@ -166,8 +156,8 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public final Conditions andNot(Expression field, Operator operator, Query query) {
-        andNot(condition(field, operator, query));
+    public final <T>  Conditions andNot(T field, T operator, Query query) {
+        andNot(condition(getOrConvert(field), operator(operator), query));
         return this;
     }
 
@@ -178,15 +168,8 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public final Conditions or(String leftValue, String operator, String rightValue) {
-        or(asName(leftValue), operator(operator), asName(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions or(Expression leftField, Operator operator, Expression rightField) {
-        or(condition(leftField, operator, rightField));
-
+    public final <T> Conditions or(T leftValue, T operator, T rightValue) {
+        or(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
         return this;
     }
 
@@ -203,20 +186,14 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public final Conditions or(Expression field, Operator operator, Query query) {
-        or(condition(field, operator, query));
+    public final <T> Conditions or(T field, T operator, Query query) {
+        or(condition(getOrConvert(field), operator(operator), query));
         return this;
     }
 
     @Override
-    public final Conditions orNot(String leftValue, String operator, String rightValue) {
-        orNot(asName(leftValue), operator(operator), asName(rightValue));
-        return this;
-    }
-
-    @Override
-    public final Conditions orNot(Expression leftField, Operator operator, Expression rightField) {
-        orNot(condition(leftField, operator, rightField));
+    public final <T> Conditions orNot(T leftValue, T operator, T rightValue) {
+        orNot(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
         return this;
     }
 
@@ -227,8 +204,8 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public final Conditions orNot(Expression field, Operator operator, Query query) {
-        orNot(condition(field, operator, query));
+    public final <T> Conditions orNot(T field, T operator, Query query) {
+        orNot(condition(getOrConvert(field), operator(String.valueOf(operator)), query));
         return this;
     }
 

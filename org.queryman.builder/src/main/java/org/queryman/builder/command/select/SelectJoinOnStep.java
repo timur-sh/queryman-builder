@@ -45,20 +45,7 @@ public interface SelectJoinOnStep extends SelectWhereFirstStep {
      *  .sql()
      * </code>
      */
-    SelectJoinOnStepsStep on(String left, String operator, String right);
-
-    /**
-     * Example:
-     * <code>
-     * // SELECT id FROM book b JOIN author a ON "a"."id" = "b"."author_id"
-     * select("id")
-     *  .from("book b")
-     *  .join("author a")
-     *  .on(asQuotedName("a.id"), operator("="), asQuotedName("b.author_id"))
-     *  .sql()
-     * </code>
-     */
-    SelectJoinOnStepsStep on(Expression left, Operator operator, Expression right);
+    <T> SelectJoinOnStepsStep on(T operand1, T operator, T operand2);
 
     /**
      * Subquery condition.
@@ -73,7 +60,7 @@ public interface SelectJoinOnStep extends SelectWhereFirstStep {
      * @see org.queryman.builder.PostgreSQL#asName(String)
      * @see org.queryman.builder.PostgreSQL#operator(String)
      */
-    SelectJoinOnStepsStep on(Expression field, Operator operator, Query query);
+    <T> SelectJoinOnStepsStep on(T operand, T operator, Query query);
 
     SelectJoinOnStepsStep on(Conditions conditions);
 
