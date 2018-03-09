@@ -24,6 +24,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asConstant;
+import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.insertInto;
 
 /**
@@ -147,15 +148,17 @@ public class PostgreSQLTypeTest extends BaseTest {
               "timestamp",
               "date",
               "time",
-              "interval"
+              "interval",
+              "integer"
            )
            .values(
               asConstant(timestamp),
               asConstant(date),
               asConstant(time),
-              asConstant(interval).cast("interval")
+              asConstant(interval).cast("interval"),
+              null
            )
-           .returning("timestamp", "date", "time", "interval");
+           .returning("timestamp", "date", "time", asName("interval").as("i"), "integer");
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
@@ -165,7 +168,7 @@ public class PostgreSQLTypeTest extends BaseTest {
                 assertEquals(date.toString(), rs.getDate("date").toString());
                 assertEquals(time.toString(), rs.getTime("time").toString());
                 assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
-                assertEquals(interval, rs.getString("interval"));
+                assertEquals(interval, rs.getString("i"));
             }
         }
 
@@ -177,7 +180,7 @@ public class PostgreSQLTypeTest extends BaseTest {
                 assertEquals(date.toString(), rs.getDate("date").toString());
                 assertEquals(time.toString(), rs.getTime("time").toString());
                 assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
-                assertEquals(interval, rs.getString("interval"));
+                assertEquals(interval, rs.getString("i"));
             }
         }
     }

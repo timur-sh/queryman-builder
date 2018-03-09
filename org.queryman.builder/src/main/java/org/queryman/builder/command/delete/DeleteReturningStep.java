@@ -22,7 +22,7 @@ public interface DeleteReturningStep extends DeleteFinalStep {
      *
      * @see #returning(Expression...)
      */
-    DeleteFinalStep returning(String... output);
+    <T> DeleteFinalStep returning(T... output);
 
     /**
      * Set list of expressions that to be computed after each row is deleted.

@@ -22,7 +22,7 @@ public interface UpdateReturningStep extends UpdateFinalStep {
      *
      * @see #returning(Expression...)
      */
-    UpdateFinalStep returning(String... output);
+    <T> UpdateFinalStep returning(T... output);
 
     /**
      * Set list of expressions that to be computed after each row is updated.

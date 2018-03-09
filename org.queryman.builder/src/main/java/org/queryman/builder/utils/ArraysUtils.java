@@ -6,7 +6,13 @@
  */
 package org.queryman.builder.utils;
 
+import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.token.Expression;
+
 import java.util.Arrays;
+import java.util.function.Function;
+
+import static org.queryman.builder.PostgreSQL.asName;
 
 /**
  * @author Timur Shaidullin
@@ -87,5 +93,36 @@ public class ArraysUtils {
      */
     public static Double[] toWrapper(double[] arr) {
         return Arrays.stream(arr).boxed().toArray(Double[]::new);
+    }
+
+    /**
+     * Convert list of object to list of {@link org.queryman.builder.token.expression.ColumnReferenceExpression}.
+     *
+     * @param values list of names
+     * @return array of column reference expressions
+     */
+    @SafeVarargs
+    public static <T>Expression[] toExpression(T... values) {
+        Function<T, Expression> func = v -> {
+            if (v instanceof Expression)
+                return (Expression) v;
+            return asName(String.valueOf(v));
+        };
+
+        return toExpression(func, values);
+    }
+
+    /**
+     * @param func functional interface to convert {@code values} to
+     *             appropriate expression.
+     * @param values list of values
+     *
+     * @return array of expressions
+     */
+    @SafeVarargs
+    public static <T> Expression[] toExpression(Function<T, Expression> func, T... values) {
+        return Arrays.stream(values)
+           .map(func)
+           .toArray(Expression[]::new);
     }
 }

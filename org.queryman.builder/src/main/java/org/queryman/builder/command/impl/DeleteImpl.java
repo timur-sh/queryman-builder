@@ -19,6 +19,7 @@ import org.queryman.builder.command.delete.DeleteWhereFirstStep;
 import org.queryman.builder.command.delete.DeleteWhereManyStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.utils.ArraysUtils;
 
 import java.util.Arrays;
 
@@ -33,6 +34,7 @@ import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.USING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
+import static org.queryman.builder.utils.ArraysUtils.*;
 
 /**
  * DELETE statement.
@@ -115,7 +117,7 @@ public class DeleteImpl extends AbstractQuery implements
 
     @Override
     public final DeleteImpl using(String... tables) {
-        return using(Arrays.stream(tables).map(PostgreSQL::asName).toArray(Expression[]::new));
+        return using(toExpression(tables));
     }
 
     @Override
@@ -267,8 +269,9 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public final DeleteImpl returning(String... output) {
-        return returning(Arrays.stream(output).map(PostgreSQL::asName).toArray(Expression[]::new));
+    @SafeVarargs
+    public final <T> DeleteImpl returning(T... output) {
+        return returning(toExpression(output));
     }
 
     @Override

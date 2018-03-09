@@ -19,6 +19,7 @@ import org.queryman.builder.command.update.UpdateWhereFirstStep;
 import org.queryman.builder.command.update.UpdateWhereManyStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.utils.ArraysUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import static org.queryman.builder.ast.NodesMetadata.FROM;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
+import static org.queryman.builder.utils.ArraysUtils.toExpression;
 
 /**
  * UPDATE statement.
@@ -264,8 +266,9 @@ public class UpdateImpl extends AbstractQuery implements
     }
 
     @Override
-    public final UpdateImpl returning(String... output) {
-        return returning(Arrays.stream(output).map(PostgreSQL::asName).toArray(Expression[]::new));
+    @SafeVarargs
+    public final <T> UpdateImpl returning(T... output) {
+        return returning(toExpression(output));
     }
 
     @Override
@@ -292,7 +295,7 @@ public class UpdateImpl extends AbstractQuery implements
 
     @Override
     public final UpdateImpl from(String... tables) {
-        return from(Arrays.stream(tables).map(PostgreSQL::asName).toArray(Expression[]::new));
+        return from(toExpression(tables));
     }
 
     @Override

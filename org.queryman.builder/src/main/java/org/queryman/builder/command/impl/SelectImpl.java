@@ -30,6 +30,7 @@ import org.queryman.builder.command.select.SelectWhereStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
+import org.queryman.builder.utils.ArraysUtils;
 import org.queryman.builder.utils.Tools;
 
 import java.util.Arrays;
@@ -53,6 +54,7 @@ import static org.queryman.builder.ast.NodesMetadata.ON;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
+import static org.queryman.builder.utils.ArraysUtils.toExpression;
 
 /**
  * @author Timur Shaidullin
@@ -132,8 +134,7 @@ public class SelectImpl extends AbstractQuery implements
      * Clause SELECT DISTINCT ON ( .. ) ...
      */
     public final SelectImpl distinctOn(String... columns) {
-        distinctOn(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
-        return this;
+        return distinctOn(toExpression(columns));
     }
 
     /**
@@ -240,11 +241,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl from(String... tables) {
-        from(Arrays.stream(tables)
-           .map(PostgreSQL::asName)
-           .toArray(Expression[]::new)
-        );
-        return this;
+        return from(toExpression(tables));
     }
 
     @Override
@@ -465,9 +462,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl groupBy(String... expressions) {
-        Expression[] expr = Arrays.stream(expressions)
-           .map(PostgreSQL::asName)
-           .toArray(Expression[]::new);
+        Expression[] expr = toExpression(expressions);
 
         return groupBy(expr);
     }
@@ -624,7 +619,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl using(String... name) {
-        return using(Arrays.stream(name).map(PostgreSQL::asName).toArray(Expression[]::new));
+        return using(toExpression(name));
     }
 
     @Override

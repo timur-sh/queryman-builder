@@ -23,7 +23,7 @@ public interface InsertReturningStep extends InsertFinalStep {
      *
      * @see #returning(Expression...)
      */
-    InsertFinalStep returning(String... output);
+    <T> InsertFinalStep returning(T... output);
 
     /**
      * Set list of expressions that to be computed after each row is inserted.

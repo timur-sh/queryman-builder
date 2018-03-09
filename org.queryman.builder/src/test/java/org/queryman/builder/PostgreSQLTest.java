@@ -12,7 +12,7 @@ class PostgreSQLTest {
 
     @Test
     void asStringTest() {
-        assertEquals("'Timur'", asConstant("Timur").getName());
+        assertEquals("'Timur'::varchar AS v", asConstant("Timur").cast("varchar").as("v").getName());
         assertEquals("'I''m Timur'", asConstant("I'm Timur").getName());
     }
 

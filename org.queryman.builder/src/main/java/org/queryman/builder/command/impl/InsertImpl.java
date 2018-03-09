@@ -30,11 +30,13 @@ import org.queryman.builder.command.insert.InsertValuesManyStep;
 import org.queryman.builder.command.insert.InsertValuesStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.utils.ArraysUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.queryman.builder.Keywords.AS;
 import static org.queryman.builder.Keywords.DEFAULT_VALUES;
@@ -56,6 +58,7 @@ import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
+import static org.queryman.builder.utils.ArraysUtils.toExpression;
 
 /**
  * @author Timur Shaidullin
@@ -197,7 +200,7 @@ public class InsertImpl extends AbstractQuery implements
 
     @Override
     public final InsertImpl columns(String... columns) {
-        return columns(Arrays.stream(columns).map(PostgreSQL::asName).toArray(Expression[]::new));
+        return columns(toExpression(columns));
     }
 
     @Override
@@ -227,18 +230,13 @@ public class InsertImpl extends AbstractQuery implements
     @Override
     @SafeVarargs
     public final <T> InsertImpl values(T... values) {
-        return values(Arrays.stream(values)
-           .map(PostgreSQL::asConstant)
-           .toArray(Expression[]::new));
+        return values(toExpression(PostgreSQL::asConstant, values));
     }
 
     @Override
     public final InsertImpl values(Expression... values) {
-        for (int i = 0; i < values.length; i++)
-            if (values[i] == null)
-                values[i] = asConstant(null);
-
-        this.values = values;
+        Function<Expression, Expression> func = v -> v == null ? asConstant(null) :v;
+        this.values = toExpression(func, values);
         return this;
     }
 
@@ -494,8 +492,9 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl returning(String... output) {
-        return returning(Arrays.stream(output).map(PostgreSQL::asName).toArray(Expression[]::new));
+    @SafeVarargs
+    public final <T> InsertImpl returning(T... output) {
+        return returning(toExpression(output));
     }
 
     @Override

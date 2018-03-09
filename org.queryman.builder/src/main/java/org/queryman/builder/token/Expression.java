@@ -48,14 +48,6 @@ public abstract class Expression extends AbstractToken
         StringBuilder builder = new StringBuilder();
         builder.append(prepareName());
 
-        if (outputName != null)
-            builder
-               .append(" ")
-               .append("AS")
-               .append(" ")
-               .append(outputName)
-               ;
-
         builder.append(getCastExpression());
 
         return builder.toString();
@@ -70,6 +62,13 @@ public abstract class Expression extends AbstractToken
         if (castType != null)
             builder.append("::").append(castType);
 
+        if (outputName != null)
+            builder
+               .append(" ")
+               .append("AS")
+               .append(" ")
+               .append(outputName)
+               ;
         if (columns != null) {
             if (columns.length == 0)
                 builder.append("()");
