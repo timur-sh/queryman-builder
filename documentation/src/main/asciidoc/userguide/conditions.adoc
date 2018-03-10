@@ -5,7 +5,7 @@ include::./../variable.adoc[]
 :example: ../{mainJavaDir}/Conditions.java
 
 Ordinarily any condition is used within data manipulation statements, like
-SELECT, UPDATE, DELETE, INSERT. Also, some other statements may use condition also,
+SELECT, UPDATE, DELETE, INSERT. Also, some other statements may use the condition also,
 for example CHECK.
 
 The condition is representing by interface `org.queryman.builder.command.Conditions`.
