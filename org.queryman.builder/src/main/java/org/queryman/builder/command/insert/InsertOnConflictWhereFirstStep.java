@@ -63,7 +63,7 @@ public interface InsertOnConflictWhereFirstStep extends InsertConflictActionStep
      * @see org.queryman.builder.Operators#GTE
      * @see org.queryman.builder.PostgreSQL#max(String)
      * @see org.queryman.builder.PostgreSQL#asName(String)
-     * @see org.queryman.builder.PostgreSQL#operator(String)
+     * @see org.queryman.builder.PostgreSQL#operator(Object)
      */
     InsertOnConflictWhereManyStep where(Expression field, Operator operator, Query query);
 

@@ -64,7 +64,7 @@ public interface UpdateWhereFirstStep extends UpdateReturningStep {
      * @see org.queryman.builder.Operators#GTE
      * @see PostgreSQL#max(String)
      * @see PostgreSQL#asName(String)
-     * @see PostgreSQL#operator(String)
+     * @see PostgreSQL#operator(Object)
      */
     UpdateWhereManyStep where(Expression field, Operator operator, Query query);
 

@@ -6,7 +6,9 @@
  */
 package org.queryman.builder.utils;
 
+import org.queryman.builder.Query;
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.expression.SubQueryExpression;
 
 import static org.queryman.builder.PostgreSQL.asName;
 
@@ -14,7 +16,24 @@ import static org.queryman.builder.PostgreSQL.asName;
  * @author Timur Shaidullin
  */
 public class ExpressionUtil {
-    public static <T>Expression getOrConvert(T field) {
-        return field instanceof Expression ? (Expression) field : asName(String.valueOf(field));
+    /**
+     * Returns an expression. Checking scenario is:
+     * <ul>
+     *     <li>if it is an {@link Expression} object return itself </li>
+     *     <li>if it is a {@link Query} object, returns a {@link SubQueryExpression}</li>
+     *     <li>returns a {@link org.queryman.builder.token.expression.ColumnReferenceExpression}</li>
+     * </ul>
+     *
+     * @param field
+     * @return expression
+     */
+    public static <T>Expression toExpression(T field) {
+        if (field instanceof Expression)
+            return (Expression) field;
+
+        if (field instanceof Query)
+            return new SubQueryExpression((Query) field);
+
+        return asName(String.valueOf(field));
     }
 }

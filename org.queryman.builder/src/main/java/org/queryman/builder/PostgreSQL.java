@@ -64,6 +64,7 @@ import static org.queryman.builder.ast.NodesMetadata.ALL;
 import static org.queryman.builder.ast.NodesMetadata.ANY;
 import static org.queryman.builder.ast.NodesMetadata.EXISTS;
 import static org.queryman.builder.ast.NodesMetadata.SOME;
+import static org.queryman.builder.utils.ExpressionUtil.toExpression;
 
 /**
  * The entry point to all parts of PostgreSQL clauses. This contains a full
@@ -669,13 +670,14 @@ public class PostgreSQL {
      * @param leftValue  left operand
      * @param operator   operator
      * @param rightValue right operand
+     * @param <T> String, Expression, Operator or Query object
      *
      * @return {@link Conditions}
      *
      * @see #condition(Expression, Operator, Expression)
      */
-    public static Conditions condition(String leftValue, String operator, String rightValue) {
-        return condition(asName(leftValue), operator(operator), asName(rightValue));
+    public static <T> Conditions condition(T leftValue, T operator, T rightValue) {
+        return condition(toExpression(leftValue), operator(operator), toExpression(rightValue));
     }
 
     /**
@@ -768,43 +770,6 @@ public class PostgreSQL {
     //----
     // SUBQUERY CONDITIONS
     //----
-
-    /**
-     * Subquery condition. Primarily it is used by {@code IN} expression:
-     * <p>
-     * Example:
-     * <code>
-     *  condition(asName("name"), IN, select("name").from("authors")); // name IN (select name from authors)
-     * </code>
-     *
-     * @param field    left operand
-     * @param operator operator
-     * @param query    right operand
-     * @return {@link Conditions}
-
-     * @see Operators#IN
-     */
-    public static Conditions condition(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(field, new NodeMetadata(operator), query);
-    }
-
-    /**
-     * Subquery condition. Primarily it is used by {@code IN} expression:
-     * <p>
-     * Example:
-     * <code>
-     *      condition("name", "IN", select("name").from("authors")); // name IN (select name from authors)
-     * </code>
-     *
-     * @param field    left operand
-     * @param operator operator
-     * @param query    right operand
-     * @return {@link Conditions}
-     * @see #select(Object[])
-     */
-    public static Conditions condition(String field, String operator, Query query) {
-        return condition(asName(field), operator(operator), query);
-    }
 
     /**
      * Creates a condition.

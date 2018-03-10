@@ -9,7 +9,6 @@ package org.queryman.builder.command.select;
 import org.queryman.builder.Query;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 
 /**
  * Compulsory step for all JOIN clauses. Exclusion is CROSS JOIN
@@ -17,7 +16,7 @@ import org.queryman.builder.token.Operator;
  * @see SelectJoinStep
  * @author Timur Shaidullin
  */
-public interface SelectJoinOnStep extends SelectWhereFirstStep {
+public interface SelectJoinOnFirstStep extends SelectWhereFirstStep {
 
     /**
      * This form of JOIN ON condition is equivalent to CROSS JOIN.
@@ -44,27 +43,18 @@ public interface SelectJoinOnStep extends SelectWhereFirstStep {
      *  .on("a.id", "=", "b.author_id")
      *  .sql()
      * </code>
-     */
-    <T> SelectJoinOnStepsStep on(T operand1, T operator, T operand2);
-
-    /**
-     * Subquery condition.
      *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      *
-     * @see org.queryman.builder.Operators#GTE
-     * @see org.queryman.builder.PostgreSQL#max(String)
-     * @see org.queryman.builder.PostgreSQL#asName(String)
-     * @see org.queryman.builder.PostgreSQL#operator(String)
      */
-    <T> SelectJoinOnStepsStep on(T operand, T operator, Query query);
+    <T> SelectJoinOnManySteps on(T left, T operator, T right);
 
-    SelectJoinOnStepsStep on(Conditions conditions);
+    SelectJoinOnManySteps on(Conditions conditions);
 
-    SelectJoinOnStepsStep onExists(Query query);
+    SelectJoinOnManySteps onExists(Query query);
 
     /**
      * Example:

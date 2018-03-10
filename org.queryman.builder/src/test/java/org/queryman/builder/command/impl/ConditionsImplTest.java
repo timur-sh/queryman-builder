@@ -68,6 +68,14 @@ public class ConditionsImplTest {
         Conditions conditions1 = condition(asName("id"), EQUAL, asSubQuery(select("max(sum)")).as("sum"));
         assembleAst(conditions1);
         assertEquals("WHERE id = (SELECT max(sum)) AS sum", ast.toString());
+
+        conditions1 = condition(
+           select("id").from("book").limit(1),
+           EQUAL,
+           select("max(sum)")
+        );
+        assembleAst(conditions1);
+        assertEquals("WHERE (SELECT id FROM book LIMIT 1) = (SELECT max(sum))", ast.toString());
     }
 
     //----

@@ -63,7 +63,7 @@ public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
      * @see org.queryman.builder.Operators#GTE
      * @see PostgreSQL#max(String)
      * @see PostgreSQL#asName(String)
-     * @see PostgreSQL#operator(String)
+     * @see PostgreSQL#operator(Object)
      */
     InsertDoUpdateWhereManyStep where(Expression field, Operator operator, Query query);
 

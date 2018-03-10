@@ -19,17 +19,17 @@ import org.queryman.builder.command.select.SelectFinalStep;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectGroupByStep;
 import org.queryman.builder.command.select.SelectHavingFirstStep;
-import org.queryman.builder.command.select.SelectHavingStep;
-import org.queryman.builder.command.select.SelectJoinOnStep;
-import org.queryman.builder.command.select.SelectJoinOnStepsStep;
+import org.queryman.builder.command.select.SelectHavingManySteps;
+import org.queryman.builder.command.select.SelectJoinOnFirstStep;
+import org.queryman.builder.command.select.SelectJoinOnManySteps;
 import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.command.select.SelectLimitStep;
 import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
-import org.queryman.builder.command.select.SelectWhereStep;
+import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 import org.queryman.builder.token.Token;
+import org.queryman.builder.utils.ExpressionUtil;
 import org.queryman.builder.utils.Tools;
 
 import java.util.Arrays;
@@ -55,7 +55,6 @@ import static org.queryman.builder.ast.NodesMetadata.SELECT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
 import static org.queryman.builder.utils.ArrayUtils.toExpression;
-import static org.queryman.builder.utils.ExpressionUtil.getOrConvert;
 
 /**
  * @author Timur Shaidullin
@@ -63,12 +62,12 @@ import static org.queryman.builder.utils.ExpressionUtil.getOrConvert;
 public class SelectImpl extends AbstractQuery implements
    SelectFromStep,
    SelectJoinStep,
-   SelectJoinOnStep,
-   SelectJoinOnStepsStep,
-   SelectWhereStep,
+   SelectJoinOnFirstStep,
+   SelectJoinOnManySteps,
+   SelectWhereManySteps,
    SelectGroupByStep,
    SelectHavingFirstStep,
-   SelectHavingStep,
+   SelectHavingManySteps,
    SelectOrderByStep,
    SelectLimitStep,
    SelectOffsetStep,
@@ -263,22 +262,9 @@ public class SelectImpl extends AbstractQuery implements
     //--
 
     @Override
-    public final SelectImpl where(String left, String operator, String right) {
+    public final <T> SelectImpl where(T left, T operator, T right) {
         where(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final SelectImpl where(Expression left, Operator operator, Expression right) {
-        where(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final SelectImpl where(Expression field, Operator operator, Query query) {
-        where(condition(field, operator, query));
         return this;
     }
 
@@ -298,22 +284,9 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl and(String left, String operator, String right) {
+    public final <T> SelectImpl and(T left, T operator, T right) {
         and(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final SelectImpl and(Expression left, Operator operator, Expression right) {
-        and(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final SelectImpl and(Expression field, Operator operator, Query query) {
-        and(condition(field, operator, query));
         return this;
     }
 
@@ -338,22 +311,9 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl andNot(String left, String operator, String right) {
+    public final <T> SelectImpl andNot(T left, T operator, T right) {
         andNot(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final SelectImpl andNot(Expression left, Operator operator, Expression right) {
-        andNot(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final SelectImpl andNot(Expression field, Operator operator, Query query) {
-        andNot(condition(field, operator, query));
         return this;
     }
 
@@ -378,22 +338,9 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl or(String left, String operator, String right) {
+    public final <T> SelectImpl or(T left, T operator, T right) {
         or(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final SelectImpl or(Expression left, Operator operator, Expression right) {
-        or(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final SelectImpl or(Expression field, Operator operator, Query query) {
-        or(condition(field, operator, query));
         return this;
     }
 
@@ -418,7 +365,7 @@ public class SelectImpl extends AbstractQuery implements
     }
 
     @Override
-    public final SelectImpl orNot(String left, String operator, String right) {
+    public final <T> SelectImpl orNot(T left, T operator, T right) {
         orNot(condition(left, operator, right));
 
         return this;
@@ -441,19 +388,6 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl orNotExists(Query query) {
         orNot(conditionExists(query));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl orNot(Expression left, Operator operator, Expression right) {
-        orNot(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final SelectImpl orNot(Expression field, Operator operator, Query query) {
-        orNot(condition(field, operator, query));
         return this;
     }
 
@@ -638,12 +572,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final <T> SelectImpl on(T left, T operator, T right) {
-        return on(condition(getOrConvert(left), operator(operator), getOrConvert(right)));
-    }
-
-    @Override
-    public final <T> SelectImpl on(T field, T operator, Query query) {
-        return on(condition(getOrConvert(field), operator(operator), query));
+        return on(condition(ExpressionUtil.toExpression(left), operator(operator), ExpressionUtil.toExpression(right)));
     }
 
     @Override
@@ -700,20 +629,8 @@ public class SelectImpl extends AbstractQuery implements
     //----
 
     @Override
-    public final SelectImpl having(String left, String operator, String right) {
+    public final <T> SelectImpl having(T left, T operator, T right) {
         having(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl having(Expression left, Operator operator, Expression right) {
-        having(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final SelectImpl having(Expression field, Operator operator, Query query) {
-        having(condition(field, operator, query));
         return this;
     }
 

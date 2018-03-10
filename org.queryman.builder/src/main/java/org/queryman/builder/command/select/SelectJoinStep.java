@@ -19,65 +19,65 @@ public interface SelectJoinStep extends SelectWhereFirstStep {
      *             or {@code VALUES} expression
      * @see #join(Expression)
      */
-    SelectJoinOnStep join(String name);
+    SelectJoinOnFirstStep join(String name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      */
-    SelectJoinOnStep join(Expression name);
+    SelectJoinOnFirstStep join(Expression name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      * @see #innerJoin(Expression)
      */
-    SelectJoinOnStep innerJoin(String name);
+    SelectJoinOnFirstStep innerJoin(String name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      */
-    SelectJoinOnStep innerJoin(Expression name);
+    SelectJoinOnFirstStep innerJoin(Expression name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      * @see #leftJoin(Expression)
      */
-    SelectJoinOnStep leftJoin(String name);
+    SelectJoinOnFirstStep leftJoin(String name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      */
-    SelectJoinOnStep leftJoin(Expression name);
+    SelectJoinOnFirstStep leftJoin(Expression name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      * @see #rightJoin(Expression)
      */
-    SelectJoinOnStep rightJoin(String name);
+    SelectJoinOnFirstStep rightJoin(String name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      */
-    SelectJoinOnStep rightJoin(Expression name);
+    SelectJoinOnFirstStep rightJoin(Expression name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      * @see #fullJoin(Expression)
      */
-    SelectJoinOnStep fullJoin(String name);
+    SelectJoinOnFirstStep fullJoin(String name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},
      *             or {@code VALUES} expression
      */
-    SelectJoinOnStep fullJoin(Expression name);
+    SelectJoinOnFirstStep fullJoin(Expression name);
 
     /**
      * @param name is a table name. actually it can be {@code ROW},

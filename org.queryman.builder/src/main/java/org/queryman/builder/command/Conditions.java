@@ -25,7 +25,7 @@ import org.queryman.builder.PostgreSQL;
  * </ul>
  *
  * Each condition is built from operands and operator returning a boolean type
- * value (=, !=, IN, IS, IS NOT etc). Internally, any operand1 is being a {@link Expression}
+ * value (=, !=, IN, IS, IS NOT etc). Internally, any operator is being a {@link Expression}
  * object. And operator is being {@link Operator} object. For convenience sake
  * it's possible to use a {@code String} representation of them, which will
  * convert into needful type.
@@ -67,30 +67,13 @@ public interface Conditions extends AstVisitor {
      *  .and(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
-     */
-    <T>Conditions and(T operand1, T operator, T operand2);
-
-    /**
-     * Subquery condition. It is used primarily by {@code IN} expression:
-     * Example:
-     * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 AND author_id IN (SELECT id FROM author)
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .and(asName("author_id"), IN, select("id").from("authors"))
-     *  .sql()
-     * </code>
-     *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#IN
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    <T> Conditions and(T field, T operator, Query query);
+    <T>Conditions and(T left, T operator, T right);
 
     /**
      * Example:
@@ -153,10 +136,10 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     Conditions and(Conditions conditions);
+
 
     /**
      * Example:
@@ -168,30 +151,13 @@ public interface Conditions extends AstVisitor {
      *  .andNot(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
-     */
-    <T> Conditions andNot(T operand1, T operator, T operand2);
-
-    /**
-     * Subquery condition. It is used primarily by {@code IN} expression:
-     * Example:
-     * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 AND NOT author_id IN (SELECT id FROM author)
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .andNot(asName("author_id"), IN, select("id").from("authors"))
-     *  .sql()
-     * </code>
-     *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#IN
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    <T> Conditions andNot(T field, T operator, Query query);
+    <T> Conditions andNot(T left, T operator, T right);
 
     /**
      * Example:
@@ -254,10 +220,10 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     Conditions andNot(Conditions conditions);
+
 
     /**
      * Example:
@@ -269,30 +235,13 @@ public interface Conditions extends AstVisitor {
      *  .or("id", "=", "1")
      *  .sql()
      * </code>
-     */
-    <T> Conditions or(T operand1, T operator, T operand2);
-
-    /**
-     * Subquery condition. It is used primarily by {@code IN} expression:
-     * Example:
-     * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 OR author_id IN (SELECT id FROM author)
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .or(asName("author_id"), IN, select("id").from("author"))
-     *  .sql()
-     * </code>
-     *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#IN
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    <T> Conditions or(T field, T operator, Query query);
+    <T> Conditions or(T left, T operator, T right);
 
     /**
      * Example:
@@ -355,10 +304,10 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     Conditions or(Conditions conditions);
+
 
     /**
      * Example:
@@ -370,30 +319,13 @@ public interface Conditions extends AstVisitor {
      *  .orNot(asQuotedName("id"), "=", 1)
      *  .sql()
      * </code>
-     */
-    <T> Conditions orNot(T operand1, T operator, T operand2);
-
-    /**
-     * Subquery condition. It is used primarily by {@code IN} expression:
-     * Example:
-     * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 OR NOT author_id IN (SELECT id FROM author)
-     * select("*")
-     *  .from("book")
-     *  .where("year", ">", "2010")
-     *  .orNot(asName("author_id"), IN, select("id").from("authors"))
-     *  .sql()
-     * </code>
-     *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#IN
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    <T> Conditions orNot(T field, T operator, Query query);
+    <T> Conditions orNot(T left, T operator, T right);
 
     /**
      * Example:
@@ -456,8 +388,7 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     Conditions orNot(Conditions conditions);
 

@@ -25,45 +25,13 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      *  .where("year", ">", "2010")
      *  .sql()
      * </code>
-     */
-    SelectWhereStep where(String left, String operator, String right);
-
-    /**
-     * Example:
-     * <code>
-     * // SELECT * FROM book WHERE "id" = 1
-     * select("*")
-     *  .from("book")
-     *  .where(asQuotedName("id"), operator("="), asNumber(1))
-     *  .sql()
-     * </code>
-     */
-    SelectWhereStep where(Expression left, Operator operator, Expression right);
-
-    /**
-     * Subquery condition.
-     * Example:
-     * <code>
      *
-     * // SELECT price FROM book WHERE price < (SELECT MAX(total) FROM order)
-     *
-     * select("price")
-     *  .from("book")
-     *  .where("year", "<=", select(max("total")).from("order"))
-     *  .sql()
-     * </code>
-     *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#GTE
-     * @see org.queryman.builder.PostgreSQL#max(String)
-     * @see org.queryman.builder.PostgreSQL#asName(String)
-     * @see org.queryman.builder.PostgreSQL#operator(String)
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    SelectWhereStep where(Expression field, Operator operator, Query query);
+    <T> SelectWhereManySteps where(T left, T operator, T right);
 
     /**
      * This function useful in a few case:
@@ -110,7 +78,7 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      * @see PostgreSQL#condition(String, String, Query)
      * @see PostgreSQL#condition(String, String, String)
      */
-    SelectWhereStep where(Conditions conditions);
+    SelectWhereManySteps where(Conditions conditions);
 
     /**
      * Example:
@@ -126,5 +94,5 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      * @param query subquery
      * @return itself
      */
-    SelectWhereStep whereExists(Query query);
+    SelectWhereManySteps whereExists(Query query);
 }

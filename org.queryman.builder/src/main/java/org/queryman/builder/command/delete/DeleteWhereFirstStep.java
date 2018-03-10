@@ -61,7 +61,7 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * @see org.queryman.builder.Operators#GTE
      * @see org.queryman.builder.PostgreSQL#max(String)
      * @see org.queryman.builder.PostgreSQL#asName(String)
-     * @see org.queryman.builder.PostgreSQL#operator(String)
+     * @see org.queryman.builder.PostgreSQL#operator(Object)
      */
     DeleteWhereManyStep where(Expression field, Operator operator, Query query);
 

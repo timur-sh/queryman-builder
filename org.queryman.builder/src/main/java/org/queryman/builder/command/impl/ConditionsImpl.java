@@ -13,10 +13,7 @@ import org.queryman.builder.ast.NodeImpl;
 import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
-import org.queryman.builder.utils.ExpressionUtil;
 
-import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.conditionExists;
 import static org.queryman.builder.PostgreSQL.getTree;
@@ -25,7 +22,7 @@ import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
-import static org.queryman.builder.utils.ExpressionUtil.getOrConvert;
+import static org.queryman.builder.utils.ExpressionUtil.toExpression;
 
 /**
  * @author Timur Shaidullin
@@ -121,19 +118,13 @@ public final class ConditionsImpl implements
 
     @Override
     public final <T> Conditions and(T leftValue, T operator, T rightValue) {
-        and(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
+        and(condition(leftValue, operator, rightValue));
         return this;
     }
 
     @Override
     public final Conditions and(Conditions conditions) {
         rebuildNode(AND, conditions.getNode());
-        return this;
-    }
-
-    @Override
-    public <T> Conditions and(T field, T operator, Query query) {
-        and(condition(getOrConvert(field), operator(operator), query));
         return this;
     }
 
@@ -145,19 +136,13 @@ public final class ConditionsImpl implements
 
     @Override
     public final <T> Conditions andNot(T leftValue, T operator, T rightValue) {
-        andNot(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
+        andNot(condition(leftValue, operator, rightValue));
         return this;
     }
 
     @Override
     public final Conditions andNot(Conditions conditions) {
         rebuildNode(AND_NOT, conditions.getNode());
-        return this;
-    }
-
-    @Override
-    public final <T>  Conditions andNot(T field, T operator, Query query) {
-        andNot(condition(getOrConvert(field), operator(operator), query));
         return this;
     }
 
@@ -169,7 +154,7 @@ public final class ConditionsImpl implements
 
     @Override
     public final <T> Conditions or(T leftValue, T operator, T rightValue) {
-        or(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
+        or(condition(leftValue, operator, rightValue));
         return this;
     }
 
@@ -186,26 +171,14 @@ public final class ConditionsImpl implements
     }
 
     @Override
-    public final <T> Conditions or(T field, T operator, Query query) {
-        or(condition(getOrConvert(field), operator(operator), query));
-        return this;
-    }
-
-    @Override
     public final <T> Conditions orNot(T leftValue, T operator, T rightValue) {
-        orNot(condition(getOrConvert(leftValue), operator(operator), getOrConvert(rightValue)));
+        orNot(condition(leftValue, operator, rightValue));
         return this;
     }
 
     @Override
     public final Conditions orNot(Conditions conditions) {
         rebuildNode(OR_NOT, conditions.getNode());
-        return this;
-    }
-
-    @Override
-    public final <T> Conditions orNot(T field, T operator, Query query) {
-        orNot(condition(getOrConvert(field), operator(String.valueOf(operator)), query));
         return this;
     }
 
