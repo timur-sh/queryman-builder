@@ -15,7 +15,7 @@ import org.queryman.builder.command.update.UpdateFromStep;
 import org.queryman.builder.command.update.UpdateReturningStep;
 import org.queryman.builder.command.update.UpdateSetStep;
 import org.queryman.builder.command.update.UpdateWhereFirstStep;
-import org.queryman.builder.command.update.UpdateWhereManyStep;
+import org.queryman.builder.command.update.UpdateWhereManySteps;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
@@ -49,7 +49,7 @@ public class UpdateImpl extends AbstractQuery implements
    UpdateSetStep,
    UpdateFromStep,
    UpdateWhereFirstStep,
-   UpdateWhereManyStep,
+   UpdateWhereManySteps,
    UpdateReturningStep {
 
     private final Expression   table;
@@ -127,18 +127,8 @@ public class UpdateImpl extends AbstractQuery implements
     }
 
     @Override
-    public final UpdateImpl where(String left, String operator, String right) {
+    public final <T> UpdateImpl where(T left, T operator, T right) {
         return where(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl where(Expression left, Operator operator, Expression right) {
-        return where(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl where(Expression field, Operator operator, Query query) {
-        return where(condition(field, operator, query));
     }
 
     @Override
@@ -159,18 +149,8 @@ public class UpdateImpl extends AbstractQuery implements
     }
 
     @Override
-    public final UpdateImpl and(String left, String operator, String right) {
+    public final <T> UpdateImpl and(T left, T operator, T right) {
         return and(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl and(Expression left, Operator operator, Expression right) {
-        return and(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl and(Expression field, Operator operator, Query query) {
-        return and(condition(field, operator, query));
     }
 
     @Override
@@ -185,18 +165,8 @@ public class UpdateImpl extends AbstractQuery implements
     }
 
     @Override
-    public final UpdateImpl andNot(String left, String operator, String right) {
+    public final <T> UpdateImpl andNot(T left, T operator, T right) {
         return andNot(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl andNot(Expression left, Operator operator, Expression right) {
-        return andNot(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl andNot(Expression field, Operator operator, Query query) {
-        return andNot(condition(field, operator, query));
     }
 
     @Override
@@ -211,18 +181,8 @@ public class UpdateImpl extends AbstractQuery implements
     }
 
     @Override
-    public final UpdateImpl or(String left, String operator, String right) {
+    public final <T> UpdateImpl or(T left, T operator, T right) {
         return or(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl or(Expression left, Operator operator, Expression right) {
-        return or(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl or(Expression field, Operator operator, Query query) {
-        return or(condition(field, operator, query));
     }
 
     @Override
@@ -237,18 +197,8 @@ public class UpdateImpl extends AbstractQuery implements
     }
 
     @Override
-    public final UpdateImpl orNot(String left, String operator, String right) {
+    public final <T> UpdateImpl orNot(T left, T operator, T right) {
         return orNot(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl orNot(Expression left, Operator operator, Expression right) {
-        return orNot(condition(left, operator, right));
-    }
-
-    @Override
-    public final UpdateImpl orNot(Expression field, Operator operator, Query query) {
-        return orNot(condition(field, operator, query));
     }
 
     @Override

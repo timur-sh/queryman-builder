@@ -18,55 +18,23 @@ import org.queryman.builder.token.Operator;
  * @author Timur Shaidullin
  */
 public interface UpdateWhereFirstStep extends UpdateReturningStep {
-    /**
-     * Example:
-     * <code>
-     * // UPDATE book AS b SET year = 2003 WHERE b.year > 1
-     * update("book")
-     *  .as("b")
-     *  .set("year", 2003)
-     *  .where("b.year", ">", "2010")
-     *  .sql()
-     * </code>
-     */
-    UpdateWhereManyStep where(String left, String operator, String right);
 
     /**
      * Example:
      * <code>
-     * // UPDATE book SET year = 2003 WHERE "id" = 1
-     * update("book")
-     *  .set("year", 2003)
-     *  .where(asQuotedName("id"), operator("="), asNumber(1))
-     *  .sql()
-     * </code>
-     */
-    UpdateWhereManyStep where(Expression left, Operator operator, Expression right);
-
-    /**
-     * Subquery condition.
-     * Example:
-     * <code>
-     *
-     * // UPDATE book SET year = 2003 WHERE price < (SELECT MAX(total) FROM order)
-     *
-     * update("book")
-     *  .set("year", 2003)
-     *  .where("year", "<=", select(max("total")).from("order"))
+     * // SELECT * FROM book WHERE year > 2010
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
      *  .sql()
      * </code>
      *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#GTE
-     * @see PostgreSQL#max(String)
-     * @see PostgreSQL#asName(String)
-     * @see PostgreSQL#operator(Object)
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    UpdateWhereManyStep where(Expression field, Operator operator, Query query);
+    <T> UpdateWhereManySteps where(T left, T operator, T right);
 
     /**
      * This function useful in a few case:
@@ -87,18 +55,18 @@ public interface UpdateWhereFirstStep extends UpdateReturningStep {
      *
      * The first example:
      * <code>
-     * // UPDATE book SET year = 2003 WHERE id BETWEEN 1 AND 10
-     * update("book")
-     *  .set("year", 2003)
+     * // SELECT * FROM book WHERE id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
      *  .where(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
      *
      * The second example:
      * <code>
-     * // UPDATE book SET year = 2003 WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
-     * update("book")
-     *  .set("year", 2003)
+     * // SELECT * FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
      *  .where(
      *      conditionBetween("id", "1", "10")
      *      .and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -113,15 +81,15 @@ public interface UpdateWhereFirstStep extends UpdateReturningStep {
      * @see PostgreSQL#condition(String, String, Query)
      * @see PostgreSQL#condition(String, String, String)
      */
-    UpdateWhereManyStep where(Conditions conditions);
+    UpdateWhereManySteps where(Conditions conditions);
 
     /**
      * Example:
      * <code>
      *
-     * // UPDATE book SET year = 2003 WHERE EXISTS (SELECT * FROM author)
-     * update("book")
-     *  .set("year", 2003)
+     * // SELECT * FROM book WHERE EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
      *  .whereExists(select("*").from("authors"))
      *  .sql()
      * </code>
@@ -129,7 +97,7 @@ public interface UpdateWhereFirstStep extends UpdateReturningStep {
      * @param query subquery
      * @return itself
      */
-    UpdateWhereManyStep whereExists(Query query);
+    UpdateWhereManySteps whereExists(Query query);
 
     /**
      * Set a cursor name created by DECLARE statement.
