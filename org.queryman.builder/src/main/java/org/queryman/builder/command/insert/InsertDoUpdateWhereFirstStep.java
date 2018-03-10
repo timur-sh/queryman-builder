@@ -109,8 +109,7 @@ public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     InsertDoUpdateWhereManyStep where(Conditions conditions);
 

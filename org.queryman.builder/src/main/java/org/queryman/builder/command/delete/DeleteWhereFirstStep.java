@@ -18,52 +18,23 @@ import org.queryman.builder.token.Operator;
  * @author Timur Shaidullin
  */
 public interface DeleteWhereFirstStep extends DeleteReturningStep {
-    /**
-     * Example:
-     * <code>
-     * // DELETE FROM book WHERE b.year > 1
-     * deleteFrom("book")
-     *  .as("b")
-     *  .where("b.year", ">", "2010")
-     *  .sql()
-     * </code>
-     */
-    DeleteWhereManyStep where(String left, String operator, String right);
 
     /**
      * Example:
      * <code>
-     * // DELETE FROM book WHERE "id" = 1
-     * deleteFrom("book")
-     *  .where(asQuotedName("id"), operator("="), asNumber(1))
-     *  .sql()
-     * </code>
-     */
-    DeleteWhereManyStep where(Expression left, Operator operator, Expression right);
-
-    /**
-     * Subquery condition.
-     * Example:
-     * <code>
-     *
-     * // DELETE FROM book WHERE price < (SELECT MAX(total) FROM order)
-     *
-     * deleteFrom("book")
-     *  .where("year", "<=", select(max("total")).from("order"))
+     * // SELECT * FROM book WHERE year > 2010
+     * select("*")
+     *  .from("book")
+     *  .where("year", ">", "2010")
      *  .sql()
      * </code>
      *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return delete where many steps
-     *
-     * @see org.queryman.builder.Operators#GTE
-     * @see org.queryman.builder.PostgreSQL#max(String)
-     * @see org.queryman.builder.PostgreSQL#asName(String)
-     * @see org.queryman.builder.PostgreSQL#operator(Object)
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    DeleteWhereManyStep where(Expression field, Operator operator, Query query);
+    <T> DeleteWhereManySteps where(T left, T operator, T right);
 
     /**
      * This function useful in a few case:
@@ -84,16 +55,18 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      *
      * The first example:
      * <code>
-     * // DELETE FROM book WHERE id BETWEEN 1 AND 10
-     * deleteFrom("book")
+     * // SELECT * FROM book WHERE id BETWEEN 1 AND 10
+     * select("*")
+     *  .from("book")
      *  .where(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
      *
      * The second example:
      * <code>
-     * // DELETE FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
-     * deleteFrom("book")
+     * // SELECT * FROM book WHERE (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * select("*")
+     *  .from("book")
      *  .where(
      *      conditionBetween("id", "1", "10")
      *      .and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -102,28 +75,28 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * </code>
      *
      * @param conditions condition
-     * @return delete where many steps
+     * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
-    DeleteWhereManyStep where(Conditions conditions);
+    DeleteWhereManySteps where(Conditions conditions);
 
     /**
      * Example:
      * <code>
      *
-     * // DELETE FROM FROM book WHERE EXISTS (SELECT * FROM author)
-     * deleteFrom("book")
+     * // SELECT * FROM book WHERE EXISTS (SELECT * FROM author)
+     * select("*")
+     *  .from("book")
      *  .whereExists(select("*").from("authors"))
      *  .sql()
      * </code>
      *
      * @param query subquery
-     * @return delete where many steps
+     * @return itself
      */
-    DeleteWhereManyStep whereExists(Query query);
+    DeleteWhereManySteps whereExists(Query query);
 
     /**
      * Set a cursor name created by DECLARE statement.

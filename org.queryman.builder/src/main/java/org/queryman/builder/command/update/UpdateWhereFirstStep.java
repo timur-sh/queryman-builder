@@ -78,8 +78,7 @@ public interface UpdateWhereFirstStep extends UpdateReturningStep {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     UpdateWhereManySteps where(Conditions conditions);
 

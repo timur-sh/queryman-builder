@@ -15,7 +15,7 @@ import org.queryman.builder.command.delete.DeleteFinalStep;
 import org.queryman.builder.command.delete.DeleteReturningStep;
 import org.queryman.builder.command.delete.DeleteUsingStep;
 import org.queryman.builder.command.delete.DeleteWhereFirstStep;
-import org.queryman.builder.command.delete.DeleteWhereManyStep;
+import org.queryman.builder.command.delete.DeleteWhereManySteps;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
 
@@ -41,7 +41,7 @@ public class DeleteImpl extends AbstractQuery implements
    DeleteAsStep,
    DeleteUsingStep,
    DeleteWhereFirstStep,
-   DeleteWhereManyStep,
+   DeleteWhereManySteps,
    DeleteReturningStep,
    DeleteFinalStep {
 
@@ -117,18 +117,8 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public final DeleteImpl where(String left, String operator, String right) {
+    public final <T> DeleteImpl where(T left, T operator, T right) {
         return where(condition(left, operator, right));
-    }
-
-    @Override
-    public final DeleteImpl where(Expression left, Operator operator, Expression right) {
-        return where(condition(left, operator, right));
-    }
-
-    @Override
-    public final DeleteImpl where(Expression field, Operator operator, Query query) {
-        return where(condition(field, operator, query));
     }
 
     @Override
@@ -149,20 +139,8 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public final DeleteImpl and(String left, String operator, String right) {
+    public final <T> DeleteImpl and(T left, T operator, T right) {
         and(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl and(Expression left, Operator operator, Expression right) {
-        and(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl and(Expression field, Operator operator, Query query) {
-        and(condition(field, operator, query));
         return this;
     }
 
@@ -178,20 +156,8 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public final DeleteImpl andNot(String left, String operator, String right) {
+    public final <T> DeleteImpl andNot(T left, T operator, T right) {
         andNot(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl andNot(Expression left, Operator operator, Expression right) {
-        andNot(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl andNot(Expression field, Operator operator, Query query) {
-        andNot(condition(field, operator, query));
         return this;
     }
 
@@ -207,20 +173,8 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public final DeleteImpl or(String left, String operator, String right) {
+    public final <T> DeleteImpl or(T left, T operator, T right) {
         or(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl or(Expression left, Operator operator, Expression right) {
-        or(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl or(Expression field, Operator operator, Query query) {
-        or(condition(field, operator, query));
         return this;
     }
 
@@ -236,20 +190,8 @@ public class DeleteImpl extends AbstractQuery implements
     }
 
     @Override
-    public final DeleteImpl orNot(String left, String operator, String right) {
+    public final <T> DeleteImpl orNot(T left, T operator, T right) {
         orNot(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl orNot(Expression left, Operator operator, Expression right) {
-        orNot(condition(left, operator, right));
-        return this;
-    }
-
-    @Override
-    public final DeleteImpl orNot(Expression field, Operator operator, Query query) {
-        orNot(condition(field, operator, query));
         return this;
     }
 

@@ -109,8 +109,7 @@ public interface InsertOnConflictWhereFirstStep extends InsertConflictActionStep
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(String, String, Query)
-     * @see PostgreSQL#condition(String, String, String)
+     * @see PostgreSQL#condition(Object, Object, Object)
      */
     InsertOnConflictWhereManyStep where(Conditions conditions);
 
