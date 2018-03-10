@@ -6,10 +6,12 @@
  */
 package org.queryman.builder.utils;
 
+import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.expression.SubQueryExpression;
 
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 
 /**
@@ -19,8 +21,11 @@ public class ExpressionUtil {
     /**
      * Returns an expression. Checking scenario is:
      * <ul>
-     *     <li>if it is an {@link Expression} object return itself </li>
-     *     <li>if it is a {@link Query} object, returns a {@link SubQueryExpression}</li>
+     *     <li>if field is an {@link Expression} object return itself </li>
+     *     <li>if field is a {@link Query} object, returns a {@link SubQueryExpression}</li>
+     *     <li>if field is not a {@link String} object,
+     *      the {@link PostgreSQL#asConstant(Object)} is applicable
+     *     </li>
      *     <li>returns a {@link org.queryman.builder.token.expression.ColumnReferenceExpression}</li>
      * </ul>
      *
@@ -33,6 +38,9 @@ public class ExpressionUtil {
 
         if (field instanceof Query)
             return new SubQueryExpression((Query) field);
+
+        if (!(field instanceof String))
+            return asConstant(field);
 
         return asName(String.valueOf(field));
     }

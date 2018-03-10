@@ -1,0 +1,30 @@
+[[update]]
+=== UPDATE statement
+
+include::./../../variable.adoc[]
+:example: ../../{mainJavaDir}/Update.java
+
+link:https://www.postgresql.org/docs/10/static/sql-update.html[UPDATE command (PostgreSQL)]
+
+Synopsis
+```
+UPDATE [ ONLY ] table_name [ * ] [ [ AS ] alias ]
+    SET { column_name = { expression | DEFAULT } |
+          ( column_name [, ...] ) = [ ROW ] ( { expression | DEFAULT } [, ...] ) |
+          ( column_name [, ...] ) = ( sub-SELECT )
+        } [, ...]
+    [ FROM from_list ]
+    [ WHERE condition | WHERE CURRENT OF cursor_name ]
+    [ RETURNING * | output_expression [ [ AS ] output_name ] [, ...] ]
+
+```
+
+Queryman builder implements almost all clauses of UPDATE statement, except WITH.
+Common example is:
+[source,java]
+include::{example}[tag=simple-update]
+
+It's also allowable for building a PrepareStatement:
+
+[source,java]
+include::{example}[tag=prepared-update]

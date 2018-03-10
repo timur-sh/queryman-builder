@@ -1,6 +1,8 @@
 package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.Query;
+import org.queryman.builder.ast.TreeFormatterTestUtil;
 import org.queryman.builder.command.update.UpdateSetStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +18,7 @@ import static org.queryman.builder.PostgreSQL.condition;
 import static org.queryman.builder.PostgreSQL.select;
 import static org.queryman.builder.PostgreSQL.update;
 import static org.queryman.builder.PostgreSQL.updateOnly;
+import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
 class UpdateImplTest {
     @Test
@@ -201,7 +204,7 @@ class UpdateImplTest {
 
 
     @Test
-    void updateAsUsingWhereReturningTest() {
+    void updateAsUsingWhereReturningTest() throws NoSuchFieldException, IllegalAccessException {
         String sql = update("book")
            .as("b")
            .set("author", asConstant("order"))
@@ -210,12 +213,13 @@ class UpdateImplTest {
            .sql();
         assertEquals("UPDATE book AS b SET author = 'order' WHERE b.id = 1 RETURNING *", sql);
 
-        sql = update("book")
+        Query query = update("book")
            .as("b")
            .set("author", asConstant("Andrew"))
-           .where("b.id", "=", "1")
-           .returning(asName("max(price)").as("price"))
-           .sql();
-        assertEquals("UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price", sql);
+           .where("b.id", "=", 1)
+           .returning(asName("max(price)").as("price"));
+        assertEquals("UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price", query.sql());
+
+        assertEquals("UPDATE book AS b SET author = ? WHERE b.id = ? RETURNING max(price) AS price", buildPreparedSQL(query));
     }
 }

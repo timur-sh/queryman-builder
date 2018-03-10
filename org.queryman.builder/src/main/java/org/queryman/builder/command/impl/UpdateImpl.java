@@ -27,6 +27,7 @@ import static org.queryman.builder.Keywords.SET;
 import static org.queryman.builder.Keywords.UPDATE;
 import static org.queryman.builder.Keywords.UPDATE_ONLY;
 import static org.queryman.builder.Operators.EQUAL;
+import static org.queryman.builder.PostgreSQL.asConstant;
 import static org.queryman.builder.PostgreSQL.asName;
 import static org.queryman.builder.PostgreSQL.asSubQuery;
 import static org.queryman.builder.PostgreSQL.condition;
@@ -226,7 +227,7 @@ public class UpdateImpl extends AbstractQuery implements
 
     @Override
     public final <T> UpdateImpl set(String column, T value) {
-        return set(asName(column), asName(String.valueOf(value)));
+        return set(asName(column), asConstant(value));
     }
 
     @Override

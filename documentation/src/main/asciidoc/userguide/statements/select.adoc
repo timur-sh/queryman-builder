@@ -4,7 +4,7 @@
 include::./../../variable.adoc[]
 :example: ../../{mainJavaDir}/Select.java
 
-link:https://www.postgresql.org/docs/9.6/static/sql-select.html[SELECT command (PostgreSQL)]
+link:https://www.postgresql.org/docs/10/static/sql-select.html[SELECT command (PostgreSQL)]
 
 Synopsis:
 ```
@@ -36,10 +36,13 @@ and grouping_element can be one of:
 
 ```
 
-Above synopsis shows clauses are implemented by Queryman Builder for SELECT statement.
-This chapter is presenting examples of using these clauses.
+The above synopsis shows clauses are implemented by Queryman Builder for SELECT statement.
+This chapter presents examples of using these clauses.
 
-==== WHERE
+==== WHERE, HAVING, JOIN ON clauses
+
+These three clauses is a wrapper for the link:#conditions[Conditions] object.
+
 
 ==== GROUP BY
 The simple use the GROUP BY clause:

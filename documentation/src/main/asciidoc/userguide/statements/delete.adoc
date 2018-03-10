@@ -4,7 +4,7 @@
 include::./../../variable.adoc[]
 :example: ../../{mainJavaDir}/Delete.java
 
-link:https://www.postgresql.org/docs/9.6/static/sql-delete.html[DELETE command (PostgreSQL)]
+link:https://www.postgresql.org/docs/10/static/sql-delete.html[DELETE command (PostgreSQL)]
 
 Synopsis
 ```

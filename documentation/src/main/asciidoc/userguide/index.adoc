@@ -31,6 +31,8 @@ include::./conditions.adoc[]
 
 include::./statements/select.adoc[]
 
+include::./statements/update.adoc[]
+
 include::./statements/delete.adoc[]
 
 include::./statements/sequence.adoc[]
