@@ -20,10 +20,10 @@ import org.queryman.builder.command.insert.InsertConflictActionStep;
 import org.queryman.builder.command.insert.InsertDefaultValuesStep;
 import org.queryman.builder.command.insert.InsertDoUpdateSetStep;
 import org.queryman.builder.command.insert.InsertDoUpdateWhereFirstStep;
-import org.queryman.builder.command.insert.InsertDoUpdateWhereManyStep;
+import org.queryman.builder.command.insert.InsertDoUpdateWhereManySteps;
 import org.queryman.builder.command.insert.InsertOnConflictStep;
 import org.queryman.builder.command.insert.InsertOnConflictWhereFirstStep;
-import org.queryman.builder.command.insert.InsertOnConflictWhereManyStep;
+import org.queryman.builder.command.insert.InsertOnConflictWhereManySteps;
 import org.queryman.builder.command.insert.InsertOnConstraintStep;
 import org.queryman.builder.command.insert.InsertOverridingStep;
 import org.queryman.builder.command.insert.InsertValuesManyStep;
@@ -71,12 +71,12 @@ public class InsertImpl extends AbstractQuery implements
    InsertValuesStep,
    InsertOnConflictStep,
    InsertOnConflictWhereFirstStep,
-   InsertOnConflictWhereManyStep,
+   InsertOnConflictWhereManySteps,
    InsertOnConstraintStep,
    InsertConflictActionStep,
    InsertDoUpdateSetStep,
    InsertDoUpdateWhereFirstStep,
-   InsertDoUpdateWhereManyStep {
+   InsertDoUpdateWhereManySteps {
 
     private final Expression table;
     private final List<Map<Expression, Expression>> setList = new ArrayList<>();
@@ -282,22 +282,9 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl where(String left, String operator, String right) {
+    public final <T> InsertImpl where(T left, T operator, T right) {
         where(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final InsertImpl where(Expression left, Operator operator, Expression right) {
-        where(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final InsertImpl where(Expression field, Operator operator, Query query) {
-        where(condition(field, operator, query));
         return this;
     }
 
@@ -321,22 +308,9 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl and(String left, String operator, String right) {
+    public final <T> InsertImpl and(T left, T operator, T right) {
         and(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final InsertImpl and(Expression left, Operator operator, Expression right) {
-        and(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final InsertImpl and(Expression field, Operator operator, Query query) {
-        and(condition(field, operator, query));
         return this;
     }
 
@@ -359,22 +333,9 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl andNot(String left, String operator, String right) {
+    public final <T> InsertImpl andNot(T left, T operator, T right) {
         andNot(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final InsertImpl andNot(Expression left, Operator operator, Expression right) {
-        andNot(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final InsertImpl andNot(Expression field, Operator operator, Query query) {
-        andNot(condition(field, operator, query));
         return this;
     }
 
@@ -397,22 +358,9 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl or(String left, String operator, String right) {
+    public final <T> InsertImpl or(T left, T operator, T right) {
         or(condition(left, operator, right));
 
-        return this;
-    }
-
-    @Override
-    public final InsertImpl or(Expression left, Operator operator, Expression right) {
-        or(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final InsertImpl or(Expression field, Operator operator, Query query) {
-        or(condition(field, operator, query));
         return this;
     }
 
@@ -435,7 +383,7 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl orNot(String left, String operator, String right) {
+    public final <T> InsertImpl orNot(T left, T operator, T right) {
         orNot(condition(left, operator, right));
 
         return this;
@@ -458,20 +406,6 @@ public class InsertImpl extends AbstractQuery implements
         orNot(conditionExists(query));
         return this;
     }
-
-    @Override
-    public final InsertImpl orNot(Expression left, Operator operator, Expression right) {
-        orNot(condition(left, operator, right));
-
-        return this;
-    }
-
-    @Override
-    public final InsertImpl orNot(Expression field, Operator operator, Query query) {
-        orNot(condition(field, operator, query));
-        return this;
-    }
-
 
     @Override
     public final <T> InsertImpl set(String column, T value) {

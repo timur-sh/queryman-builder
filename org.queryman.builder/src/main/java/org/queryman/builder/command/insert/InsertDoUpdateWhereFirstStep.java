@@ -18,6 +18,7 @@ import org.queryman.builder.token.Operator;
  * @author Timur Shaidullin
  */
 public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
+
     /**
      * Example:
      * <code>
@@ -27,45 +28,13 @@ public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
      *  .where("year", ">", "2010")
      *  .sql()
      * </code>
-     */
-    InsertDoUpdateWhereManyStep where(String left, String operator, String right);
-
-    /**
-     * Example:
-     * <code>
-     * // SELECT * FROM book WHERE "id" = 1
-     * select("*")
-     *  .from("book")
-     *  .where(asQuotedName("id"), operator("="), asNumber(1))
-     *  .sql()
-     * </code>
-     */
-    InsertDoUpdateWhereManyStep where(Expression left, Operator operator, Expression right);
-
-    /**
-     * Subquery condition.
-     * Example:
-     * <code>
      *
-     * // SELECT price FROM book WHERE price < (SELECT MAX(total) FROM order)
-     *
-     * select("price")
-     *  .from("book")
-     *  .where("year", "<=", select(max("total")).from("order"))
-     *  .sql()
-     * </code>
-     *
-     * @param field field
+     * @param left left operand
      * @param operator operator
-     * @param query subquery
-     * @return itself
-     *
-     * @see org.queryman.builder.Operators#GTE
-     * @see PostgreSQL#max(String)
-     * @see PostgreSQL#asName(String)
-     * @see PostgreSQL#operator(Object)
+     * @param right right operand
+     * @param <T> String, Expression, Operator or Query object
      */
-    InsertDoUpdateWhereManyStep where(Expression field, Operator operator, Query query);
+    <T> InsertDoUpdateWhereManySteps where(T left, T operator, T right);
 
     /**
      * This function useful in a few case:
@@ -111,7 +80,7 @@ public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
      * Kind of conditions:
      * @see PostgreSQL#condition(Object, Object, Object)
      */
-    InsertDoUpdateWhereManyStep where(Conditions conditions);
+    InsertDoUpdateWhereManySteps where(Conditions conditions);
 
     /**
      * Example:
@@ -127,5 +96,5 @@ public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
      * @param query subquery
      * @return itself
      */
-    InsertDoUpdateWhereManyStep whereExists(Query query);
+    InsertDoUpdateWhereManySteps whereExists(Query query);
 }
