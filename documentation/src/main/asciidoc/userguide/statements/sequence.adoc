@@ -4,3 +4,18 @@
 include::./../../variable.adoc[]
 :example: ../../{mainJavaDir}/Sequence.java
 
+link:https://www.postgresql.org/docs/10/static/sql-createsequence.html[CREATE SEQUENCE command (PostgreSQL)]
+
+Synopsis
+```
+CREATE [ TEMPORARY | TEMP ] SEQUENCE [ IF NOT EXISTS ] name
+    [ AS data_type ]
+    [ INCREMENT [ BY ] increment ]
+    [ MINVALUE minvalue | NO MINVALUE ] [ MAXVALUE maxvalue | NO MAXVALUE ]
+    [ START [ WITH ] start ] [ CACHE cache ] [ [ NO ] CYCLE ]
+    [ OWNED BY { table_name.column_name | NONE } ]
+```
+
+Full example is below:
+[source,java]
+include::{example}[tag=simple-sequence]

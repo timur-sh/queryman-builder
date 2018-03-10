@@ -41,7 +41,7 @@ This chapter presents examples of using these clauses.
 
 ==== WHERE, HAVING, JOIN ON clauses
 
-These three clauses is a wrapper for the link:#conditions[Conditions] object.
+These three clauses are a wrapper for the link:#conditions[Conditions] object.
 
 
 ==== GROUP BY
