@@ -29,7 +29,6 @@ import org.queryman.builder.command.insert.InsertOverridingStep;
 import org.queryman.builder.command.insert.InsertValuesManyStep;
 import org.queryman.builder.command.insert.InsertValuesStep;
 import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -258,6 +257,11 @@ public class InsertImpl extends AbstractQuery implements
 
         conflictTargets = targets;
         return this;
+    }
+
+    @Override
+    public final InsertImpl onConflict(String indexColumnName) {
+        return onConflict(PostgreSQL.targetColumn(indexColumnName));
     }
 
     @Override

@@ -2,11 +2,13 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.Query;
+import org.queryman.builder.ast.TreeFormatterTestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.conflictTargetColumn;
-import static org.queryman.builder.PostgreSQL.conflictTargetExpression;
+import static org.queryman.builder.PostgreSQL.targetColumn;
+import static org.queryman.builder.PostgreSQL.targetExpression;
 import static org.queryman.builder.PostgreSQL.select;
 
 class InsertImplTest {
@@ -33,7 +35,7 @@ class InsertImplTest {
            .columns("id", "name")
            .overridingUserValue()
            .values(1, "test")
-           .onConflict(conflictTargetColumn("tt", "44", "55"), conflictTargetExpression("qq"))
+           .onConflict(targetColumn("tt", "44", "55"), PostgreSQL.targetExpression("qq"))
            .where("id", "=", "2")
            .and("id", "!=", "3")
            .doNothing()
@@ -44,21 +46,23 @@ class InsertImplTest {
     }
 
     @Test
-    void insertFull3() {
-        String sql = PostgreSQL.insertInto("book")
+    void insertFull3() throws NoSuchFieldException, IllegalAccessException {
+        Query query = PostgreSQL.insertInto("book")
            .as("b")
            .columns("id", "name")
            .defaultValues()
-           .onConflict(conflictTargetColumn("tt"))
+           .onConflict("id")
            .doUpdate()
            .set("id", 1)
-           .set("name", asConstant("test"))
-           .where("id", "=", "2")
-           .and("id", "!=", "3")
+           .set("name", "test")
+           .where("id", "=", 1)
+           .and("id", "!=", 3)
            .returning("id")
-           .sql()
         ;
-        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (tt) DO UPDATE SET id = 1, name = 'test' WHERE id = 2 AND id != 3 RETURNING id", sql);
+        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (id) DO UPDATE SET id = 1, name = 'test' WHERE id = 1 AND id != 3 RETURNING id", query.sql());
+        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (id) DO UPDATE SET id = ?, name = ? WHERE id = ? AND id != ? RETURNING id", TreeFormatterTestUtil.buildPreparedSQL(query));
+
+
     }
 
     @Test

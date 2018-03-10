@@ -1372,8 +1372,8 @@ public class PostgreSQL {
      * @param expression index expression
      * @return conflict target type
      */
-    public static ConflictTarget conflictTargetExpression(String expression) {
-        return conflictTargetExpression(expression, null, null);
+    public static ConflictTarget targetExpression(String expression) {
+        return targetExpression(expression, null, null);
     }
 
     /**
@@ -1384,8 +1384,8 @@ public class PostgreSQL {
      * @param collation collation
      * @return conflict target type
      */
-    public static ConflictTarget conflictTargetExpression(String expression, String collation) {
-        return conflictTargetExpression(expression, collation, null);
+    public static ConflictTarget targetExpression(String expression, String collation) {
+        return targetExpression(expression, collation, null);
     }
 
     /**
@@ -1397,7 +1397,7 @@ public class PostgreSQL {
      * @param opclass operator class
      * @return conflict target type
      */
-    public static ConflictTarget conflictTargetExpression(String expression, String collation, String opclass) {
+    public static ConflictTarget targetExpression(String expression, String collation, String opclass) {
         return new ConflictTarget(expression, collation, opclass).markAsExpression();
     }
 
@@ -1408,8 +1408,8 @@ public class PostgreSQL {
      * @param column index expression
      * @return conflict target type
      */
-    public static ConflictTarget conflictTargetColumn(String column) {
-        return conflictTargetColumn(column, null, null);
+    public static ConflictTarget targetColumn(String column) {
+        return targetColumn(column, null, null);
     }
 
     /**
@@ -1420,8 +1420,8 @@ public class PostgreSQL {
      * @param collation collation
      * @return conflict target type
      */
-    public static ConflictTarget conflictTargetColumn(String column, String collation) {
-        return conflictTargetColumn(column, collation, null);
+    public static ConflictTarget targetColumn(String column, String collation) {
+        return targetColumn(column, collation, null);
     }
 
     /**
@@ -1433,7 +1433,7 @@ public class PostgreSQL {
      * @param opclass operator class
      * @return conflict target type
      */
-    public static ConflictTarget conflictTargetColumn(String column, String collation, String opclass) {
+    public static ConflictTarget targetColumn(String column, String collation, String opclass) {
         return new ConflictTarget(column, collation, opclass).markAsColumn();
     }
 }

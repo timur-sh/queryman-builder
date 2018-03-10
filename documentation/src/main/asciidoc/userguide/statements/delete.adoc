@@ -20,3 +20,6 @@ DELETE statement is entirely implemented. Considering the above synopsis of DELE
 
 [source,java]
 include::{example}[tag=simple-delete]
+
+As a UPDATE statement, the DELETE statement also can be used to build a
+`PreparedStatement`.

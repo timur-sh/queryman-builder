@@ -1,0 +1,42 @@
+[[insert]]
+=== INSERT statement
+
+include::./../../variable.adoc[]
+:example: ../../{mainJavaDir}/InsertInto.java
+
+link:https://www.postgresql.org/docs/10/static/sql-insert.html[INSERT command (PostgreSQL)]
+
+Synopsis
+```
+INSERT INTO table_name [ AS alias ] [ ( column_name [, ...] ) ]
+    [ OVERRIDING { SYSTEM | USER} VALUE ]
+    { DEFAULT VALUES | VALUES ( { expression | DEFAULT } [, ...] ) [, ...] | query }
+    [ ON CONFLICT [ conflict_target ] conflict_action ]
+    [ RETURNING * | output_expression [ [ AS ] output_name ] [, ...] ]
+
+where conflict_target can be one of:
+
+    ( { index_column_name | ( index_expression ) } [ COLLATE collation ] [ opclass ] [, ...] ) [ WHERE index_predicate ]
+    ON CONSTRAINT constraint_name
+
+and conflict_action is one of:
+
+    DO NOTHING
+    DO UPDATE SET { column_name = { expression | DEFAULT } |
+                    ( column_name [, ...] ) = [ ROW ] ( { expression | DEFAULT } [, ...] ) |
+                    ( column_name [, ...] ) = ( sub-SELECT )
+                  } [, ...]
+              [ WHERE condition ]
+
+```
+
+Queryman builder supports a entirely INSERT statement, except WITH clause.
+The code below shows several of variety INSERT clauses:
+
+[source,java]
+include::{example}[tag=simple-insert]
+
+It's also possible use it for building a PreparedStatement:
+
+[source,java]
+include::{example}[tag=prepared-insert]
