@@ -66,4 +66,11 @@ public final class NodesMetadata {
 
 
     public static final NodeMetadata NULLS  = new NodeMetadata(keyword("NULLS"));
+
+    public static final NodeMetadata OF  = new NodeMetadata(keyword("OF"));
+
+    public static final NodeMetadata FOR_UPDATE  = new NodeMetadata(keyword("FOR UPDATE"));
+    public static final NodeMetadata FOR_NO_KEY_UPDATE  = new NodeMetadata(keyword("FOR NO KEY UPDATE"));
+    public static final NodeMetadata FOR_SHARE  = new NodeMetadata(keyword("FOR SHARE"));
+    public static final NodeMetadata FOR_KEY_SHARE  = new NodeMetadata(keyword("FOR KEY SHARE"));
 }

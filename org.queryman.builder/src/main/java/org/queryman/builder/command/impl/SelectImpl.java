@@ -13,6 +13,7 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.clause.Join;
+import org.queryman.builder.command.clause.Locking;
 import org.queryman.builder.command.clause.OrderBy;
 import org.queryman.builder.command.from.From;
 import org.queryman.builder.command.select.SelectFinalStep;
@@ -24,6 +25,10 @@ import org.queryman.builder.command.select.SelectJoinOnFirstStep;
 import org.queryman.builder.command.select.SelectJoinOnManySteps;
 import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.command.select.SelectLimitStep;
+import org.queryman.builder.command.select.SelectLockingManySteps;
+import org.queryman.builder.command.select.SelectLockingOfTableStep;
+import org.queryman.builder.command.select.SelectLockingStep;
+import org.queryman.builder.command.select.SelectLockingWaitingStep;
 import org.queryman.builder.command.select.SelectOffsetStep;
 import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
@@ -32,8 +37,10 @@ import org.queryman.builder.token.Token;
 import org.queryman.builder.utils.ExpressionUtil;
 import org.queryman.builder.utils.Tools;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -71,13 +78,17 @@ public class SelectImpl extends AbstractQuery implements
    SelectOrderByStep,
    SelectLimitStep,
    SelectOffsetStep,
+   SelectLockingStep,
+   SelectLockingOfTableStep,
+   SelectLockingWaitingStep,
+   SelectLockingManySteps,
    SelectFinalStep {
 
-    private final List<From>    FROM     = new LinkedList<>();
-    private final List<Token>   GROUP_BY = new LinkedList<>();
-    private final List<OrderBy> ORDER_BY = new LinkedList<>();
+    private final List<From>    FROM     = new ArrayList<>();
+    private final List<Token>   GROUP_BY = new ArrayList<>();
+    private final List<OrderBy> ORDER_BY = new ArrayList<>();
 
-    private final List<CombiningQuery> COMBINING_QUERY = new LinkedList<>();
+    private final List<CombiningQuery> COMBINING_QUERY = new ArrayList<>();
 
     private final Token[] COLUMNS_SELECTED;
     private       Token[] DISTINCT_COLUMNS;
@@ -95,6 +106,8 @@ public class SelectImpl extends AbstractQuery implements
 
     private Expression limit;
     private Expression offset;
+
+    private Deque<Locking> locks = new ArrayDeque<>();
 
     public SelectImpl(AbstractSyntaxTree ast, String... columnsSelected) {
         this(
@@ -196,7 +209,7 @@ public class SelectImpl extends AbstractQuery implements
                 tree.peek(q);
 
         if (!ORDER_BY.isEmpty()) {
-            tree.startNode(NodesMetadata.ORDER_BY);
+            tree.startNode(NodesMetadata.ORDER_BY.setJoinNodes(true), ", ");
 
             for (OrderBy orderBy : ORDER_BY)
                 tree.peek(orderBy);
@@ -213,6 +226,15 @@ public class SelectImpl extends AbstractQuery implements
             tree.startNode(NodesMetadata.OFFSET)
                .addLeaf(offset)
                .endNode();
+
+        if (locks.size() > 0) {
+            tree.startNode(EMPTY);
+
+            for (Locking locking : locks)
+                tree.peek(locking);
+
+            tree.endNode();
+        }
 
         tree.endNode();
     }
@@ -649,6 +671,54 @@ public class SelectImpl extends AbstractQuery implements
     @Override
     public final SelectImpl havingExists(Query query) {
         having(conditionExists(query));
+        return this;
+    }
+
+    @Override
+    public final SelectImpl forUpdate() {
+        locks.add(Locking.forUpdate());
+        return this;
+    }
+
+    @Override
+    public final SelectImpl forNoKeyUpdate() {
+        locks.add(Locking.forNoKeyUpdate());
+
+        return this;
+    }
+
+    @Override
+    public final SelectImpl forShare() {
+        locks.add(Locking.forShare());
+        return this;
+    }
+
+    @Override
+    public final SelectImpl forKeyShare() {
+        locks.add(Locking.forKeyShare());
+        return this;
+    }
+
+    @Override
+    public final SelectImpl of(String... tables) {
+        return of(toExpression(tables));
+    }
+
+    @Override
+    public final SelectImpl of(Expression... tables) {
+        locks.peekLast().setTables(tables);
+        return this;
+    }
+
+    @Override
+    public final SelectImpl skipLocked() {
+        locks.peekLast().skipLocked();
+        return this;
+    }
+
+    @Override
+    public final SelectImpl noWait() {
+        locks.peekLast().noWait();
         return this;
     }
 }

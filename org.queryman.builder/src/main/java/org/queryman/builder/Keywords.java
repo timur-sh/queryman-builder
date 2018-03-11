@@ -111,4 +111,8 @@ public class Keywords {
 
 
     public static final Keyword WHERE_CURRENT_OF = keyword("WHERE CURRENT OF");
+
+
+    public static final Keyword NOWAIT = keyword("NOWAIT");
+    public static final Keyword SKIP_LOCKED = keyword("SKIP LOCKED");
 }

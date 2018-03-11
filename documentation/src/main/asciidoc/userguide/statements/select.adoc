@@ -17,7 +17,8 @@ SELECT [ ALL | DISTINCT [ ON ( expression [, ...] ) ] ]
     [ { UNION | INTERSECT | EXCEPT } [ ALL | DISTINCT ] select ]
     [ ORDER BY expression [ ASC | DESC | USING operator ] [ NULLS { FIRST | LAST } ] [, ...] ]
     [ LIMIT { count | ALL } ]
-    [ OFFSET start [ ROW | ROWS ] ]
+    [ OFFSET start ]
+    [ FOR { UPDATE | NO KEY UPDATE | SHARE | KEY SHARE } [ OF table_name [, ...] ] [ NOWAIT | SKIP LOCKED ] [...] ]
 
 where from_item can be one of:
 

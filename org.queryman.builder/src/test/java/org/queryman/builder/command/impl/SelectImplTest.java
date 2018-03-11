@@ -89,6 +89,21 @@ class SelectImplTest {
     }
 
     @Test
+    void selectFromLocking() {
+        assertEquals("SELECT * FROM book FOR SHARE OF book NOWAIT", select("*").from("book").forShare().of("book").noWait().sql());
+
+        assertEquals("SELECT * FROM book FOR KEY SHARE OF book SKIP LOCKED", select("*").from("book").forKeyShare().of("book").skipLocked().sql());
+
+        assertEquals("SELECT * FROM book FOR UPDATE OF book", select("*").from("book").forUpdate().of("book").sql());
+
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book", select("*").from("book").forNoKeyUpdate().of("book").sql());
+
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book FOR KEY SHARE", select("*").from("book").forNoKeyUpdate().of("book").forKeyShare().sql());
+
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE FOR KEY SHARE OF b, v NOWAIT", select("*").from("book").forNoKeyUpdate().forKeyShare().of("b", "v").noWait().sql());
+    }
+
+    @Test
     void selectFromOnly() {
         SelectFromStep select = select("id", "name");
 
@@ -196,6 +211,9 @@ class SelectImplTest {
         SelectJoinStep select = select("id", "name").from("book");
         assertEquals("SELECT id, name FROM book CROSS JOIN author", select.crossJoin("author").sql());
 
+        select = select("id", "name").from("book");
+        assertEquals("SELECT id, name FROM book CROSS JOIN author FOR SHARE", select.crossJoin("author").forShare().sql());
+
         SelectJoinStep select1 = select("*").from("book");
         select1.crossJoin("author").fullJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM book CROSS JOIN author FULL JOIN sales ON EXISTS (SELECT 1, 2)", select1.sql());
@@ -224,7 +242,14 @@ class SelectImplTest {
            .sql();
         assertEquals("SELECT id, name FROM book WHERE id = 1 AND id2 = 2", sql);
 
-        sql = select.from("book")
+        sql = select("id", "name").from("book")
+           .where("id", "=", "1")
+           .and("id2", "=", "2")
+           .forShare()
+           .sql();
+        assertEquals("SELECT id, name FROM book WHERE id = 1 AND id2 = 2 FOR SHARE", sql);
+
+        sql = select("id", "name").from("book")
            .where(asQuotedName("id"), EQUAL, asConstant(1))
            .sql();
         assertEquals("SELECT id, name FROM book WHERE \"id\" = 1", sql);
@@ -499,6 +524,13 @@ class SelectImplTest {
            .groupBy(asFunc("ROLLUP", "id", "name"), asFunc("CUBE", "id", "name"))
            .sql();
         assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name)", sql);
+
+        select = select("id", "name");
+        sql = select.from("book")
+           .groupBy(asFunc("ROLLUP", "id", "name"), asFunc("CUBE", "id", "name"))
+           .forShare()
+           .sql();
+        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name) FOR SHARE", sql);
     }
 
     @Test
@@ -560,6 +592,15 @@ class SelectImplTest {
            .andNot(asQuotedName("id5"), EQUAL, asConstant(5))
            .sql();
         assertEquals("SELECT id, name FROM book HAVING id1 = '1' OR \"id2\" = 2 OR NOT table.id3 = 3 AND \"table\".\"id4\" = 4 AND NOT \"id5\" = 5", sql);
+
+
+        sql = select.from("book")
+           .having("id", "=", "1")
+           .orNot("id3", "=", "3")
+           .andNot("id2", "=", "2")
+           .forShare()
+           .sql();
+        assertEquals("SELECT id, name FROM book HAVING id = 1 OR NOT id3 = 3 AND NOT id2 = 2 FOR SHARE", sql);
     }
 
     @Test
@@ -666,10 +707,17 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last", sql);
 
         sql = select.from("book")
-           .orderBy(orderBy("name", "desc", "last"))
+           .orderBy(orderBy("name", "desc", "last"), orderBy("id"))
            .sql();
 
-        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last", sql);
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id", sql);
+
+        sql = select.from("book")
+           .orderBy(orderBy("name", "desc", "last"), orderBy("id"))
+           .forShare()
+           .sql();
+
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id FOR SHARE", sql);
     }
 
     @Test
@@ -712,6 +760,17 @@ class SelectImplTest {
            .sql();
 
         assertEquals("SELECT id, name FROM book LIMIT 1", sql);
+    }
+
+    @Test
+    void selectFromLimitLocking() {
+        SelectFromStep select = select("id", "name");
+        String sql = select.from("book")
+           .limit(1)
+           .forShare()
+           .sql();
+
+        assertEquals("SELECT id, name FROM book LIMIT 1 FOR SHARE", sql);
     }
 
     @Test
@@ -759,6 +818,17 @@ class SelectImplTest {
            .sql();
 
         assertEquals("SELECT id, name FROM book LIMIT 1", sql);
+    }
+
+    @Test
+    void selectFromOffsetLocking() {
+        SelectFromStep select = select("id", "name");
+        String sql = select.from("book")
+           .limit(1)
+           .forShare()
+           .sql();
+
+        assertEquals("SELECT id, name FROM book LIMIT 1 FOR SHARE", sql);
     }
 
     @Test

@@ -11,8 +11,22 @@ import org.queryman.builder.token.Expression;
 /**
  * @author Timur Shaidullin
  */
-public interface SelectOffsetStep extends SelectFinalStep {
-    SelectFinalStep offset(long offset);
+public interface SelectOffsetStep extends SelectLockingStep {
+    /**
+     * Specifies the offset start.
+     *
+     * @param offset offset start
+     * @return select locking step
+     *
+     * @see #offset(Expression)
+     */
+    SelectLockingStep offset(long offset);
 
-    SelectFinalStep offset(Expression offset);
+    /**
+     * Specifies the offset start.
+     *
+     * @param offset offset start
+     * @return select locking step
+     */
+    SelectLockingStep offset(Expression offset);
 }
