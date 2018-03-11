@@ -7,15 +7,15 @@
 package org.queryman.builder;
 
 
-import org.queryman.builder.command.select.SelectFromStep;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.queryman.builder.Operators.*;
-import static org.queryman.builder.PostgreSQL.*;
-import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.Operators.EQUAL;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asOperator;
+import static org.queryman.builder.Queryman.select;
 
 /**
  * @author Timur Shaidullin
@@ -23,7 +23,7 @@ import static org.queryman.builder.PostgreSQL.select;
 public class Select {
     void selectTest() throws SQLException {
         //tag::simple-select[]
-        PostgreSQL.select("id", "name")
+        Queryman.select("id", "name")
            .from("book", "author")
            .where("id", "=", "2")
            .orderBy("year")
@@ -31,7 +31,7 @@ public class Select {
         //end::simple-select[]
 
         //tag::simple-select2[]
-        PostgreSQL.select("id", "name")
+        Queryman.select("id", "name")
            .from("book")
            .innerJoin(asName("author").as("a"))
            .on("a.id", "=", "author_id")
@@ -48,7 +48,7 @@ public class Select {
            "jdbc:postgresql://localhost:5432/name", "user", "pass");
 
         // SELECT * FROM book WHERE author_id = ?
-        PostgreSQL.select("*")
+        Queryman.select("*")
            .from("book")
            .where(asName("author_id"), EQUAL, asConstant(10))
            .buildPreparedStatement(conn);

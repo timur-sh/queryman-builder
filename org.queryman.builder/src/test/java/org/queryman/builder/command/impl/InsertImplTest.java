@@ -1,21 +1,19 @@
 package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.TreeFormatterTestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.targetColumn;
-import static org.queryman.builder.PostgreSQL.targetExpression;
-import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.targetColumn;
 
 class InsertImplTest {
 
     @Test
     void insertFull1() {
-        String sql = PostgreSQL.insertInto("book")
+        String sql = Queryman.insertInto("book")
            .as("b")
            .columns("id", "name")
            .overridingSystemValue()
@@ -31,11 +29,11 @@ class InsertImplTest {
 
     @Test
     void insertFull2() {
-        String sql = PostgreSQL.insertInto("book")
+        String sql = Queryman.insertInto("book")
            .columns("id", "name")
            .overridingUserValue()
            .values(1, "test")
-           .onConflict(targetColumn("tt", "44", "55"), PostgreSQL.targetExpression("qq"))
+           .onConflict(targetColumn("tt", "44", "55"), Queryman.targetExpression("qq"))
            .where("id", "=", "2")
            .and("id", "!=", "3")
            .doNothing()
@@ -47,7 +45,7 @@ class InsertImplTest {
 
     @Test
     void insertFull3() throws NoSuchFieldException, IllegalAccessException {
-        Query query = PostgreSQL.insertInto("book")
+        Query query = Queryman.insertInto("book")
            .as("b")
            .columns("id", "name")
            .defaultValues()
@@ -67,7 +65,7 @@ class InsertImplTest {
 
     @Test
     void insertFull4() {
-        String sql = PostgreSQL.insertInto("book")
+        String sql = Queryman.insertInto("book")
            .as("b")
            .columns("id", "name")
            .values(select("id", "name").from("book"))

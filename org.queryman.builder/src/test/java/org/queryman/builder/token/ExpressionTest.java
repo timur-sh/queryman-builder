@@ -1,7 +1,7 @@
 package org.queryman.builder.token;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.token.expression.prepared.BigDecimalExpression;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
@@ -20,21 +20,20 @@ import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.queryman.builder.PostgreSQL.asArray;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asDollarString;
-import static org.queryman.builder.PostgreSQL.asFunc;
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asSubQuery;
-import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.Queryman.asArray;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asDollarString;
+import static org.queryman.builder.Queryman.asFunc;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asQuotedName;
+import static org.queryman.builder.Queryman.asSubQuery;
+import static org.queryman.builder.Queryman.select;
 
 class ExpressionTest {
     @Test
@@ -229,7 +228,7 @@ class ExpressionTest {
 
     @Test
     void valuesTest() {
-        Expression values = PostgreSQL.values(asList(1, 2), asList(3, 4));
+        Expression values = Queryman.values(asList(1, 2), asList(3, 4));
 
         assertEquals("VALUES(1, 2), (3, 4)", values.getName());
         assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", values.as("point", "x", "y").getName());

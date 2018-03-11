@@ -2,13 +2,13 @@
 === Expressions
 
 include::./../variable.adoc[]
-:example: ../{mainJavaDir}/PostgreSQLExamples.java
+:example: ../{mainJavaDir}/QuerymanExamples.java
 
 The expressions are used in a variety context, almost by all of clauses, like
 output list in SELECT clause, table name or subquery in FROM clause, WHERE clause operates
 scalar, row, subquery expressions etc in its own conditions.
 
-The `PostgreSQL` class provides convenient methods creating any expressions. Some examples
+The `Queryman` class provides convenient methods creating any expressions. Some examples
 described a creation of expression are below. But, before starting a explanation
 of them, look at common methods such as AS and CAST which all expressions are possessed.
 
@@ -53,7 +53,7 @@ include::{example}[tag=prepared]
 Queryman provides several helpful methods to work with different date types
 
 
-===== Constants: PostgreSQL.asConstant() and other constant-methods
+===== Constants: Queryman.asConstant() and other constant-methods
 
 PostgreSQL constants are numeric, string, date/time, arrays and other data types.
 
@@ -68,9 +68,9 @@ This method allows working with the following Java types:
 The `java.util.Date` type is converted into `java.sql.Date`. If you wish to
 be in control into which PostgreSQL type it is converted, use one of ad hoc methods:
 
-* `PostgreSQL.asDate`
-* `PostgreSQL.asTime`
-* `PostgreSQL.asTimestamp`
+* `Queryman.asDate`
+* `Queryman.asTime`
+* `Queryman.asTimestamp`
 
 Some of examples of constant expressions are:
 [source,java]
@@ -79,8 +79,8 @@ include::{example}[tag=constant]
 
 There are a few other useful methods deal constants:
 
-* `PostgreSQL.asDollarString`
-* `PostgreSQL.asArray`
+* `Queryman.asDollarString`
+* `Queryman.asArray`
 
 
 Example using of `asArray` method:
@@ -94,7 +94,7 @@ prepared statement.
 include::{example}[tag=insert-prepared]
 
 
-===== Column reference: PostgreSQL.asName, PostgreSQL.asQuotedName
+===== Column reference: Queryman.asName, Queryman.asQuotedName
 
 These methods are used to denote name of object. The passed argument into them
 may be a a string contains one of qualified name or an unqualified name.
@@ -103,7 +103,7 @@ The output of them is either quoted name or unquoted name.
 [source,java]
 include::{example}[tag=column-reference]
 
-===== List constructor: PostgreSQL.asList
+===== List constructor: Queryman.asList
 The list constructor takes list of arguments and builds them into PostgreSQL's list
 compatible form. The PostgreSQL's list is values are separated by commas and
 surrounded by parentheses. An argument may be any type.
@@ -111,7 +111,7 @@ surrounded by parentheses. An argument may be any type.
 [source,java]
 include::{example}[tag=list]
 
-===== Subquery: PostgreSQL.asSubquery
+===== Subquery: Queryman.asSubquery
 Subquery are used in a variety statements. Its common using is:
 [source,java]
 include::{example}[tag=query]

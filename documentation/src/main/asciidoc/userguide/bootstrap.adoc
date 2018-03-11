@@ -29,6 +29,6 @@ Firstly, `ServiceRegister` tries to load the *xml* configuration. If this attemp
 then it will try to load a configuration from the *properties* file. If this attempt is
 failed too, then the default configuration will be used.
 
-There after, you should provide `TreeFactory` into `PostgreSQL`:
+There after, you should provide `TreeFactory` into `Queryman`:
 [source,java]
 include::{example}[tag=get-tree-factory]

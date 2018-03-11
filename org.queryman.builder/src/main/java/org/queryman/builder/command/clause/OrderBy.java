@@ -6,11 +6,12 @@
  */
 package org.queryman.builder.command.clause;
 
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.Queryman.asName;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.NULLS;
 
@@ -18,9 +19,9 @@ import static org.queryman.builder.ast.NodesMetadata.NULLS;
  * This {@code class} represents an ORDER BY clause.
  *
  * @author Timur Shaidullin
- * @see org.queryman.builder.PostgreSQL#orderBy(String)
- * @see org.queryman.builder.PostgreSQL#orderBy(String, String)
- * @see org.queryman.builder.PostgreSQL#orderBy(String, String, String)
+ * @see Queryman#orderBy(String)
+ * @see Queryman#orderBy(String, String)
+ * @see Queryman#orderBy(String, String, String)
  */
 public final class OrderBy implements AstVisitor {
     private final Expression name;

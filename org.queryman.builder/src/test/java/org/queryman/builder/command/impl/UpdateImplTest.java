@@ -2,7 +2,6 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.Query;
-import org.queryman.builder.ast.TreeFormatterTestUtil;
 import org.queryman.builder.command.update.UpdateSetStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,14 +9,14 @@ import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.NE2;
 import static org.queryman.builder.Operators.NOT_IN;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.select;
-import static org.queryman.builder.PostgreSQL.update;
-import static org.queryman.builder.PostgreSQL.updateOnly;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asQuotedName;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.update;
+import static org.queryman.builder.Queryman.updateOnly;
 import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
 class UpdateImplTest {

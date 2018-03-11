@@ -5,17 +5,17 @@ import org.queryman.builder.Query;
 import org.queryman.builder.token.Expression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.from;
-import static org.queryman.builder.PostgreSQL.fromOnly;
-import static org.queryman.builder.PostgreSQL.operator;
-import static org.queryman.builder.PostgreSQL.select;
-import static org.queryman.builder.PostgreSQL.selectAll;
-import static org.queryman.builder.PostgreSQL.selectDistinct;
-import static org.queryman.builder.PostgreSQL.selectDistinctOn;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asQuotedName;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.from;
+import static org.queryman.builder.Queryman.fromOnly;
+import static org.queryman.builder.Queryman.operator;
+import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.selectAll;
+import static org.queryman.builder.Queryman.selectDistinct;
+import static org.queryman.builder.Queryman.selectDistinctOn;
 import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
 class TreeFormatterTest {

@@ -18,7 +18,7 @@ public class InsertInto {
         //tag::simple-insert[]
         // INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (id)
         // DO UPDATE SET id = 1, name = 'test' WHERE id = 1 AND id != 3 RETURNING id
-        PostgreSQL.insertInto("book")
+        Queryman.insertInto("book")
            .as("b")
            .columns("id", "name")
            .defaultValues()
@@ -37,7 +37,7 @@ public class InsertInto {
         //tag::prepared-insert[]
         // INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (id)
         // DO UPDATE SET id = ?, name = ? WHERE id = ? AND id != ? RETURNING id
-        PostgreSQL.insertInto("book")
+        Queryman.insertInto("book")
            .as("b")
            .columns("id", "name")
            .defaultValues()

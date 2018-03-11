@@ -6,8 +6,8 @@
  */
 package org.queryman.builder.command.select;
 
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
@@ -42,8 +42,8 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
-     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(String, String, String)}, or
+     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -79,7 +79,7 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(Object, Object, Object)
+     * @see Queryman#condition(Object, Object, Object)
      */
     SelectHavingManySteps having(Conditions conditions);
 

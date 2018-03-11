@@ -9,7 +9,7 @@ package org.queryman.builder.ast;
 import org.queryman.builder.Keywords;
 import org.queryman.builder.Operators;
 
-import static org.queryman.builder.PostgreSQL.keyword;
+import static org.queryman.builder.Queryman.keyword;
 
 /**
  * List of all configured {@link Node Metadata} objects.

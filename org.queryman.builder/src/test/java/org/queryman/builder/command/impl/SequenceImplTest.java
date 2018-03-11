@@ -3,10 +3,10 @@ package org.queryman.builder.command.impl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.createSequence;
-import static org.queryman.builder.PostgreSQL.createSequenceIfNotExists;
-import static org.queryman.builder.PostgreSQL.createTempSequence;
-import static org.queryman.builder.PostgreSQL.createTempSequenceIfNotExists;
+import static org.queryman.builder.Queryman.createSequence;
+import static org.queryman.builder.Queryman.createSequenceIfNotExists;
+import static org.queryman.builder.Queryman.createTempSequence;
+import static org.queryman.builder.Queryman.createTempSequenceIfNotExists;
 
 class SequenceImplTest {
     @Test

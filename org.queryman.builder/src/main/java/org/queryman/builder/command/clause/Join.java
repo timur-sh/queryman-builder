@@ -12,8 +12,9 @@ import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.ast.NodesMetadata.*;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.ast.NodesMetadata.ON;
+import static org.queryman.builder.ast.NodesMetadata.USING;
 
 /**
  * This {@code class} represents an JOIN clause.

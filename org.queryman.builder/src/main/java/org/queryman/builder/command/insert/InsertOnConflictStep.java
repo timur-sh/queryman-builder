@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.insert;
 
+import org.queryman.builder.Queryman;
 import org.queryman.builder.command.ConflictTarget;
 
 /**
@@ -24,8 +25,8 @@ public interface InsertOnConflictStep extends InsertConflictActionStep, InsertRe
      * @param targets target
      * @return on conflict where step
      *
-     * @see org.queryman.builder.PostgreSQL#targetColumn(String)
-     * @see org.queryman.builder.PostgreSQL#targetExpression(String)
+     * @see Queryman#targetColumn(String)
+     * @see Queryman#targetExpression(String)
      */
     InsertOnConflictWhereFirstStep onConflict(ConflictTarget... targets);
 
@@ -36,8 +37,8 @@ public interface InsertOnConflictStep extends InsertConflictActionStep, InsertRe
      * @return on conflict where step
      *
      * @see #onConflict(ConflictTarget...)
-     * @see org.queryman.builder.PostgreSQL#targetColumn(String)
-     * @see org.queryman.builder.PostgreSQL#targetExpression(String)
+     * @see Queryman#targetColumn(String)
+     * @see Queryman#targetExpression(String)
      */
     InsertOnConflictWhereFirstStep onConflict(String indexColumnName);
 

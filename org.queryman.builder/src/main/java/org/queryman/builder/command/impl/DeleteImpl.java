@@ -17,20 +17,19 @@ import org.queryman.builder.command.delete.DeleteUsingStep;
 import org.queryman.builder.command.delete.DeleteWhereFirstStep;
 import org.queryman.builder.command.delete.DeleteWhereManySteps;
 import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 
 import static org.queryman.builder.Keywords.DELETE_FROM;
 import static org.queryman.builder.Keywords.DELETE_FROM_ONLY;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionExists;
-import static org.queryman.builder.PostgreSQL.nodeMetadata;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.conditionExists;
+import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.AS;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.USING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
-import static org.queryman.builder.utils.ArrayUtils.*;
+import static org.queryman.builder.utils.ArrayUtils.toExpression;
 
 /**
  * DELETE statement.

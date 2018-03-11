@@ -76,7 +76,7 @@ import static org.queryman.builder.utils.ExpressionUtil.toExpression;
  *
  * @author Timur Shaidullin
  */
-public class PostgreSQL {
+public class Queryman {
     private static TreeFactory treeFactory;
 
     static {
@@ -122,7 +122,7 @@ public class PostgreSQL {
     @SafeVarargs
     public static <T> SelectFromStep select(T... columns) {
         return select(Arrays.stream(columns)
-           .map(v -> PostgreSQL.asName(String.valueOf(v)))
+           .map(v -> Queryman.asName(String.valueOf(v)))
            .toArray(Expression[]::new)
         );
     }
@@ -223,7 +223,7 @@ public class PostgreSQL {
     @SafeVarargs
     public static <T> SelectFromStep selectDistinctOn(String[] distinct, T... columns) {
         return selectDistinctOn(
-           Arrays.stream(distinct).map(PostgreSQL::asName).toArray(Expression[]::new),
+           Arrays.stream(distinct).map(Queryman::asName).toArray(Expression[]::new),
            Arrays.stream(columns)
               .map(v -> asName(String.valueOf(v)))
               .toArray(Expression[]::new)
@@ -1253,7 +1253,7 @@ public class PostgreSQL {
     @SafeVarargs
     public static <T> Expression asFunc(String name, T... arguments) {
         Expression[] args = Arrays.stream(arguments)
-           .map(v -> PostgreSQL.asName(String.valueOf(v)))
+           .map(v -> Queryman.asName(String.valueOf(v)))
            .toArray(Expression[]::new);
         return asFunc(name, asList(args));
     }

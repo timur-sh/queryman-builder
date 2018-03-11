@@ -3,13 +3,14 @@ package org.queryman.builder.ast;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.util.Deque;
 import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.ast.NodesMetadata.*;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.ast.NodesMetadata.FROM;
+import static org.queryman.builder.ast.NodesMetadata.SELECT;
+import static org.queryman.builder.ast.NodesMetadata.WHERE;
 
 public class AbstractSyntaxTreeImplTest {
     @Test

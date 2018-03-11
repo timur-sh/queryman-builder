@@ -9,7 +9,7 @@ package org.queryman.builder;
 
 import org.queryman.builder.token.Keyword;
 
-import static org.queryman.builder.PostgreSQL.keyword;
+import static org.queryman.builder.Queryman.keyword;
 
 /**
  * Collection of key words are used by Queryman to build SQL query.

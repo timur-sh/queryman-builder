@@ -9,10 +9,7 @@ package org.queryman.builder;
 
 import org.queryman.builder.token.Operator;
 
-import java.util.Map;
-
-import static java.util.Map.entry;
-import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.Queryman.operator;
 
 /**
  * Collection of operators which can be used in different conditions.

@@ -23,9 +23,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.insertInto;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.insertInto;
 
 /**
  * @author Timur Shaidullin

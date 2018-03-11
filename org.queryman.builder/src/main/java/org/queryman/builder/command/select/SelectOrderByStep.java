@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.Queryman;
 import org.queryman.builder.command.clause.OrderBy;
 
 /**
@@ -47,7 +48,7 @@ public interface SelectOrderByStep extends SelectLimitStep {
      * @param ordersBy list of {@link OrderBy} objects.
      * @return SELECT .. LIMIT .. step
      *
-     * @see org.queryman.builder.PostgreSQL#orderBy(String)
+     * @see Queryman#orderBy(String)
      */
     SelectLimitStep orderBy(OrderBy... ordersBy);
 }

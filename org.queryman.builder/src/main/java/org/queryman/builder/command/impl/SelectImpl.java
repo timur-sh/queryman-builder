@@ -7,8 +7,8 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
@@ -44,11 +44,11 @@ import static org.queryman.builder.Keywords.INTERSECT;
 import static org.queryman.builder.Keywords.INTERSECT_ALL;
 import static org.queryman.builder.Keywords.UNION;
 import static org.queryman.builder.Keywords.UNION_ALL;
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionExists;
-import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.conditionExists;
+import static org.queryman.builder.Queryman.operator;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.ON;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
@@ -100,7 +100,7 @@ public class SelectImpl extends AbstractQuery implements
         this(
            ast,
            Arrays.stream(columnsSelected)
-              .map(PostgreSQL::asName)
+              .map(Queryman::asName)
               .collect(Collectors.toList())
         );
     }

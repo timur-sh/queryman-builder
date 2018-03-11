@@ -10,13 +10,13 @@ import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.getTree;
+import static org.queryman.builder.Queryman.getTree;
 
 /**
  * Represent a subquery expression.
  * <code>
- *     PostgreSQL.asSubQuery(select("price")); // (SELECT price)
- *     PostgreSQL.asSubQuery(select("max(price)")).as("max"); // (SELECT price) AS max
+ *     Queryman.asSubQuery(select("price")); // (SELECT price)
+ *     Queryman.asSubQuery(select("max(price)")).as("max"); // (SELECT price) AS max
  *  </code>
  *
  * @author Timur Shaidullin

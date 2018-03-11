@@ -8,8 +8,8 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
@@ -26,21 +26,21 @@ import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.LTE;
 import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.Operators.NOT_LIKE;
-import static org.queryman.builder.PostgreSQL.asArray;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asFunc;
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.asSubQuery;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionAll;
-import static org.queryman.builder.PostgreSQL.conditionAny;
-import static org.queryman.builder.PostgreSQL.conditionBetween;
-import static org.queryman.builder.PostgreSQL.conditionExists;
-import static org.queryman.builder.PostgreSQL.conditionSome;
-import static org.queryman.builder.PostgreSQL.operator;
-import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.Queryman.asArray;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asFunc;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asQuotedName;
+import static org.queryman.builder.Queryman.asSubQuery;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.conditionAll;
+import static org.queryman.builder.Queryman.conditionAny;
+import static org.queryman.builder.Queryman.conditionBetween;
+import static org.queryman.builder.Queryman.conditionExists;
+import static org.queryman.builder.Queryman.conditionSome;
+import static org.queryman.builder.Queryman.operator;
+import static org.queryman.builder.Queryman.select;
 
 /**
  * @author Timur Shaidullin
@@ -50,7 +50,7 @@ public class ConditionsImplTest {
 
     @BeforeEach
     void tearUp() {
-        ast = PostgreSQL.getTree();
+        ast = Queryman.getTree();
     }
 
     void assembleAst(Conditions conditions) {

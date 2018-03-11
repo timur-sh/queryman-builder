@@ -3,9 +3,9 @@ package org.queryman.builder.ast;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.keyword;
-import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.keyword;
+import static org.queryman.builder.Queryman.operator;
 import static org.queryman.builder.ast.NodeUtil.node;
 
 class NodeImplTest {

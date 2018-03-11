@@ -7,11 +7,11 @@
 package org.queryman.builder.command;
 
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.Node;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Operator;
-import org.queryman.builder.PostgreSQL;
 
 /**
  * This supplies a search condition.
@@ -32,7 +32,7 @@ import org.queryman.builder.PostgreSQL;
  *
  * Example:
  * <p><code>
- * PostgreSQL.conditions("id", "=", "1")
+ * Queryman.conditions("id", "=", "1")
  *    .and("name", "=", "Alan")
  *    .and(condition("age", ">", "29")
  *       .and("gender", "!=", "male")
@@ -43,7 +43,7 @@ import org.queryman.builder.PostgreSQL;
  * Conditions can be grouped:
  * <p><code>
  * // "id" = 1 AND (users.name = 'Alan' AND gender != 'male' OR code = 3)
- * PostgreSQL.conditions(asQuotedName("id"), operator("="), asNumber("1"))
+ * Queryman.conditions(asQuotedName("id"), operator("="), asNumber("1"))
  *    .and(asName("users.name"), "=", asString("Alan")
  *       .and(asName("gender"), "!=", asString("male"))
  *       .or(asName("code"), "=", asNumber("3"))
@@ -51,8 +51,8 @@ import org.queryman.builder.PostgreSQL;
  * </code></p>
  *
  *
- * See conditions' methods in {@link org.queryman.builder.PostgreSQL}:
- * @see org.queryman.builder.PostgreSQL#condition(Expression, Operator, Expression)
+ * See conditions' methods in {@link Queryman}:
+ * @see Queryman#condition(Expression, Operator, Expression)
  *
  * @author Timur Shaidullin
  */
@@ -97,8 +97,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
-     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(String, String, String)}, or
+     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -136,7 +136,7 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(Object, Object, Object)
+     * @see Queryman#condition(Object, Object, Object)
      */
     Conditions and(Conditions conditions);
 
@@ -181,8 +181,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
-     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(String, String, String)}, or
+     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -220,7 +220,7 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(Object, Object, Object)
+     * @see Queryman#condition(Object, Object, Object)
      */
     Conditions andNot(Conditions conditions);
 
@@ -265,8 +265,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
-     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(String, String, String)}, or
+     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -304,7 +304,7 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(Object, Object, Object)
+     * @see Queryman#condition(Object, Object, Object)
      */
     Conditions or(Conditions conditions);
 
@@ -349,8 +349,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link PostgreSQL#conditionBetween(String, String, String)}, or
-     *         {@link PostgreSQL#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(String, String, String)}, or
+     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -388,7 +388,7 @@ public interface Conditions extends AstVisitor {
      * @return itself
      *
      * Kind of conditions:
-     * @see PostgreSQL#condition(Object, Object, Object)
+     * @see Queryman#condition(Object, Object, Object)
      */
     Conditions orNot(Conditions conditions);
 

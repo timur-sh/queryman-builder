@@ -6,41 +6,35 @@
  */
 package org.queryman.builder;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.List;
 
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asDollarString;
-import static org.queryman.builder.PostgreSQL.asFunc;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.asOperator;
-import static org.queryman.builder.PostgreSQL.asSubQuery;
-import static org.queryman.builder.PostgreSQL.asTime;
-import static org.queryman.builder.PostgreSQL.insertInto;
-import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asOperator;
+import static org.queryman.builder.Queryman.asSubQuery;
+import static org.queryman.builder.Queryman.insertInto;
+import static org.queryman.builder.Queryman.select;
 
 /**
  * @author Timur Shaidullin
  */
-public class PostgreSQLExamples {
+public class QuerymanExamples {
     public void common() {
         //tag::alias[]
         // book.id AS b_id
-        PostgreSQL.asName("book.id").as("b_id");
+        Queryman.asName("book.id").as("b_id");
         //end::alias[]
 
         //tag::select-alias[]
         // SELECT b.id FROM book AS b
-        PostgreSQL.select("b.id")
+        Queryman.select("b.id")
            .from(asName("book").as("b"));
         //end::select-alias[]
 
         //tag::cast[]
         // ARRAY[1, 2, 3]::integer[] AS arr
-        PostgreSQL.asArray(1, 2, 3).cast("integer[]").as("arr");
+        Queryman.asArray(1, 2, 3).cast("integer[]").as("arr");
         //end::cast[]
 
 
@@ -48,7 +42,7 @@ public class PostgreSQLExamples {
         /*
         //tag::prepared[]
         // SELECT * FROM book WHERE time = ?::time
-        PostgreSQL.select("*")
+        Queryman.select("*")
            .from("schedule")
            .where("time", "=", asTime(new Time(ms)).cast("time"))
         //end::prepared[]
@@ -58,26 +52,26 @@ public class PostgreSQLExamples {
     public void constants() {
         //tag::constant[]
         // 20
-        PostgreSQL.asConstant(20);
+        Queryman.asConstant(20);
         // 'a string'
-        PostgreSQL.asConstant("a string");
+        Queryman.asConstant("a string");
         // $$a dollar string$$
-        PostgreSQL.asDollarString("a dollar string");
+        Queryman.asDollarString("a dollar string");
         // $tag$a dollar string$tag$
-        PostgreSQL.asDollarString("a dollar string", "tag");
+        Queryman.asDollarString("a dollar string", "tag");
         //end::constant[]
     }
 
     public void columnReference() {
         //tag::column-reference[]
         // book
-        PostgreSQL.asName("book");
+        Queryman.asName("book");
         // book.id
-        PostgreSQL.asName("book.id");
+        Queryman.asName("book.id");
         // "book"
-        PostgreSQL.asQuotedName("book");
+        Queryman.asQuotedName("book");
         // "book"."id"
-        PostgreSQL.asQuotedName("book.id");
+        Queryman.asQuotedName("book.id");
         //end::column-reference[]
     }
 
@@ -98,38 +92,38 @@ public class PostgreSQLExamples {
     public void array() {
         //tag::array[]
         // ARRAY[1, 2, 3]
-        PostgreSQL.asArray(1, 2, 3);
+        Queryman.asArray(1, 2, 3);
         // ARRAY[1, 2, 3]
-        PostgreSQL.asArray(List.of(1, 2, 3));
+        Queryman.asArray(List.of(1, 2, 3));
         //end::array[]
     }
 
     public void list() {
         //tag::list[]
         // (1, 2, 3)
-        PostgreSQL.asList(1, 2, 3, asConstant(4));
+        Queryman.asList(1, 2, 3, asConstant(4));
         // (1, 2, 3)
-        PostgreSQL.asList(List.of(1, 2, 3));
+        Queryman.asList(List.of(1, 2, 3));
         //end::list[]
     }
 
     public void func() {
         //tag::func[]
         // concat('price', 1, 2)
-        PostgreSQL.asFunc("concat", PostgreSQL.asList("'price'", 2, ".", 1));
+        Queryman.asFunc("concat", Queryman.asList("'price'", 2, ".", 1));
 
         // concat('price', 1, 2)
-        PostgreSQL.asFunc("concat", "'price'", 2, ".", 1);
+        Queryman.asFunc("concat", "'price'", 2, ".", 1);
 
         // (VALUES(1, 2), (3, 4)) AS point(x, y)
-        PostgreSQL.values(asList(1, 2), asList(3, 4)).as("point", "x", "y");
+        Queryman.values(asList(1, 2), asList(3, 4)).as("point", "x", "y");
         //end::func[]
     }
 
     public void query() {
         //tag::query[]
         // (SELECT id, name FROM book)
-        PostgreSQL.asSubQuery(PostgreSQL.select("id", "name").from("book"));
+        Queryman.asSubQuery(Queryman.select("id", "name").from("book"));
         //end::query[]
 
         //tag::select-query[]

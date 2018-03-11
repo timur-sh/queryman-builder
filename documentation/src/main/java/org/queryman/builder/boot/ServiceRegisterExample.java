@@ -6,11 +6,7 @@
  */
 package org.queryman.builder.boot;
 
-import org.queryman.builder.PostgreSQL;
-import org.queryman.builder.boot.Metadata;
-import org.queryman.builder.boot.MetadataBuilder;
-import org.queryman.builder.boot.MetadataBuilderImpl;
-import org.queryman.builder.boot.MetadataImpl;
+import org.queryman.builder.Queryman;
 
 import java.io.IOException;
 
@@ -34,7 +30,7 @@ public class ServiceRegisterExample {
         //end::change-xml-file[]
 
         //tag::get-tree-factory[]
-        PostgreSQL.setTreeFactory(serviceRegister.treeFactory());
+        Queryman.setTreeFactory(serviceRegister.treeFactory());
         //end::get-tree-factory[]
 
 

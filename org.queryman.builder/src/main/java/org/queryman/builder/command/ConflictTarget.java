@@ -11,8 +11,8 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.nodeMetadata;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 

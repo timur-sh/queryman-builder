@@ -12,7 +12,7 @@ import org.queryman.builder.utils.StringUtils;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.Queryman.asName;
 
 /**
  * @author Timur Shaidullin

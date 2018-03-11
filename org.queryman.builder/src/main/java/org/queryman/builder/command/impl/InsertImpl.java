@@ -7,8 +7,8 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.AbstractQuery;
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.Conditions;
@@ -47,12 +47,12 @@ import static org.queryman.builder.Keywords.OVERRIDING_USER_VALUE;
 import static org.queryman.builder.Keywords.SET;
 import static org.queryman.builder.Keywords.VALUES;
 import static org.queryman.builder.Operators.EQUAL;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asSubQuery;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionExists;
-import static org.queryman.builder.PostgreSQL.nodeMetadata;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asSubQuery;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.conditionExists;
+import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.utils.ArrayUtils.toExpression;
@@ -227,7 +227,7 @@ public class InsertImpl extends AbstractQuery implements
     @Override
     @SafeVarargs
     public final <T> InsertImpl values(T... values) {
-        return values(toExpression(PostgreSQL::asConstant, values));
+        return values(toExpression(Queryman::asConstant, values));
     }
 
     @Override
@@ -261,7 +261,7 @@ public class InsertImpl extends AbstractQuery implements
 
     @Override
     public final InsertImpl onConflict(String indexColumnName) {
-        return onConflict(PostgreSQL.targetColumn(indexColumnName));
+        return onConflict(Queryman.targetColumn(indexColumnName));
     }
 
     @Override

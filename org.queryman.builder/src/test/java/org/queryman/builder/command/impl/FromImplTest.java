@@ -2,22 +2,22 @@ package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.NodesMetadata;
 import org.queryman.builder.command.from.From;
 import org.queryman.builder.command.from.FromFirstStep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.from;
-import static org.queryman.builder.PostgreSQL.fromOnly;
+import static org.queryman.builder.Queryman.from;
+import static org.queryman.builder.Queryman.fromOnly;
 
 class FromImplTest {
     private AbstractSyntaxTree ast;
 
     @BeforeEach
     void tearUp() {
-        ast = PostgreSQL.getTree();
+        ast = Queryman.getTree();
     }
 
     void assembleAst(From from) {

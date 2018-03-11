@@ -8,8 +8,6 @@ package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
 
-import static org.queryman.builder.PostgreSQL.asConstant;
-
 /**
  * This is a ARRAY expressions. If you would use a prepared expression, see
  * {@link PreparedExpression}
@@ -17,7 +15,7 @@ import static org.queryman.builder.PostgreSQL.asConstant;
  * Commons use:
  * <code>
  *     // ARRAY[1, 2, 3 [,...]]
- *     PostgreSQL.asArray(1, 2, 3);
+ *     Queryman.asArray(1, 2, 3);
  *  </code>
  *
  * @author Timur Shaidullin

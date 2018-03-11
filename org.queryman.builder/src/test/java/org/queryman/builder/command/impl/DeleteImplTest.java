@@ -8,13 +8,13 @@ import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.NE2;
 import static org.queryman.builder.Operators.NOT_IN;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asQuotedName;
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.deleteFrom;
-import static org.queryman.builder.PostgreSQL.deleteFromOnly;
-import static org.queryman.builder.PostgreSQL.select;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asQuotedName;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.deleteFrom;
+import static org.queryman.builder.Queryman.deleteFromOnly;
+import static org.queryman.builder.Queryman.select;
 
 class DeleteImplTest {
     @Test

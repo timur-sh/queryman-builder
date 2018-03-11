@@ -14,15 +14,13 @@ import org.queryman.builder.ast.NodeMetadata;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 
-import static org.queryman.builder.PostgreSQL.condition;
-import static org.queryman.builder.PostgreSQL.conditionExists;
-import static org.queryman.builder.PostgreSQL.getTree;
-import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.conditionExists;
+import static org.queryman.builder.Queryman.getTree;
 import static org.queryman.builder.ast.NodesMetadata.AND;
 import static org.queryman.builder.ast.NodesMetadata.AND_NOT;
 import static org.queryman.builder.ast.NodesMetadata.OR;
 import static org.queryman.builder.ast.NodesMetadata.OR_NOT;
-import static org.queryman.builder.utils.ExpressionUtil.toExpression;
 
 /**
  * @author Timur Shaidullin

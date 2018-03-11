@@ -34,9 +34,9 @@ import static org.queryman.builder.Keywords.NO_CYCLE;
 import static org.queryman.builder.Keywords.OWNED_BY;
 import static org.queryman.builder.Keywords.START;
 import static org.queryman.builder.Keywords.START_WITH;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.nodeMetadata;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.nodeMetadata;
 
 /**
  * Implementation of SEQUENCE statement.

@@ -16,7 +16,7 @@ public class Sequence {
         // CREATE SEQUENCE book_seq AS smallint
         // INCREMENT BY 1 MINVALUE 0 MAXVALUE NO MAXVALUE
         // START WITH 0 CACHE 5 CYCLE OWNED BY NONE
-        PostgreSQL.createSequence("book_seq")
+        Queryman.createSequence("book_seq")
            .as("smallint")
            .incrementBy(1)
            .minvalue(0)

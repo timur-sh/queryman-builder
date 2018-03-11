@@ -6,13 +6,12 @@
  */
 package org.queryman.builder.utils;
 
-import org.queryman.builder.PostgreSQL;
 import org.queryman.builder.token.Expression;
 
 import java.util.Arrays;
 import java.util.function.Function;
 
-import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.Queryman.asName;
 
 /**
  * @author Timur Shaidullin

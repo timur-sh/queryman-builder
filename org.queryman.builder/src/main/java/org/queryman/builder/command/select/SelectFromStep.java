@@ -6,6 +6,7 @@
  */
 package org.queryman.builder.command.select;
 
+import org.queryman.builder.Queryman;
 import org.queryman.builder.command.from.From;
 import org.queryman.builder.token.Expression;
 
@@ -36,8 +37,8 @@ public interface SelectFromStep extends SelectCombiningQueryStep {
      *
      * It you'd like to use an alias, it must be followed by table name:
      * <code>
-     *     PostgreSQL.asName("books").as("b"); // books AS b
-     *     PostgreSQL.asName("books").as("b", "id", "name"); // books AS b(id, name)
+     *     Queryman.asName("books").as("b"); // books AS b
+     *     Queryman.asName("books").as("b", "id", "name"); // books AS b(id, name)
      * </code>
      *
      * @see #from(String...)
@@ -52,17 +53,17 @@ public interface SelectFromStep extends SelectCombiningQueryStep {
      *
      * It you'd like to use an alias, it must be followed by table name:
      * <code>
-     *     PostgreSQL.from("books").as("b"); // books AS b
-     *     PostgreSQL.from("books").as("b", "id", "name"); // books AS b(id, name)
-     *     PostgreSQL.fromOnly("books"); // ONLY books
+     *     Queryman.from("books").as("b"); // books AS b
+     *     Queryman.from("books").as("b", "id", "name"); // books AS b(id, name)
+     *     Queryman.fromOnly("books"); // ONLY books
      * </code>
      *
      * @see #from(Expression...)
      * @see #from(String...)
-     * @see org.queryman.builder.PostgreSQL#from(String)
-     * @see org.queryman.builder.PostgreSQL#from(Expression)
-     * @see org.queryman.builder.PostgreSQL#fromOnly(String)
-     * @see org.queryman.builder.PostgreSQL#fromOnly(Expression)
+     * @see Queryman#from(String)
+     * @see Queryman#from(Expression)
+     * @see Queryman#fromOnly(String)
+     * @see Queryman#fromOnly(Expression)
      */
     SelectJoinStep from(From... tables);
 }

@@ -3,12 +3,12 @@ package org.queryman.builder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.queryman.builder.PostgreSQL.asConstant;
-import static org.queryman.builder.PostgreSQL.asDollarString;
-import static org.queryman.builder.PostgreSQL.asName;
-import static org.queryman.builder.PostgreSQL.asQuotedName;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asDollarString;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asQuotedName;
 
-class PostgreSQLTest {
+class QuerymanTest {
 
     @Test
     void asStringTest() {

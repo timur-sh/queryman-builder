@@ -7,7 +7,7 @@
 package org.queryman.builder.command.impl;
 
 import org.queryman.builder.Keywords;
-import org.queryman.builder.PostgreSQL;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.command.from.From;
@@ -20,9 +20,9 @@ import org.queryman.builder.token.Expression;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static org.queryman.builder.PostgreSQL.asFunc;
-import static org.queryman.builder.PostgreSQL.asList;
-import static org.queryman.builder.PostgreSQL.nodeMetadata;
+import static org.queryman.builder.Queryman.asFunc;
+import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 
 /**
@@ -100,7 +100,7 @@ public class FromImpl implements
     public FromRepeatableStep tablesample(String method, String... arguments) {
         Objects.requireNonNull(arguments);
 
-        return tablesample(method, Arrays.stream(arguments).map(PostgreSQL::asName).toArray(Expression[]::new));
+        return tablesample(method, Arrays.stream(arguments).map(Queryman::asName).toArray(Expression[]::new));
     }
 
     @Override
