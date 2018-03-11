@@ -22,6 +22,7 @@ import static org.queryman.builder.PostgreSQL.conditionBetween;
 import static org.queryman.builder.PostgreSQL.fromOnly;
 import static org.queryman.builder.PostgreSQL.max;
 import static org.queryman.builder.PostgreSQL.operator;
+import static org.queryman.builder.PostgreSQL.orderBy;
 import static org.queryman.builder.PostgreSQL.select;
 import static org.queryman.builder.PostgreSQL.selectAll;
 import static org.queryman.builder.PostgreSQL.selectDistinct;
@@ -659,10 +660,16 @@ class SelectImplTest {
         assertEquals("SELECT id, name FROM book ORDER BY name desc", sql);
 
         sql = select.from("book")
-           .orderBy("name", "desc", "nulls last")
+           .orderBy("name", "desc", "last")
            .sql();
 
-        assertEquals("SELECT id, name FROM book ORDER BY name desc nulls last", sql);
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last", sql);
+
+        sql = select.from("book")
+           .orderBy(orderBy("name", "desc", "last"))
+           .sql();
+
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last", sql);
     }
 
     @Test
@@ -850,7 +857,7 @@ class SelectImplTest {
            .and("name", "IS NOT", null)
            .union(select("2", "2"));
 
-        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 AND name IS NOT null UNION SELECT 2, 2", select.sql());
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 AND name IS NOT NULL UNION SELECT 2, 2", select.sql());
     }
 
     @Test

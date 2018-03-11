@@ -427,8 +427,13 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl orderBy(String column, String sorting, String nulls) {
+        orderBy(new OrderBy(column, sorting, nulls));
+        return this;
+    }
+
+    public final SelectImpl orderBy(OrderBy... ordersBy) {
         ORDER_BY.clear();
-        ORDER_BY.add(new OrderBy(column, sorting, nulls));
+        ORDER_BY.addAll(List.of(ordersBy));
         return this;
     }
 

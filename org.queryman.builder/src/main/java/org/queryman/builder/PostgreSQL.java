@@ -13,6 +13,7 @@ import org.queryman.builder.ast.TreeFactory;
 import org.queryman.builder.boot.ServiceRegister;
 import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.ConflictTarget;
+import org.queryman.builder.command.clause.OrderBy;
 import org.queryman.builder.command.create_sequence.SequenceAsStep;
 import org.queryman.builder.command.delete.DeleteAsStep;
 import org.queryman.builder.command.from.FromFirstStep;
@@ -29,24 +30,24 @@ import org.queryman.builder.command.update.UpdateAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
+import org.queryman.builder.token.expression.ColumnReferenceExpression;
+import org.queryman.builder.token.expression.FuncExpression;
+import org.queryman.builder.token.expression.ListExpression;
+import org.queryman.builder.token.expression.SubQueryExpression;
 import org.queryman.builder.token.expression.prepared.ArrayExpression;
 import org.queryman.builder.token.expression.prepared.BigDecimalExpression;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
-import org.queryman.builder.token.expression.ColumnReferenceExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
 import org.queryman.builder.token.expression.prepared.BytesExpression;
 import org.queryman.builder.token.expression.prepared.DateExpression;
 import org.queryman.builder.token.expression.prepared.DollarStringExpression;
 import org.queryman.builder.token.expression.prepared.DoubleExpression;
-import org.queryman.builder.token.expression.FuncExpression;
 import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
-import org.queryman.builder.token.expression.ListExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
 import org.queryman.builder.token.expression.prepared.NullExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.StringExpression;
-import org.queryman.builder.token.expression.SubQueryExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
 import org.queryman.builder.token.expression.prepared.UUIDExpression;
@@ -1435,5 +1436,39 @@ public class PostgreSQL {
      */
     public static ConflictTarget targetColumn(String column, String collation, String opclass) {
         return new ConflictTarget(column, collation, opclass).markAsColumn();
+    }
+
+    /**
+     * Creates an {@link OrderBy} object. It's used in SELECT .. ORDER BY clause.
+     *
+     * @param name column name
+     * @return OrderBy type
+     */
+    public static OrderBy orderBy(String name) {
+        return orderBy(name, null, null);
+    }
+
+    /**
+     * Creates an {@link OrderBy} object. It's used in SELECT .. ORDER BY clause.
+     *
+     * @param name column name or expression
+     * @param sorting sorting constant: ASC | DESC | USING constant
+     * @return OrderBy type
+     */
+    public static OrderBy orderBy(String name, String sorting) {
+        return orderBy(name, sorting, null);
+    }
+
+    /**
+     * Creates an {@link OrderBy} object. It's used in SELECT .. ORDER BY clause.
+     *
+     * @param name column name or expression
+     * @param sorting sorting constant: ASC | DESC | USING constant
+     * @param nulls sets a position a row with null values for {@code name} column.
+     *              It may be FIRST | LAST
+     * @return OrderBy type
+     */
+    public static OrderBy orderBy(String name, String sorting, String nulls) {
+        return new OrderBy(name, sorting, nulls);
     }
 }

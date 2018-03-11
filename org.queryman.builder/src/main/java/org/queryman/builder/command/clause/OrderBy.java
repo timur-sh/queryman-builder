@@ -11,11 +11,16 @@ import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.token.Expression;
 
 import static org.queryman.builder.PostgreSQL.asName;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
+import static org.queryman.builder.ast.NodesMetadata.NULLS;
 
 /**
  * This {@code class} represents an ORDER BY clause.
  *
  * @author Timur Shaidullin
+ * @see org.queryman.builder.PostgreSQL#orderBy(String)
+ * @see org.queryman.builder.PostgreSQL#orderBy(String, String)
+ * @see org.queryman.builder.PostgreSQL#orderBy(String, String, String)
  */
 public final class OrderBy implements AstVisitor {
     private final Expression name;
@@ -46,12 +51,17 @@ public final class OrderBy implements AstVisitor {
 
     @Override
     public void assemble(AbstractSyntaxTree tree) {
+        tree.startNode(EMPTY);
         tree.addLeaf(name);
 
         if (sorting != null)
             tree.addLeaf(sorting);
 
         if (nulls != null)
-            tree.addLeaf(nulls);
+            tree.startNode(NULLS)
+               .addLeaf(nulls)
+               .endNode();
+
+        tree.endNode();
     }
 }

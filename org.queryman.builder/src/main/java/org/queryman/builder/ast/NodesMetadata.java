@@ -65,4 +65,5 @@ public final class NodesMetadata {
     public static final NodeMetadata OR_NOT  = new NodeMetadata(Operators.OR_NOT);
 
 
+    public static final NodeMetadata NULLS  = new NodeMetadata(keyword("NULLS"));
 }
