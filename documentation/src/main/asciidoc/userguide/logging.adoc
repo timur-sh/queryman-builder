@@ -1,0 +1,27 @@
+[[logging]]
+== Logging
+
+include::./../variable.adoc[]
+:completed: ../{mainResourcesDir}/log4j2-completed.xml
+:boot: ../{mainResourcesDir}/log4j2-boot.xml
+:ast: ../{mainResourcesDir}/log4j2-ast.xml
+
+Queryman Builder uses the log4j2 as a logger framework. So, the experienced
+person in `log4j2` will have not problem to configure it.
+
+Queryman Builder provides a base configuration of logging for particular things:
+
+=== Logging for bootstrapping:
+[source,xml]
+include::{boot}[]
+
+=== Logging for building a SQL and binding parameters.
+[source,xml]
+include::{ast}[]
+
+
+=== Completed configuration of the logger.
+[source,xml]
+include::{completed}[]
+
+

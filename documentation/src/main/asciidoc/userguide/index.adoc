@@ -38,3 +38,5 @@ include::./statements/update.adoc[]
 include::./statements/delete.adoc[]
 
 include::./statements/sequence.adoc[]
+
+include::./logging.adoc[]

@@ -1,7 +1,7 @@
 
 :mainDir: ../../
 :mainJavaDir: ../java/org/queryman/builder
-:mainResourcesDir: {mainDir}resources
+:mainResourcesDir: ../resources
 
 :testDir: ../../../test
 :testResourceDir: {testDir}/resources
