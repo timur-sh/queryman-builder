@@ -1,6 +1,7 @@
 ext {
     jaxb = '2.3.0'
     queryman = '1.0.0.beta'
+    log = '2.10.0'
 
     libraries = [
             querymanBuilder: "org.queryman:builder:${queryman}",
@@ -10,7 +11,8 @@ ext {
             apuGuardian    : "org.apiguardian:apiguardian-api:1.0.0",
             flyway         : 'org.flywaydb:flyway-core:5.0.6',
 
-            log4j          : 'org.apache.logging.log4j:log4j-core:2.10.0',
+            log4j          : "org.apache.logging.log4j:log4j-core:${log}",
+            log4jApi       : "org.apache.logging.log4j:log4j-api:${log}",
             jaxbApi        : "javax.xml.bind:jaxb-api:${jaxb}",
             jaxbImpl       : "com.sun.xml.bind:jaxb-impl:${jaxb}",
             jaxbCore       : "com.sun.xml.bind:jaxb-core:${jaxb}",

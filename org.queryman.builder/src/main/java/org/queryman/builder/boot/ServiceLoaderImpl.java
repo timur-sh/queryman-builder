@@ -6,6 +6,9 @@
  */
 package org.queryman.builder.boot;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Properties;
 
@@ -13,6 +16,8 @@ import java.util.Properties;
  * @author Timur Shaidullin
  */
 public class ServiceLoaderImpl implements ServiceLoader {
+    private final static Logger LOG = LogManager.getLogger("org.queryman.builder.boot");
+
     private final ConfigLoader[] loaders;
     private Properties properties;
 
@@ -31,8 +36,7 @@ public class ServiceLoaderImpl implements ServiceLoader {
                 properties = loader.getConfiguration();
                 return true;
             } catch (IllegalStateException | ClassNotFoundException | IOException e) {
-                //todo log an error
-//                e.printStackTrace();
+                LOG.error(e.getMessage());
             }
         }
 

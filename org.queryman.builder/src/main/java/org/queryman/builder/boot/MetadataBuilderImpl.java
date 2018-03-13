@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.boot;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.queryman.builder.cfg.Settings;
 
 /**
@@ -14,6 +16,8 @@ import org.queryman.builder.cfg.Settings;
  * @author Timur Shaidullin
  */
 class MetadataBuilderImpl implements MetadataBuilder {
+    private final static Logger LOG = LogManager.getLogger("org.queryman.builder.boot");
+
     private final Metadata metadata = new MetadataImpl();
 
     private String xmlCfgFile        = "queryman-builder.xml";
@@ -74,7 +78,7 @@ class MetadataBuilderImpl implements MetadataBuilder {
                 return true;
             }
         } catch (IllegalStateException e) {
-            //todo log
+            LOG.error(e.getMessage());
         }
 
         return false;

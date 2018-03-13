@@ -24,8 +24,6 @@ allprojects {
 
     //common dependencies
     dependencies {
-        compile(libraries['log4j'])
-
         testCompile(libraries['junit'])
         testCompile(libraries['apuGuardian'])
     }

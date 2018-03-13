@@ -6,6 +6,8 @@
  */
 package org.queryman.builder.boot;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.queryman.builder.boot.adapter.PropertiesMetadataAdapter;
 import org.queryman.builder.utils.StringUtils;
 
@@ -19,6 +21,7 @@ import java.util.Properties;
  * @author Timur Shaidullin
  */
 public final class PropertiesLoader extends AbstractConfigLoader {
+    private final static Logger LOG = LogManager.getLogger("org.queryman.builder.boot");
 
     protected final Properties properties = new Properties();
 
@@ -37,7 +40,8 @@ public final class PropertiesLoader extends AbstractConfigLoader {
             properties.load(stream);
             return true;
         } catch (IOException e) {
-            e.printStackTrace();  //todo log stacktrace
+            LOG.error(e.getMessage());
+
             return false;
         }
     }

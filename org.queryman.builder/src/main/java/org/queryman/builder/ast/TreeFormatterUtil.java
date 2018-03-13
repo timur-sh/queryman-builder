@@ -6,14 +6,24 @@
  */
 package org.queryman.builder.ast;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.queryman.builder.token.PreparedExpression;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Timur Shaidullin
  */
 public class TreeFormatterUtil {
+    private final static Logger LOG = LogManager.getLogger("org.queryman.builder.ast");
+
     /**
      * Builds a SQL string.
      *
@@ -22,8 +32,9 @@ public class TreeFormatterUtil {
      */
     static String getSQL(AbstractSyntaxTree tree) {
         String sql = new TreeFormatter().buildSQL(tree.getRootNode());
-        //todo move to the logger
-        System.out.println(sql);
+
+        LOG.info(sql);
+
         return sql;
     }
 
@@ -41,8 +52,21 @@ public class TreeFormatterUtil {
 
         TreeFormatter formatter = new TreeFormatter();
         String sql = formatter.buildSQL(tree.getRootNode(), true);
-        //todo move to the logger
-        System.out.println(sql);
+        Map<Integer, PreparedExpression> params = formatter.getParameters();
+
+        LOG.info(sql);
+        if (!params.isEmpty() && LOG.isEnabled(Level.DEBUG)) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Parameters\n{");
+
+            SortedSet<Integer> sorted = new TreeSet<>(params.keySet());
+            for (int key : sorted) {
+                builder.append(String.format("\n\t%d -> %s", key, params.get(key)));
+            }
+            builder.append("\n}");
+
+            LOG.debug(builder.toString());
+        }
 
         PreparedStatement statement = conn.prepareStatement(sql);
 

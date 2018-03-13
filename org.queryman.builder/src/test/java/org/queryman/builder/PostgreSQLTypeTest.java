@@ -31,7 +31,7 @@ import static org.queryman.builder.Queryman.insertInto;
  * @author Timur Shaidullin
  */
 public class PostgreSQLTypeTest extends BaseTest {
-    static Connection connection;
+    private static Connection connection;
 
     @BeforeAll
     static void beforeAll() {

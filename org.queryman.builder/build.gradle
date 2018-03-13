@@ -6,4 +6,7 @@ dependencies {
 
     testCompile(libraries['flyway'])
     testCompile(libraries['postgres'])
+
+    compile(libraries['log4j'])
+    compile(libraries['log4jApi'])
 }
