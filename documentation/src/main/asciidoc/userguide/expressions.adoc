@@ -125,11 +125,15 @@ EXISTS clause using subquery:
 include::{example}[tag=exists-query]
 
 ===== Function calls
+Queryman Builder provides convenient operators and function:
+
 Examples of function expression:
 [source,java]
 ```
 include::{example}[tag=func]
 ```
+
+If you are needed to create an your own function, see `Queryman.asFunc` method.
 
 ===== Extending expression
 

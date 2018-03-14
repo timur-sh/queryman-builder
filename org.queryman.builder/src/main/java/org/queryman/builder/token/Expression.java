@@ -56,7 +56,7 @@ public abstract class Expression extends AbstractToken
     /**
      * @return string with expression of explicitly casting
      */
-    String getCastExpression() {
+    protected String getCastExpression() {
         StringBuilder builder = new StringBuilder();
 
         if (castType != null)

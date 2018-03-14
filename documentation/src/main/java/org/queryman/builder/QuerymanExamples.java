@@ -15,6 +15,7 @@ import static org.queryman.builder.Queryman.asOperator;
 import static org.queryman.builder.Queryman.asSubQuery;
 import static org.queryman.builder.Queryman.insertInto;
 import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.values;
 
 /**
  * @author Timur Shaidullin
@@ -112,11 +113,17 @@ public class QuerymanExamples {
         // concat('price', 1, 2)
         Queryman.asFunc("concat", Queryman.asList("'price'", 2, ".", 1));
 
-        // concat('price', 1, 2)
-        Queryman.asFunc("concat", "'price'", 2, ".", 1);
+        // concat('price', 2, 'USD')
+        Queryman.asFunc("concat", asConstant("price"), 2, asConstant("USD"));
 
         // (VALUES(1, 2), (3, 4)) AS point(x, y)
         Queryman.values(asList(1, 2), asList(3, 4)).as("point", "x", "y");
+
+        // ALL(VALUES(1), (2))
+        Queryman.all(values(1, 2));
+
+        // ANY(SELECT id FROM book)
+        Queryman.any(select("id").from("book"));
         //end::func[]
     }
 

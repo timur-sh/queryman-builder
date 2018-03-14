@@ -29,6 +29,7 @@ import org.queryman.builder.command.insert.InsertOverridingStep;
 import org.queryman.builder.command.insert.InsertValuesManyStep;
 import org.queryman.builder.command.insert.InsertValuesStep;
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
-import static org.queryman.builder.utils.ArrayUtils.toExpression;
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * @author Timur Shaidullin
@@ -198,7 +199,7 @@ public class InsertImpl extends AbstractQuery implements
 
     @Override
     public final InsertImpl columns(String... columns) {
-        return columns(toExpression(columns));
+        return columns(ArrayUtils.toExpressions(columns));
     }
 
     @Override
@@ -228,13 +229,13 @@ public class InsertImpl extends AbstractQuery implements
     @Override
     @SafeVarargs
     public final <T> InsertImpl values(T... values) {
-        return values(toExpression(Queryman::asConstant, values));
+        return values(toExpressions(Queryman::asConstant, values));
     }
 
     @Override
     public final InsertImpl values(Expression... values) {
         Function<Expression, Expression> func = v -> v == null ? asConstant(null) :v;
-        this.values = toExpression(func, values);
+        this.values = toExpressions(func, values);
         return this;
     }
 
@@ -431,7 +432,7 @@ public class InsertImpl extends AbstractQuery implements
     @Override
     @SafeVarargs
     public final <T> InsertImpl returning(T... output) {
-        return returning(toExpression(output));
+        return returning(ArrayUtils.toExpressions(output));
     }
 
     @Override

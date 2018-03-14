@@ -74,6 +74,6 @@ class InsertImplTest {
            .returning("id")
            .sql()
         ;
-        assertEquals("INSERT INTO book AS b (id, name) VALUES (SELECT id, name FROM book) ON CONFLICT DO NOTHING RETURNING id", sql);
+        assertEquals("INSERT INTO book AS b (id, name) (SELECT id, name FROM book) ON CONFLICT DO NOTHING RETURNING id", sql);
     }
 }

@@ -6,9 +6,7 @@
  */
 package org.queryman.builder.token.expression.prepared;
 
-import org.queryman.builder.token.PreparedExpression;
-
-import java.sql.Time;
+import org.queryman.builder.token.Expression;
 
 
 /**
@@ -16,7 +14,7 @@ import java.sql.Time;
  *
  * @author Timur Shaidullin
  */
-public class NullExpression extends PreparedExpression<Object> {
+public class NullExpression extends Expression {
     public NullExpression(Object constant) {
         super("NULL");
     }
@@ -24,10 +22,5 @@ public class NullExpression extends PreparedExpression<Object> {
     @Override
     protected String prepareName() {
         return name;
-    }
-
-    @Override
-    public Object getValue() {
-        return null;
     }
 }

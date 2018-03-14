@@ -26,6 +26,7 @@ import static org.queryman.builder.Operators.LT;
 import static org.queryman.builder.Operators.LTE;
 import static org.queryman.builder.Operators.NOT_IN;
 import static org.queryman.builder.Operators.NOT_LIKE;
+import static org.queryman.builder.Queryman.any;
 import static org.queryman.builder.Queryman.asArray;
 import static org.queryman.builder.Queryman.asConstant;
 import static org.queryman.builder.Queryman.asFunc;
@@ -41,6 +42,7 @@ import static org.queryman.builder.Queryman.conditionExists;
 import static org.queryman.builder.Queryman.conditionSome;
 import static org.queryman.builder.Queryman.operator;
 import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.values;
 
 /**
  * @author Timur Shaidullin
@@ -304,38 +306,42 @@ public class ConditionsImplTest {
 
     @Test
     void conditionAnyTest() {
-        Conditions conditions = conditionAny("id", "=", select( "1"));
+        Conditions conditions = condition("id", "=", any(select("1")));
         assembleAst(conditions);
-        assertEquals("WHERE id = ANY (SELECT 1)", ast.toString());
+        assertEquals("WHERE id = ANY(SELECT 1)", ast.toString());
+
+        conditions = condition("id", "=", any(values(1, 2)));
+        assembleAst(conditions);
+        assertEquals("WHERE id = ANY(VALUES(1), (2))", ast.toString());
 
         conditions = conditionAny("id", "=", select("1", "2"));
         assembleAst(conditions);
-        assertEquals("WHERE id = ANY (SELECT 1, 2)", ast.toString());
+        assertEquals("WHERE id = ANY(SELECT 1, 2)", ast.toString());
 
         conditions.and(conditionAny(asName("id"), operator("="), select("id").from("user")));
         assembleAst(conditions);
-        assertEquals("WHERE id = ANY (SELECT 1, 2) AND id = ANY (SELECT id FROM user)", ast.toString());
+        assertEquals("WHERE id = ANY(SELECT 1, 2) AND id = ANY(SELECT id FROM user)", ast.toString());
     }
 
     @Test
     void conditionSomeTest() {
         Conditions conditions = conditionSome("id", "=", select("1", "2"));
         assembleAst(conditions);
-        assertEquals("WHERE id = SOME (SELECT 1, 2)", ast.toString());
+        assertEquals("WHERE id = SOME(SELECT 1, 2)", ast.toString());
 
         conditions.and(conditionSome(asName("id"), operator("="), select("id").from("user")));
         assembleAst(conditions);
-        assertEquals("WHERE id = SOME (SELECT 1, 2) AND id = SOME (SELECT id FROM user)", ast.toString());
+        assertEquals("WHERE id = SOME(SELECT 1, 2) AND id = SOME(SELECT id FROM user)", ast.toString());
     }
 
     @Test
     void conditionAllTest() {
         Conditions conditions = conditionAll("id", "=", select("1", "2"));
         assembleAst(conditions);
-        assertEquals("WHERE id = ALL (SELECT 1, 2)", ast.toString());
+        assertEquals("WHERE id = ALL(SELECT 1, 2)", ast.toString());
 
         conditions.and(conditionAll(asName("id"), operator("="), select("id").from("user")));
         assembleAst(conditions);
-        assertEquals("WHERE id = ALL (SELECT 1, 2) AND id = ALL (SELECT id FROM user)", ast.toString());
+        assertEquals("WHERE id = ALL(SELECT 1, 2) AND id = ALL(SELECT id FROM user)", ast.toString());
     }
 }

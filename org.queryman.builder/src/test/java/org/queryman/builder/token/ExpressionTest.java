@@ -25,6 +25,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.queryman.builder.Queryman.all;
+import static org.queryman.builder.Queryman.any;
 import static org.queryman.builder.Queryman.asArray;
 import static org.queryman.builder.Queryman.asConstant;
 import static org.queryman.builder.Queryman.asDollarString;
@@ -34,6 +36,8 @@ import static org.queryman.builder.Queryman.asName;
 import static org.queryman.builder.Queryman.asQuotedName;
 import static org.queryman.builder.Queryman.asSubQuery;
 import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.some;
+import static org.queryman.builder.Queryman.values;
 
 class ExpressionTest {
     @Test
@@ -214,24 +218,61 @@ class ExpressionTest {
     }
 
     @Test
-    void functionAll() {
-        assertEquals("ALL(ARRAY[])", asFunc("ALL", asArray()).getName());
-        assertEquals("ALL(ARRAY[1, 2])", asFunc("ALL", asArray(1, 2)).getName());
-        assertEquals("ALL()", asFunc("ALL", asList()).getName());
-        assertEquals("ALL(1, 2)", asFunc("ALL", asList(1, 2)).getName());
-    }
-
-    @Test
     void aliasTest() {
         assertEquals("book AS b", asName("book").as("b").getName());
     }
 
+
+    //------
+    // FUNCTIONS AND OPERATORS
+    //------
+
+    @Test
+    void functionAll() {
+        assertEquals("ALL(ARRAY[])", all(asArray()).getName());
+        assertEquals("ALL(ARRAY[1, 2])", all(asArray(1, 2)).getName());
+        assertEquals("ALL()", all(asList()).getName());
+        assertEquals("ALL(1, 2)", all(asList(1, 2)).getName());
+        assertEquals("ALL(NULL, 1)", all(null, 1).getName());
+        assertEquals("ALL(1, 2)", all(1, 2).getName());
+        assertEquals("ALL(SELECT 1)", all(select(1)).getName());
+        assertEquals("ALL(VALUES(1), (2))", all(values(1, 2)).getName());
+    }
+
+    @Test
+    void functionAny() {
+        assertEquals("ANY(ARRAY[])", any(asArray()).getName());
+        assertEquals("ANY(ARRAY[1, 2])", any(asArray(1, 2)).getName());
+        assertEquals("ANY()", any(asList()).getName());
+        assertEquals("ANY(1, 2)", any(asList(1, 2)).getName());
+        assertEquals("ANY(NULL, 1)", any(null, 1).getName());
+        assertEquals("ANY(2)", any(2).getName());
+        assertEquals("ANY(1, 2)", any(1, 2).getName());
+        assertEquals("ANY(SELECT id FROM book)", any(select("id").from("book")).getName());
+        assertEquals("ANY(VALUES(1), (2))", any(values(1, 2)).getName());
+    }
+
+    @Test
+    void functionSome() {
+        assertEquals("SOME(ARRAY[])", some(asArray()).getName());
+        assertEquals("SOME(ARRAY[1, 2])", some(asArray(1, 2)).getName());
+        assertEquals("SOME()", some(asList()).getName());
+        assertEquals("SOME(1, 2)", some(asList(1, 2)).getName());
+        assertEquals("SOME(NULL, 1)", some(null, 1).getName());
+        assertEquals("SOME(2)", some(2).getName());
+        assertEquals("SOME(1, 2)", some(1, 2).getName());
+        assertEquals("SOME(SELECT 1)", some(select(1)).getName());
+        assertEquals("SOME(VALUES(1), (2))", some(values(1, 2)).getName());
+    }
+
     @Test
     void valuesTest() {
-        Expression values = Queryman.values(asList(1, 2), asList(3, 4));
+        assertEquals("VALUES(1, 2), (3, 4)", values(asList(1, 2), asList(3, 4)).getName());
+        assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", values(asList(1, 2), asList(3, 4)).as("point", "x", "y").getName());
 
-        assertEquals("VALUES(1, 2), (3, 4)", values.getName());
-        assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", values.as("point", "x", "y").getName());
+
+        assertEquals("VALUES(1), (2)", values(1, 2).getName());
+        assertEquals("(VALUES(1), (2)) AS point(x, y)", values(1, 2).as("point", "x", "y").getName());
     }
 
     @Test
@@ -241,6 +282,10 @@ class ExpressionTest {
         ).sql();
 
         assertEquals("SELECT EXISTS(SELECT * FROM book) AS exists", sql);
+    }
 
+    @Test
+    void commonTest() {
+        assertEquals("concat('price', 2, 'USD')", asFunc("concat", asConstant("price"), 2, asConstant("USD")).getName());
     }
 }

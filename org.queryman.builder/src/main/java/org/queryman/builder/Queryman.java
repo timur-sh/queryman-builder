@@ -60,11 +60,10 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
-import static org.queryman.builder.ast.NodesMetadata.ALL;
-import static org.queryman.builder.ast.NodesMetadata.ANY;
 import static org.queryman.builder.ast.NodesMetadata.EXISTS;
-import static org.queryman.builder.ast.NodesMetadata.SOME;
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 import static org.queryman.builder.utils.ExpressionUtil.toExpression;
 
 /**
@@ -790,7 +789,7 @@ public class Queryman {
      * Creates a condition.
      * Example:
      * <code>
-     *      conditionSome(asName("id"), operator("="), select(1)); // id = SOME (SELECT 1);
+     *      conditionSome("id", "=", select(1)); // id = SOME (SELECT 1);
      * </code>
      *
      * @param field    left operand
@@ -798,25 +797,8 @@ public class Queryman {
      * @param query    subquery right operand
      * @return {@link Conditions}
      */
-    public static Conditions conditionSome(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(SOME, query));
-    }
-
-    /**
-     * Create a condition.
-     * Example:
-     * <code>
-     *      conditionSome("id", "=", select(1, 2)); // id = SOME (SELECT 1, 2);
-     * </code>
-     *
-     * @param field    left operand
-     * @param operator operator
-     * @param query    subquery right operand
-     * @return {@link Conditions}
-     * @see #conditionSome(Expression, Operator, Query)
-     */
-    public static Conditions conditionSome(String field, String operator, Query query) {
-        return conditionSome(asName(field), operator(operator), query);
+    public static <T> Conditions conditionSome(T field, T operator, Query query) {
+        return condition(toExpression(field), operator, some(query));
     }
 
     /**
@@ -831,25 +813,8 @@ public class Queryman {
      * @param query    subquery right operand
      * @return {@link Conditions}
      */
-    public static Conditions conditionAny(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ANY, query));
-    }
-
-    /**
-     * Create a condition.
-     * Example:
-     * <code>
-     *      conditionAny("id", "=", select(1, 2)); // id = ANY (SELECT 1, 2);
-     * </code>
-     *
-     * @param field    left operand
-     * @param operator operator
-     * @param query    subquery right operand
-     * @return {@link Conditions}
-     * @see #conditionAny(Expression, Operator, Query)
-     */
-    public static Conditions conditionAny(String field, String operator, Query query) {
-        return conditionAny(asName(field), operator(operator), query);
+    public static <T> Conditions conditionAny(T field, T operator, Query query) {
+        return condition(toExpression(field), operator, any(query));
     }
 
     /**
@@ -865,25 +830,8 @@ public class Queryman {
      * @return {@link Conditions}
      * @see #conditionAny(Expression, Operator, Query)
      */
-    public static Conditions conditionAll(Expression field, Operator operator, Query query) {
-        return new ConditionsImpl(new NodeMetadata(operator), field, new ConditionsImpl(ALL, query));
-    }
-
-    /**
-     * Creates a condition.
-     * Example:
-     * <code>
-     *      conditionAll("id", "=", select(1, 2)); // id = ALL (SELECT 1, 2);
-     * </code>
-     *
-     * @param field    left operand
-     * @param operator operator
-     * @param query    subquery -right operand
-     * @return {@link Conditions}
-     * @see #conditionAll(Expression, Operator, Query)
-     */
-    public static Conditions conditionAll(String field, String operator, Query query) {
-        return conditionAll(asName(field), operator(operator), query);
+    public static <T> Conditions conditionAll(T field, T operator, Query query) {
+        return condition(toExpression(field), operator, all(query));
     }
 
     //----
@@ -1208,6 +1156,7 @@ public class Queryman {
         return asArray(arr.toArray());
     }
 
+
     //----
     // FUNCTION EXPRESSIONS
     //----
@@ -1229,6 +1178,19 @@ public class Queryman {
     public static Expression asFunc(String name, Expression expression) {
         return new FuncExpression(name, expression);
     }
+
+    /**
+     * @param name of function
+     * @param arguments arguments
+     * @return a function with list of arguments
+
+     * @see #asFunc(String, Expression)
+     */
+    @SafeVarargs
+    public static <T> Expression asFunc(String name, T... arguments) {
+        return new FuncExpression(name, toExpressions(arguments));
+    }
+
     /**
      * Examples:
      * <code>
@@ -1240,22 +1202,76 @@ public class Queryman {
      *
      */
     public static Expression max(String field) {
-        return new FuncExpression("MAX", asName(field));
+        return asFunc("MAX", asName(field));
     }
 
     /**
-     * @param name of function
-     * @param arguments arguments
-     * @return a function with list of arguments
+     * Creates an ALL expression that contains one argument
+     *
+     * @param argument argument of any
+     * @param <T> String ot Expression object
+     * @return an ALL expression
+     */
+    public static <T> Expression all(T argument) {
+        return asFunc("ALL", toExpression(argument));
+    }
 
-     * @see #asFunc(String, Expression)
+    /**
+     * Creates an ALL expression that contains one argument
+     *
+     * @param arguments argument of
+     * @param <T> String ot Expression objects
+     * @return an ALL expression
      */
     @SafeVarargs
-    public static <T> Expression asFunc(String name, T... arguments) {
-        Expression[] args = Arrays.stream(arguments)
-           .map(v -> Queryman.asName(String.valueOf(v)))
-           .toArray(Expression[]::new);
-        return asFunc(name, asList(args));
+    public static <T> Expression all(T... arguments) {
+        return asFunc("ALL", toExpressions(arguments));
+    }
+
+    /**
+     * Creates an ANY expression that contains one argument
+     *
+     * @param argument argument of any
+     * @param <T> String ot Expression object
+     * @return an ANY expression
+     */
+    public static <T> Expression any(T argument) {
+        return asFunc("ANY", toExpression(argument));
+    }
+
+    /**
+     * Creates an ANY expression that contains one argument
+     *
+     * @param arguments argument of
+     * @param <T> String ot Expression objects
+     * @return an ANY expression
+     */
+    @SafeVarargs
+    public static <T> Expression any(T... arguments) {
+        return asFunc("ANY", toExpressions(arguments));
+    }
+
+    /**
+     * Creates an SOME expression that contains one argument
+     *
+     * @param argument argument of any
+     * @param <T> String ot Expression object
+     * @return an SOME expression
+     */
+    public static <T> Expression some(T argument) {
+        return asFunc("SOME", toExpression(argument));
+    }
+
+    /**
+     * Creates an SOME expression that contains one argument
+     *
+     * @param arguments argument of
+     * @param <T> String ot Expression objects
+     * @return an SOME expression
+     */
+    @SafeVarargs
+    public static <T> Expression some(T... arguments) {
+        return asFunc("SOME", toExpressions(arguments));
     }
 
     /**
@@ -1277,7 +1293,7 @@ public class Queryman {
      * @see #asFunc(String, Expression)
      */
     public static Expression asOperator(String name, Expression expression) {
-        return new FuncExpression(name, expression);
+        return asFunc(name, expression);
     }
 
     /**
@@ -1291,8 +1307,7 @@ public class Queryman {
      */
     @SafeVarargs
     public static <T> Expression asOperator(String name, T... arguments) {
-        String[] args = Arrays.stream(arguments).map(String::valueOf).toArray(String[]::new);
-        return asFunc(name, asList(args));
+        return asFunc(name, arguments);
     }
 
     /**
@@ -1311,8 +1326,15 @@ public class Queryman {
      *
      * @see #asList(Object[])
      */
-    public static Expression values(Expression... expressions) {
-       return new FuncExpression("VALUES", expressions);
+    @SafeVarargs
+    public static <T> Expression values(T... expressions) {
+        Function<T, Expression> func = v -> {
+            if (v instanceof ListExpression)
+                return (Expression) v;
+            return asList(v);
+        };
+
+       return asFunc("VALUES", toExpressions(func, expressions));
     }
 
     /**
@@ -1322,6 +1344,7 @@ public class Queryman {
     public static Expression asSubQuery(Query query) {
         return new SubQueryExpression(query);
     }
+
 
     //----
     // COMMON

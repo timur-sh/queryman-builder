@@ -101,14 +101,8 @@ public class ArrayUtils {
      * @return array of column reference expressions
      */
     @SafeVarargs
-    public static <T>Expression[] toExpression(T... values) {
-        Function<T, Expression> func = v -> {
-            if (v instanceof Expression)
-                return (Expression) v;
-            return asName(String.valueOf(v));
-        };
-
-        return toExpression(func, values);
+    public static <T>Expression[] toExpressions(T... values) {
+        return toExpressions(ExpressionUtil::toExpression, values);
     }
 
     /**
@@ -119,7 +113,7 @@ public class ArrayUtils {
      * @return array of expressions
      */
     @SafeVarargs
-    public static <T> Expression[] toExpression(Function<T, Expression> func, T... values) {
+    public static <T> Expression[] toExpressions(Function<T, Expression> func, T... values) {
         return Arrays.stream(values)
            .map(func)
            .toArray(Expression[]::new);

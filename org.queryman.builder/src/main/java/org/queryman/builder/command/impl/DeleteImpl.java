@@ -17,6 +17,7 @@ import org.queryman.builder.command.delete.DeleteUsingStep;
 import org.queryman.builder.command.delete.DeleteWhereFirstStep;
 import org.queryman.builder.command.delete.DeleteWhereManySteps;
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.utils.ArrayUtils;
 
 import static org.queryman.builder.Keywords.DELETE_FROM;
 import static org.queryman.builder.Keywords.DELETE_FROM_ONLY;
@@ -29,7 +30,7 @@ import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.USING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
-import static org.queryman.builder.utils.ArrayUtils.toExpression;
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * DELETE statement.
@@ -112,7 +113,7 @@ public class DeleteImpl extends AbstractQuery implements
 
     @Override
     public final DeleteImpl using(String... tables) {
-        return using(toExpression(tables));
+        return using(ArrayUtils.toExpressions(tables));
     }
 
     @Override
@@ -208,7 +209,7 @@ public class DeleteImpl extends AbstractQuery implements
     @Override
     @SafeVarargs
     public final <T> DeleteImpl returning(T... output) {
-        return returning(toExpression(output));
+        return returning(ArrayUtils.toExpressions(output));
     }
 
     @Override

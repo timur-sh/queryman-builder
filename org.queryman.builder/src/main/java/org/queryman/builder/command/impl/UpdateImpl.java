@@ -17,6 +17,7 @@ import org.queryman.builder.command.update.UpdateSetStep;
 import org.queryman.builder.command.update.UpdateWhereFirstStep;
 import org.queryman.builder.command.update.UpdateWhereManySteps;
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import static org.queryman.builder.ast.NodesMetadata.FROM;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
-import static org.queryman.builder.utils.ArrayUtils.toExpression;
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * UPDATE statement.
@@ -215,7 +216,7 @@ public class UpdateImpl extends AbstractQuery implements
     @Override
     @SafeVarargs
     public final <T> UpdateImpl returning(T... output) {
-        return returning(toExpression(output));
+        return returning(ArrayUtils.toExpressions(output));
     }
 
     @Override
@@ -242,7 +243,7 @@ public class UpdateImpl extends AbstractQuery implements
 
     @Override
     public final UpdateImpl from(String... tables) {
-        return from(toExpression(tables));
+        return from(ArrayUtils.toExpressions(tables));
     }
 
     @Override

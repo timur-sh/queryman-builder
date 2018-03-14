@@ -49,9 +49,7 @@ class JavaTypeToJdbc {
     PreparedStatement bind(Map<Integer, PreparedExpression> params) throws SQLException {
         for (Map.Entry<Integer, PreparedExpression> expr : params.entrySet()) {
 
-            if (expr.getValue() instanceof NullExpression)
-                statement.setNull(expr.getKey(), Types.NULL);
-            else if (expr.getValue() instanceof BooleanExpression)
+            if (expr.getValue() instanceof BooleanExpression)
                 statement.setBoolean(expr.getKey(), ((BooleanExpression) expr.getValue()).getValue());
 
             else if (expr.getValue() instanceof ShortExpression)

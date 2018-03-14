@@ -34,6 +34,7 @@ import org.queryman.builder.command.select.SelectOrderByStep;
 import org.queryman.builder.command.select.SelectWhereManySteps;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Token;
+import org.queryman.builder.utils.ArrayUtils;
 import org.queryman.builder.utils.ExpressionUtil;
 import org.queryman.builder.utils.Tools;
 
@@ -61,7 +62,7 @@ import static org.queryman.builder.ast.NodesMetadata.ON;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
-import static org.queryman.builder.utils.ArrayUtils.toExpression;
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * @author Timur Shaidullin
@@ -147,7 +148,7 @@ public class SelectImpl extends AbstractQuery implements
      * Clause SELECT DISTINCT ON ( .. ) ...
      */
     public final SelectImpl distinctOn(String... columns) {
-        return distinctOn(toExpression(columns));
+        return distinctOn(ArrayUtils.toExpressions(columns));
     }
 
     /**
@@ -263,7 +264,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl from(String... tables) {
-        return from(toExpression(tables));
+        return from(ArrayUtils.toExpressions(tables));
     }
 
     @Override
@@ -419,7 +420,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl groupBy(String... expressions) {
-        Expression[] expr = toExpression(expressions);
+        Expression[] expr = ArrayUtils.toExpressions(expressions);
 
         return groupBy(expr);
     }
@@ -581,7 +582,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl using(String... name) {
-        return using(toExpression(name));
+        return using(ArrayUtils.toExpressions(name));
     }
 
     @Override
@@ -701,7 +702,7 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final SelectImpl of(String... tables) {
-        return of(toExpression(tables));
+        return of(ArrayUtils.toExpressions(tables));
     }
 
     @Override
