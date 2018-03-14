@@ -42,22 +42,23 @@ public class SelectTest extends BaseTest  {
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(select.sql());
-            ResultSet rs = statement.getResultSet();
-
-            while (rs.next()) {
-                assertEquals(1, rs.getInt(1));
-                assertEquals(2, rs.getInt(2));
-                assertEquals(2, rs.getInt(3));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(1, rs.getInt(1));
+                    assertEquals(2, rs.getInt(2));
+                    assertEquals(2, rs.getInt(3));
+                }
             }
         }
 
         try (PreparedStatement statement = select.buildPreparedStatement(connection)) {
             statement.executeQuery();
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(1, rs.getInt(1));
-                assertEquals(2, rs.getInt(2));
-                assertEquals(2, rs.getInt(3));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(1, rs.getInt(1));
+                    assertEquals(2, rs.getInt(2));
+                    assertEquals(2, rs.getInt(3));
+                }
             }
 
         }

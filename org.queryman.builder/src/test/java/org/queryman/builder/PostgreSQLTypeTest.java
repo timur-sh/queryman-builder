@@ -54,21 +54,22 @@ public class PostgreSQLTypeTest extends BaseTest {
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
-            ResultSet rs = statement.getResultSet();
-
-            while (rs.next()) {
-                assertEquals(s1, rs.getShort("smallint"));
-                assertEquals(s2, rs.getInt("integer"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(s1, rs.getShort("smallint"));
+                    assertEquals(s2, rs.getInt("integer"));
+                }
             }
+
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
             statement.execute();
-            ResultSet rs = statement.getResultSet();
-
-            while (rs.next()) {
-                assertEquals(s1, rs.getShort("smallint"));
-                assertEquals(s2, rs.getInt("integer"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(s1, rs.getShort("smallint"));
+                    assertEquals(s2, rs.getInt("integer"));
+                }
             }
         }
     }
@@ -109,33 +110,34 @@ public class PostgreSQLTypeTest extends BaseTest {
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
-            ResultSet rs = statement.getResultSet();
-
-            while (rs.next()) {
-                assertEquals(s1, rs.getShort("smallint"));
-                assertEquals(s2, rs.getInt("integer"));
-                assertEquals(s3, rs.getLong("bigint"));
-                assertEquals(s4, rs.getFloat("decimal"));
-                assertEquals(s5, rs.getFloat("numeric"));
-                assertEquals(s6, rs.getFloat("real"));
-                assertEquals(s7, rs.getDouble("double_precision"));
-                assertEquals(s8, rs.getBoolean("boolean"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(s1, rs.getShort("smallint"));
+                    assertEquals(s2, rs.getInt("integer"));
+                    assertEquals(s3, rs.getLong("bigint"));
+                    assertEquals(s4, rs.getFloat("decimal"));
+                    assertEquals(s5, rs.getFloat("numeric"));
+                    assertEquals(s6, rs.getFloat("real"));
+                    assertEquals(s7, rs.getDouble("double_precision"));
+                    assertEquals(s8, rs.getBoolean("boolean"));
+                }
             }
+
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
             statement.execute();
-            ResultSet rs = statement.getResultSet();
-
-            while (rs.next()) {
-                assertEquals(s1, rs.getShort("smallint"));
-                assertEquals(s2, rs.getInt("integer"));
-                assertEquals(s3, rs.getLong("bigint"));
-                assertEquals(s4, rs.getFloat("decimal"));
-                assertEquals(s5, rs.getFloat("numeric"));
-                assertEquals(s6, rs.getFloat("real"));
-                assertEquals(s7, rs.getDouble("double_precision"));
-                assertEquals(s8, rs.getBoolean("boolean"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(s1, rs.getShort("smallint"));
+                    assertEquals(s2, rs.getInt("integer"));
+                    assertEquals(s3, rs.getLong("bigint"));
+                    assertEquals(s4, rs.getFloat("decimal"));
+                    assertEquals(s5, rs.getFloat("numeric"));
+                    assertEquals(s6, rs.getFloat("real"));
+                    assertEquals(s7, rs.getDouble("double_precision"));
+                    assertEquals(s8, rs.getBoolean("boolean"));
+                }
             }
         }
     }
@@ -158,11 +160,12 @@ public class PostgreSQLTypeTest extends BaseTest {
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals("1", rs.getString("varchar"));
-                assertEquals("2", rs.getString("char"));
-                assertEquals("adasdas", rs.getString("text"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals("1", rs.getString("varchar"));
+                    assertEquals("2", rs.getString("char"));
+                    assertEquals("adasdas", rs.getString("text"));
+                }
             }
         }
 
@@ -198,24 +201,26 @@ public class PostgreSQLTypeTest extends BaseTest {
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(date.toString(), rs.getDate("date").toString());
-                assertEquals(time.toString(), rs.getTime("time").toString());
-                assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
-                assertEquals(interval, rs.getString("i"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(date.toString(), rs.getDate("date").toString());
+                    assertEquals(time.toString(), rs.getTime("time").toString());
+                    assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
+                    assertEquals(interval, rs.getString("i"));
+                }
             }
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
             statement.execute();
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(date.toString(), rs.getDate("date").toString());
-                assertEquals(time.toString(), rs.getTime("time").toString());
-                assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
-                assertEquals(interval, rs.getString("i"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(date.toString(), rs.getDate("date").toString());
+                    assertEquals(time.toString(), rs.getTime("time").toString());
+                    assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
+                    assertEquals(interval, rs.getString("i"));
+                }
             }
         }
     }
@@ -242,22 +247,24 @@ public class PostgreSQLTypeTest extends BaseTest {
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(cidr, rs.getString("cidr"));
-                assertEquals(inet, rs.getString("inet"));
-                assertEquals(macaddr, rs.getString("macaddr"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(cidr, rs.getString("cidr"));
+                    assertEquals(inet, rs.getString("inet"));
+                    assertEquals(macaddr, rs.getString("macaddr"));
+                }
             }
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
             statement.execute();
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(cidr, rs.getString("cidr"));
-                assertEquals(inet, rs.getString("inet"));
-                assertEquals(macaddr, rs.getString("macaddr"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(cidr, rs.getString("cidr"));
+                    assertEquals(inet, rs.getString("inet"));
+                    assertEquals(macaddr, rs.getString("macaddr"));
+                }
             }
         }
     }
@@ -281,20 +288,22 @@ public class PostgreSQLTypeTest extends BaseTest {
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(bit, rs.getString("bit"));
-                assertEquals(bitVarying, rs.getString("bit_varying"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(bit, rs.getString("bit"));
+                    assertEquals(bitVarying, rs.getString("bit_varying"));
+                }
             }
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
             statement.execute();
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(bit, rs.getString("bit"));
-                assertEquals(bitVarying, rs.getString("bit_varying"));
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(bit, rs.getString("bit"));
+                    assertEquals(bitVarying, rs.getString("bit_varying"));
+                }
             }
         }
     }
@@ -321,22 +330,24 @@ public class PostgreSQLTypeTest extends BaseTest {
         try (Statement statement = connection.createStatement()) {
             statement.execute(insert.sql());
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(uuid, rs.getObject("uuid"));
-                assertEquals(xml, rs.getString("xml"));
-                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(uuid, rs.getObject("uuid"));
+                    assertEquals(xml, rs.getString("xml"));
+                    assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
+                }
             }
         }
 
         try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
             statement.execute();
 
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(uuid, rs.getObject("uuid"));
-                assertEquals(xml, rs.getString("xml"));
-                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(uuid, rs.getObject("uuid"));
+                    assertEquals(xml, rs.getString("xml"));
+                    assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
+                }
             }
         }
     }

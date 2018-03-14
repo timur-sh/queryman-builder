@@ -44,32 +44,34 @@ public class UpdateTest extends BaseTest  {
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(query.sql());
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(rs.getInt(1), 11);
-                assertEquals(rs.getInt(2), 12);
-                assertEquals(rs.getInt(3), 13);
-                assertEquals(rs.getInt(4), 14);
-                assertEquals(rs.getInt(5), 15);
-                assertEquals(rs.getInt(6), 16);
-                assertEquals(rs.getInt(7), 17);
-                assertEquals(rs.getBoolean(8), false);
+            try  (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(rs.getInt(1), 11);
+                    assertEquals(rs.getInt(2), 12);
+                    assertEquals(rs.getInt(3), 13);
+                    assertEquals(rs.getInt(4), 14);
+                    assertEquals(rs.getInt(5), 15);
+                    assertEquals(rs.getInt(6), 16);
+                    assertEquals(rs.getInt(7), 17);
+                    assertEquals(rs.getBoolean(8), false);
+                }
             }
 
         }
 
         try (PreparedStatement statement = query.buildPreparedStatement(connection)) {
             statement.execute();
-            ResultSet rs = statement.getResultSet();
-            while (rs.next()) {
-                assertEquals(rs.getInt(1), 11);
-                assertEquals(rs.getInt(2), 12);
-                assertEquals(rs.getInt(3), 13);
-                assertEquals(rs.getInt(4), 14);
-                assertEquals(rs.getInt(5), 15);
-                assertEquals(rs.getInt(6), 16);
-                assertEquals(rs.getInt(7), 17);
-                assertEquals(rs.getBoolean(8), false);
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next()) {
+                    assertEquals(rs.getInt(1), 11);
+                    assertEquals(rs.getInt(2), 12);
+                    assertEquals(rs.getInt(3), 13);
+                    assertEquals(rs.getInt(4), 14);
+                    assertEquals(rs.getInt(5), 15);
+                    assertEquals(rs.getInt(6), 16);
+                    assertEquals(rs.getInt(7), 17);
+                    assertEquals(rs.getBoolean(8), false);
+                }
             }
         }
     }
