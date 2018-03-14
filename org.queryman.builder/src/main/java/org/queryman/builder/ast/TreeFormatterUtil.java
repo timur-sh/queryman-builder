@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.queryman.builder.token.PreparedExpression;
+import org.queryman.builder.token.expression.prepared.ArrayExpression;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,7 +62,10 @@ public class TreeFormatterUtil {
 
             SortedSet<Integer> sorted = new TreeSet<>(params.keySet());
             for (int key : sorted) {
-                builder.append(String.format("\n\t%d -> %s", key, params.get(key)));
+                if (params.get(key) instanceof ArrayExpression)
+                    builder.append(String.format("\n\t%d -> %s", key, String.valueOf(params.get(key))));
+                else
+                    builder.append(String.format("\n\t%d -> %s", key, String.valueOf(params.get(key).getValue())));
             }
             builder.append("\n}");
 

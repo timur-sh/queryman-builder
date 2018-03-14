@@ -68,7 +68,7 @@ class InsertImplTest {
         String sql = Queryman.insertInto("book")
            .as("b")
            .columns("id", "name")
-           .values(select("id", "name").from("book"))
+           .query(select("id", "name").from("book"))
            .onConflict()
            .doNothing()
            .returning("id")

@@ -7,11 +7,16 @@
 package org.queryman.builder.command.insert;
 
 import org.queryman.builder.Query;
-import org.queryman.builder.token.Expression;
 
 /**
  * @author Timur Shaidullin
  */
 public interface InsertValuesManyStep extends InsertValuesStep {
-    InsertOnConflictStep values(Query query);
+    /**
+     * Set query which output values are used to insert.
+     *
+     * @param query sub select
+     * @return insert on conflict step
+     */
+    InsertOnConflictStep query(Query query);
 }

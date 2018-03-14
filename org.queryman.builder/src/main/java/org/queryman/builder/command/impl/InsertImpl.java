@@ -53,6 +53,7 @@ import static org.queryman.builder.Queryman.asSubQuery;
 import static org.queryman.builder.Queryman.condition;
 import static org.queryman.builder.Queryman.conditionExists;
 import static org.queryman.builder.Queryman.nodeMetadata;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.utils.ArrayUtils.toExpression;
@@ -131,7 +132,7 @@ public class InsertImpl extends AbstractQuery implements
                .endNode()
                .endNode();
         else if (queryValues != null)
-            tree.startNode(nodeMetadata(VALUES), ", ")
+            tree.startNode(EMPTY)
                .addLeaf(asSubQuery(queryValues))
                .endNode();
 
@@ -238,7 +239,7 @@ public class InsertImpl extends AbstractQuery implements
     }
 
     @Override
-    public final InsertImpl values(Query query) {
+    public final InsertImpl query(Query query) {
         queryValues = query;
         return this;
     }

@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.Queryman.asConstant;
 import static org.queryman.builder.Queryman.asName;
 import static org.queryman.builder.Queryman.insertInto;
+import static org.queryman.builder.Queryman.select;
 
 /**
  * @author Timur Shaidullin
@@ -36,6 +37,40 @@ public class PostgreSQLTypeTest extends BaseTest {
     @BeforeAll
     static void beforeAll() {
         connection = JDBC.createConnection();
+    }
+
+    @Test
+    void listInsert() throws SQLException {
+        short   s1 = 1;
+        int     s2 = 2;
+
+        InsertFinalStep insert = insertInto("types")
+           .columns(
+              "smallint",
+              "integer"
+           )
+           .query(select(s1, s2))
+           .returning("*");
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(insert.sql());
+            ResultSet rs = statement.getResultSet();
+
+            while (rs.next()) {
+                assertEquals(s1, rs.getShort("smallint"));
+                assertEquals(s2, rs.getInt("integer"));
+            }
+        }
+
+        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
+            statement.execute();
+            ResultSet rs = statement.getResultSet();
+
+            while (rs.next()) {
+                assertEquals(s1, rs.getShort("smallint"));
+                assertEquals(s2, rs.getInt("integer"));
+            }
+        }
     }
 
     @Test
@@ -139,9 +174,9 @@ public class PostgreSQLTypeTest extends BaseTest {
     @Test
     void dateTest() throws SQLException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Date date = new Date(System.currentTimeMillis());
-        Time time = new Time(System.currentTimeMillis());
-        String interval = "3 years 2 mons 02:03:00";
+        Date      date      = new Date(System.currentTimeMillis());
+        Time      time      = new Time(System.currentTimeMillis());
+        String    interval  = "3 years 2 mons 02:03:00";
 
         InsertFinalStep insert = insertInto("types")
            .columns(
@@ -187,8 +222,8 @@ public class PostgreSQLTypeTest extends BaseTest {
 
     @Test
     void netTest() throws SQLException {
-        String cidr = "192.168.1.5/32";
-        String inet = "192.168.100.128/25";
+        String cidr    = "192.168.1.5/32";
+        String inet    = "192.168.100.128/25";
         String macaddr = "08:00:2b:01:02:03";
 
         InsertFinalStep insert = insertInto("types")
@@ -229,7 +264,7 @@ public class PostgreSQLTypeTest extends BaseTest {
 
     @Test
     void bitTest() throws SQLException {
-        String bit = "1";
+        String bit        = "1";
         String bitVarying = "101";
 
         InsertFinalStep insert = insertInto("types")
@@ -266,9 +301,9 @@ public class PostgreSQLTypeTest extends BaseTest {
 
     @Test
     void otherTest() throws SQLException {
-        UUID uuid = UUID.randomUUID();
-        String xml = "<foo>bar</foo>";
-        int[] arr = {1, 2, 3};
+        UUID   uuid = UUID.randomUUID();
+        String xml  = "<foo>bar</foo>";
+        int[]  arr  = { 1, 2, 3 };
 
         InsertFinalStep insert = insertInto("types")
            .columns(
@@ -277,9 +312,9 @@ public class PostgreSQLTypeTest extends BaseTest {
               "arr_int"
            )
            .values(
-              asConstant(uuid),
+              uuid,
               asConstant(xml).cast("xml"),
-              asConstant(arr)
+              arr
            )
            .returning("*");
 
@@ -290,7 +325,7 @@ public class PostgreSQLTypeTest extends BaseTest {
             while (rs.next()) {
                 assertEquals(uuid, rs.getObject("uuid"));
                 assertEquals(xml, rs.getString("xml"));
-                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[])rs.getArray("arr_int").getArray());
+                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
             }
         }
 
@@ -301,7 +336,7 @@ public class PostgreSQLTypeTest extends BaseTest {
             while (rs.next()) {
                 assertEquals(uuid, rs.getObject("uuid"));
                 assertEquals(xml, rs.getString("xml"));
-                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[])rs.getArray("arr_int").getArray());
+                assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
             }
         }
     }
