@@ -6,9 +6,12 @@
  */
 package org.queryman.builder.token.expression;
 
+import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
 
-import static org.queryman.builder.Queryman.asConstant;
+import java.util.Arrays;
+
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * Represent a list of value expressions.
@@ -24,7 +27,7 @@ public class ListExpression<T> extends PreparedExpression {
     /**
      * Contains a variables for ARRAY and LIST expressions.
      */
-    private T[] arr;
+    private Expression[] arr;
 
     private ListExpression(String constant) {
         super(constant);
@@ -33,7 +36,7 @@ public class ListExpression<T> extends PreparedExpression {
     @SafeVarargs
     public ListExpression(T... constants) {
         this("");
-        arr = constants;
+        arr = toExpressions(constants);
     }
 
     /**
@@ -47,7 +50,7 @@ public class ListExpression<T> extends PreparedExpression {
         String[] result = new String[arr.length];
 
         for (int i = 0; i < arr.length; i++) {
-            result[i] = asConstant(arr[i]).getName();
+            result[i] = arr[i].getName();
         }
 
         return "(" + String.join(", ", result) + ")";
@@ -62,16 +65,18 @@ public class ListExpression<T> extends PreparedExpression {
 
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] instanceof PreparedExpression)
-                result[i] = ((PreparedExpression)asConstant(arr[i])).getPlaceholder();
+                result[i] = ((PreparedExpression)arr[i]).getPlaceholder();
             else
-                result[i] = asConstant(arr[i]).getName();
+                result[i] = arr[i].getName();
         }
 
         return "(" + String.join(", ", result) + ")";
     }
 
     @Override
-    public Object[] getValue() {
-        return arr;
+    public PreparedExpression[] getValue() {
+        return Arrays.stream(arr)
+           .filter(v -> v instanceof PreparedExpression)
+           .toArray(PreparedExpression[]::new);
     }
 }

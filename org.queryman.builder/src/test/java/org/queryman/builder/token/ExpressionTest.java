@@ -134,7 +134,7 @@ class ExpressionTest {
         assertEquals("('one', 'two')", asList(numbers).getName());
 
         Expression strings = asList("one", "two", "three", "four", "five", "six");
-        assertEquals("('one', 'two', 'three', 'four', 'five', 'six')", strings.getName());
+        assertEquals("(one, two, three, four, five, six)", strings.getName());
 
         Expression chars = asList('1', '2', '3', '4', '5', '6');
         assertEquals("('1', '2', '3', '4', '5', '6')", chars.getName());
@@ -151,7 +151,9 @@ class ExpressionTest {
         Expression longs = asList(1L, 2L, 0xFF_EC_DE_5E, 1_2_3L);
         assertEquals("(1, 2, -1253794, 123)", longs.getName());
 
-        assertEquals("('one', 'two')", asList(List.of("one", "two")).getName());
+        assertEquals("('one', 'two')", asList(asConstant("one"), asConstant("two")).getName());
+
+        assertEquals("('1', '2')", asList(List.of(asConstant("1"), asConstant('2'))).getName());
 
         assertEquals("('1', '2')", asList(List.of('1', '2')).getName());
 
@@ -170,7 +172,7 @@ class ExpressionTest {
         assertEquals("(1, 2)", asList(numbers2).getName());
 
         Expression strings = asList("1", "2");
-        assertEquals("('1', '2')", strings.getName());
+        assertEquals("(1, 2)", strings.getName());
 
         Expression chars = asList('1', '2', '3', '4', '5', '6');
         assertEquals("('1', '2', '3', '4', '5', '6')", chars.getName());
@@ -187,7 +189,7 @@ class ExpressionTest {
         Expression longs = asList(1L, 2L, 0xFF_EC_DE_5E, 1_2_3L);
         assertEquals("(1, 2, -1253794, 123)", longs.getName());
 
-        assertEquals("('one', 'two')", asList(List.of("one", "two")).getName());
+        assertEquals("('one', 'two')", asList(asConstant("one"), asConstant("two")).getName());
 
         assertEquals("('1', '2')", asList(List.of('1', '2')).getName());
 

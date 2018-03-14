@@ -211,7 +211,7 @@ public class ConditionsImplTest {
         String[]   numbers    = { "one", "two", "three", "four", "five", "six" };
         Conditions conditions = condition(asName("number"), IN, asList(numbers));
         assembleAst(conditions);
-        assertEquals("WHERE number IN ('one', 'two', 'three', 'four', 'five', 'six')", ast.toString());
+        assertEquals("WHERE number IN (one, two, three, four, five, six)", ast.toString());
 
         Conditions conditions3 = condition(asName("number"), NOT_IN, asList(List.of(1, 2)));
         assembleAst(conditions3);

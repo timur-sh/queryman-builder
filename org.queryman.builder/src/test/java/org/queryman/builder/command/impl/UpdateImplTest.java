@@ -21,13 +21,14 @@ import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
 class UpdateImplTest {
     @Test
-    void updateSetTest() {
-        String sql = update("book")
+    void updateSetTest() throws NoSuchFieldException, IllegalAccessException {
+        Query query = update("book")
            .set(asList(asName("id"), asName("name")), asList(1, asConstant("Timur")))
            .set(asList(asName("year"), asName("price")), select("year", "price").from("book"))
-           .from("order")
-           .sql();
-        assertEquals("UPDATE book SET (id, name) = (1, 'Timur'), (year, price) = (SELECT year, price FROM book) FROM order", sql);
+           .from("order");
+
+        assertEquals("UPDATE book SET (id, name) = (1, 'Timur'), (year, price) = (SELECT year, price FROM book) FROM order", query.sql());
+        assertEquals("UPDATE book SET (id, name) = (?, ?), (year, price) = (SELECT year, price FROM book) FROM order", buildPreparedSQL(query));
     }
 
     @Test

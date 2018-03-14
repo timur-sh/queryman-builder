@@ -6,9 +6,9 @@
  */
 package org.queryman.builder.ast;
 
-import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
 import org.queryman.builder.token.Token;
+import org.queryman.builder.token.expression.ListExpression;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -79,17 +79,27 @@ final class TreeFormatter {
     private List<String> leavesToStrings(Node node, boolean prepare) {
         List<String> list = new ArrayList<>();
 
-        for (Token t : node.getLeaves()) {
-            if (prepare && t instanceof PreparedExpression) {
-                PreparedExpression expression = (PreparedExpression) t;
+        for (Token token : node.getLeaves()) {
+            if (prepare && token instanceof PreparedExpression) {
+                PreparedExpression expression = (PreparedExpression) token;
                 list.add(expression.getPlaceholder());
 
-                synchronized (parameters) {
-                    parameters.put(parameters.size() + 1, expression);
+                if (token instanceof ListExpression) {
+                    PreparedExpression[] prepared = ((ListExpression) token).getValue();
+                    for (PreparedExpression p : prepared) {
+                        synchronized (parameters) {
+                            parameters.put(parameters.size() + 1, p);
+                        }
+                    }
+                } else {
+                    synchronized (parameters) {
+                        parameters.put(parameters.size() + 1, expression);
+                    }
                 }
 
+
             } else {
-                list.add(t.getName());
+                list.add(token.getName());
             }
         }
 
