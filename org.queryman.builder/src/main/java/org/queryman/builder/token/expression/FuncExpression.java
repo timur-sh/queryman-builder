@@ -7,6 +7,7 @@
 package org.queryman.builder.token.expression;
 
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
 import org.queryman.builder.utils.StringUtils;
 
 import java.util.Arrays;
@@ -17,8 +18,9 @@ import static org.queryman.builder.Queryman.asName;
 /**
  * @author Timur Shaidullin
  */
-public class FuncExpression extends Expression {
+public class FuncExpression extends PreparedExpression {
     private Expression expression;
+    private Expression[] values;
 
     public FuncExpression(String constant) {
         super(constant);
@@ -28,6 +30,11 @@ public class FuncExpression extends Expression {
         this(name);
 
         Objects.requireNonNull(expression);
+
+        if (expression instanceof PreparedExpression) {
+            ((PreparedExpression) expression).getValue()
+        }
+
         this.expression = expression;
     }
 
@@ -60,5 +67,10 @@ public class FuncExpression extends Expression {
             return String.join("", name, result);
 
         return String.join("", name, "(", result, ")");
+    }
+
+    @Override
+    public Object getValue() {
+        return values;
     }
 }

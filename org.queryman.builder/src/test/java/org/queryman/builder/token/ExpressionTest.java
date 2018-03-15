@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.queryman.builder.Queryman.all;
@@ -43,46 +44,72 @@ class ExpressionTest {
     @Test
     void constantExpression() {
         assertEquals("table_name", asName("table_name").getName());
+
         assertEquals("234.11", asConstant(234.11d).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(234.11d)).getPlaceholder());
+        assertEquals(234.11, ((PreparedExpression) asConstant(234.11d)).getValue());
         assertTrue(asConstant(234.11d) instanceof DoubleExpression);
 
         assertEquals("0.5", asConstant(.50f).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(.50f)).getPlaceholder());
+        assertEquals(0.5f, ((PreparedExpression) asConstant(.50f)).getValue());
         assertTrue(asConstant(.50f) instanceof FloatExpression);
 
         assertEquals("1", asConstant((byte) 1).getName());
+        assertEquals("?", ((PreparedExpression) asConstant((byte) 1)).getPlaceholder());
+        assertEquals((byte) 1, ((PreparedExpression) asConstant((byte) 1)).getValue());
         assertTrue(asConstant((byte) 1) instanceof ByteExpression);
 
         assertEquals("1", asConstant(1).getName());
+        assertEquals("?", ((PreparedExpression) asConstant( 1)).getPlaceholder());
+        assertEquals(1, ((PreparedExpression) asConstant(1)).getValue());
         assertTrue(asConstant(1) instanceof IntegerExpression);
 
         assertEquals("1", asConstant(1L).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(1L)).getPlaceholder());
+        assertEquals(1L, ((PreparedExpression) asConstant(1L)).getValue());
         assertTrue(asConstant(1L) instanceof LongExpression);
 
         assertEquals("1", asConstant((short) 1).getName());
+        assertEquals("?", ((PreparedExpression) asConstant((short) 1)).getPlaceholder());
+        assertEquals((short) 1, ((PreparedExpression) asConstant((short) 1)).getValue());
         assertTrue(asConstant((short) 1) instanceof ShortExpression);
 
         assertEquals("true", asConstant(true).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(true)).getPlaceholder());
+        assertEquals(true, ((PreparedExpression) asConstant(true)).getValue());
         assertTrue(asConstant(true) instanceof BooleanExpression);
 
         Date d1 = new Date();
         SimpleDateFormat format = new SimpleDateFormat("Y-MM-dd");
 
         assertEquals("'" + format.format(d1) + "'", asConstant(d1).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(d1)).getPlaceholder());
+        assertEquals(d1, ((PreparedExpression) asConstant(d1)).getValue());
         assertTrue(asConstant(d1) instanceof DateExpression);
 
         java.sql.Date d2 = new java.sql.Date(d1.getTime());
         assertEquals("'" + format.format(d2) + "'", asConstant(d2).getName());
         assertTrue(asConstant(d2) instanceof DateExpression);
 
-        assertTrue(asConstant(new Time(System.currentTimeMillis())) instanceof TimeExpression);
+        Time time = new Time(System.currentTimeMillis());
+        assertEquals("?", ((PreparedExpression) asConstant(time)).getPlaceholder());
+        assertEquals(time, ((PreparedExpression) asConstant(time)).getValue());
+        assertTrue(asConstant(time) instanceof TimeExpression);
 
-        assertTrue(asConstant(new Timestamp(System.currentTimeMillis())) instanceof TimestampExpression);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        assertEquals("?", ((PreparedExpression) asConstant(timestamp)).getPlaceholder());
+        assertEquals(timestamp, ((PreparedExpression) asConstant(timestamp)).getValue());
+        assertTrue(asConstant(timestamp) instanceof TimestampExpression);
 
         assertEquals("NULL", asConstant(null).getName());
         assertTrue(asConstant(null) instanceof NullExpression);
 
-        assertEquals("1", asConstant(new BigDecimal(1)).getName());
-        assertTrue(asConstant(new BigDecimal(1)) instanceof BigDecimalExpression);
+        BigDecimal bigDecimal = new BigDecimal(1);
+        assertEquals("1", asConstant(bigDecimal).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(bigDecimal)).getPlaceholder());
+        assertEquals(bigDecimal, ((PreparedExpression) asConstant(bigDecimal)).getValue());
+        assertTrue(asConstant(bigDecimal) instanceof BigDecimalExpression);
     }
 
     @Test
@@ -91,26 +118,37 @@ class ExpressionTest {
         Byte[] b1 = { 1, 2, 3 };
 
         assertEquals("ARRAY[1, 2, 3]", asConstant(b).getName());
+        assertEquals("?", ((PreparedExpression) asConstant(b)).getPlaceholder());
         assertTrue(asConstant(b) instanceof BytesExpression);
 
         assertEquals("ARRAY[1, 2, 3]", asConstant(b1).getName());
+        assertArrayEquals(b1, ( Byte[])((PreparedExpression) asConstant(b1)).getValue());
         assertTrue(asConstant(b1) instanceof BytesExpression);
     }
 
     @Test
     void stringConstantExpression() {
         assertEquals("'Timur'", asConstant("Timur").getName());
+        assertEquals("?", ((PreparedExpression) asConstant("Timur")).getPlaceholder());
+        assertEquals("Timur", ((PreparedExpression) asConstant("Timur")).getValue());
 
         assertEquals("'I''m Timur'", asConstant("I'm Timur").getName());
+        assertEquals("I'm Timur", ((PreparedExpression) asConstant("I'm Timur")).getValue());
     }
 
     @Test
     void dollarStringExpression() {
         assertEquals("$$Timur$$", asDollarString("Timur").getName());
+        assertEquals("?", ((PreparedExpression) asDollarString("Timur")).getPlaceholder());
+        assertEquals("Timur", ((PreparedExpression) asDollarString("Timur")).getValue());
 
         assertEquals("$$I'm Timur$$", asDollarString("I'm Timur").getName());
+        assertEquals("?", ((PreparedExpression) asDollarString("I'm Timur")).getPlaceholder());
+        assertEquals("I'm Timur", ((PreparedExpression) asDollarString("I'm Timur")).getValue());
 
         assertEquals("$name$I'm Timur$name$", asDollarString("I'm Timur", "name").getName());
+        assertEquals("?", ((PreparedExpression) asDollarString("I'm Timur", "name")).getPlaceholder());
+        assertEquals("I'm Timur", ((PreparedExpression) asDollarString("I'm Timur", "name")).getValue());
     }
 
     @Test
@@ -131,7 +169,10 @@ class ExpressionTest {
         assertEquals("()", asList().getName());
 
         Expression[] numbers = new Expression[]{ asConstant("one"), asConstant("two") };
+
         assertEquals("('one', 'two')", asList(numbers).getName());
+        assertEquals("(?, ?)", ((PreparedExpression) asList(numbers)).getPlaceholder());
+        assertArrayEquals(numbers, (Expression[])((PreparedExpression) asList(numbers)).getValue());
 
         Expression strings = asList("one", "two", "three", "four", "five", "six");
         assertEquals("(one, two, three, four, five, six)", strings.getName());
@@ -232,6 +273,9 @@ class ExpressionTest {
     @Test
     void functionAll() {
         assertEquals("ALL(ARRAY[])", all(asArray()).getName());
+        assertEquals("ALL(?)", ((PreparedExpression) all(asArray())).getPlaceholder());
+        assertEquals(asArray(), (Expression[])((PreparedExpression) all(asArray())).getValue());
+
         assertEquals("ALL(ARRAY[1, 2])", all(asArray(1, 2)).getName());
         assertEquals("ALL()", all(asList()).getName());
         assertEquals("ALL(1, 2)", all(asList(1, 2)).getName());

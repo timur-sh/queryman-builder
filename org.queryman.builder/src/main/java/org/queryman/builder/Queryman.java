@@ -667,84 +667,15 @@ public class Queryman {
      *     ...
      * </code>
      *
-     * @param leftValue  left operand
-     * @param operator   operator
-     * @param rightValue right operand
-     * @param <T> String, Expression, Operator or Query object
+     * @param leftValue  left operand, it may by any primitive or its wrapper.
+     * @param operator   operator, String or Operator object
+     * @param rightValue right operand, it may by any primitive or its wrapper.
+     * @param <T> Any primitive or its wrapper, Expression, Operator or Query object
      *
      * @return {@link Conditions}
-     *
-     * @see #condition(Expression, Operator, Expression)
      */
     public static <T> Conditions condition(T leftValue, T operator, T rightValue) {
-        return condition(toExpression(leftValue), operator(operator), toExpression(rightValue));
-    }
-
-    /**
-     * Creates a condition
-     * <code>
-     *     ...
-     *     .where(condition(asName("id"), "=", asConstant(1)))
-     *     ...
-     * </code>
-     *
-     * @param leftValue  left operand
-     * @param operator   operator
-     * @param rightValue right operand
-     *
-     * @return {@link Conditions}
-     *
-     * @see #operator(Object)
-     * @see #condition(Expression, Operator, Expression)
-     */
-    public static Conditions condition(Expression leftValue, String operator, Expression rightValue) {
-        return condition(leftValue, operator(operator), rightValue);
-    }
-
-    /**
-     * Creates a condition
-     * <code>
-     *     ...
-     *     .where(condition(asName("id"), operator("="), asConstant(1)))
-     *     ...
-     * </code>
-     *
-     * @param leftValue  left operand
-     * @param operator   operator
-     * @param rightValue right operand
-     *
-     * @return {@link Conditions}
-     *
-     * @see #operator(Object)
-     */
-    public static Conditions condition(Expression leftValue, Operator operator, Expression rightValue) {
-        return new ConditionsImpl(leftValue, new NodeMetadata(operator), rightValue);
-    }
-
-    //----
-    // BETWEEN CONDITIONS
-    //----
-
-    /**
-     * Creates a BETWEEN condition
-     * <code>
-     *     ...
-     *     .where(conditionBetween(asName("id"), asConstant(2), asConstant(10)))
-     *     ...
-     * </code>
-     *
-     * @param field  field
-     * @param value1 left value of AND
-     * @param value2 right value of AND
-     *
-     * @return {@link Conditions}
-     *
-     * @see #operator(Object)
-     *
-     * @see #conditionBetween(String, String, String)
-     */
-    public static Conditions conditionBetween(Expression field, Expression value1, Expression value2) {
-        return new ConditionsImpl(NodesMetadata.BETWEEN, field, condition(value1, operator("AND"), value2));
+        return new ConditionsImpl(toExpression(leftValue), new NodeMetadata(operator(operator)), toExpression(rightValue));
     }
 
     /**
@@ -758,13 +689,14 @@ public class Queryman {
      * @param field  field
      * @param value1 left value of AND
      * @param value2 right value of AND
+     * @param <T> any primitive or its wrapper ot Expression
+     * @param <F> String or Expression
      *
      * @return {@link Conditions}
-     *
-     * @see #conditionBetween(String, String, String)
      */
-    public static Conditions conditionBetween(String field, String value1, String value2) {
-        return conditionBetween(asName(field), asName(value1), asName(value2));
+    public static <F, T> Conditions conditionBetween(F field, T value1, T value2) {
+        Expression exp = field instanceof Expression ? (Expression) field : asName(String.valueOf(field));
+        return new ConditionsImpl(NodesMetadata.BETWEEN, exp, condition(toExpression(value1), operator("AND"), toExpression(value2)));
     }
 
     //----
@@ -828,7 +760,6 @@ public class Queryman {
      * @param operator operator
      * @param query    subquery -right operand
      * @return {@link Conditions}
-     * @see #conditionAny(Expression, Operator, Query)
      */
     public static <T> Conditions conditionAll(T field, T operator, Query query) {
         return condition(toExpression(field), operator, all(query));

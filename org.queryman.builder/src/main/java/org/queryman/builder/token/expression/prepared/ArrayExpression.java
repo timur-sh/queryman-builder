@@ -6,11 +6,15 @@
  */
 package org.queryman.builder.token.expression.prepared;
 
+import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
+import org.queryman.builder.utils.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * This is a ARRAY expressions. If you would use a prepared expression, see
@@ -29,13 +33,13 @@ public class ArrayExpression<T> extends PreparedExpression {
     /**
      * Contains variables for ARRAY expressions.
      */
-    private T[] values;
+    private Expression[] values;
 
     @SafeVarargs
     @SuppressWarnings("unchecked")
     public ArrayExpression(T... constants) {
         super(null);
-        values = constants;
+        values = constants != null ? toExpressions(constants) : null;
     }
 
     /**
@@ -47,7 +51,7 @@ public class ArrayExpression<T> extends PreparedExpression {
             return "ARRAY[]";
 
         String[] result = Arrays.stream(values)
-           .map(v -> asConstant(v).getName())
+           .map(Expression::getName)
            .toArray(String[]::new);
 
         return "ARRAY[" + String.join(", ", result) + "]";

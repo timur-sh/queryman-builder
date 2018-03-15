@@ -7,6 +7,8 @@
 package org.queryman.builder.ast;
 
 import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
+import org.queryman.builder.command.Conditions;
 
 import java.lang.reflect.Field;
 
@@ -26,4 +28,23 @@ public class TreeFormatterTestUtil {
     public static String buildPreparedSQL(Query query) throws NoSuchFieldException, IllegalAccessException {
         return new TreeFormatter().buildSQL(tree(query).getRootNode(), true);
     }
+
+    public static String buildPreparedSQL(Conditions conditions) {
+        AbstractSyntaxTree tree = Queryman.getTree();
+
+        tree.startNode(NodesMetadata.EMPTY);
+        conditions.assemble(tree);
+        tree.endNode();
+        return new TreeFormatter().buildSQL(tree.getRootNode(), true);
+    }
+
+    public static String buildSQL(Conditions conditions) {
+        AbstractSyntaxTree tree = Queryman.getTree();
+
+        tree.startNode(NodesMetadata.EMPTY);
+        conditions.assemble(tree);
+        tree.endNode();
+        return new TreeFormatter().buildSQL(tree.getRootNode(), false);
+    }
+
 }

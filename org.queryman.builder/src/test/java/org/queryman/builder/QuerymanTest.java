@@ -45,4 +45,15 @@ class QuerymanTest {
         assertEquals("\"table\".\"column\"", asQuotedName("table.column").getName());
     }
 
+    @Test
+    void conditionTests() {
+//        Queryman.condition();
+//        Queryman.conditionAll();
+//        Queryman.conditionAny();
+//        Queryman.conditionSome();
+//        Queryman.conditionBetween();
+//        Queryman.conditionExists();
+    }
+
+
 }

@@ -14,6 +14,12 @@ CREATE TABLE book
   price  REAL
 );
 
+CREATE TABLE orders (
+  id     SERIAL NOT NULL,
+  book_id BIGINT,
+  author_id BIGINT
+);
+
 CREATE TABLE author (
   id BIGSERIAL NOT NULL,
   name VARCHAR(255)

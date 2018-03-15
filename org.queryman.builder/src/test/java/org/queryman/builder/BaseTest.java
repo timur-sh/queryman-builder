@@ -81,8 +81,9 @@ public class BaseTest {
         try (Statement statement = dataSource.getConnection().createStatement()) {
             statement.execute(query.sql());
             try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next())
-                    test.doIt(rs);
+                if (rs != null)
+                    while (rs.next())
+                        test.doIt(rs);
             }
         }
     }
@@ -91,8 +92,9 @@ public class BaseTest {
         try (PreparedStatement statement = query.buildPreparedStatement(dataSource.getConnection())) {
             statement.execute();
             try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next())
-                    test.doIt(rs);
+                if (rs != null)
+                    while (rs.next())
+                        test.doIt(rs);
             }
         }
     }
