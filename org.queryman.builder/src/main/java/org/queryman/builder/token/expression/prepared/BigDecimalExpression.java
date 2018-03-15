@@ -9,6 +9,7 @@ package org.queryman.builder.token.expression.prepared;
 import org.queryman.builder.token.PreparedExpression;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 
 /**
@@ -29,5 +30,11 @@ public class BigDecimalExpression extends PreparedExpression<BigDecimal> {
     @Override
     public BigDecimal getValue() {
         return value;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+        map.put(map.size() + 1, this);
     }
 }

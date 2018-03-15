@@ -8,7 +8,6 @@ package org.queryman.builder.ast;
 
 import org.queryman.builder.token.PreparedExpression;
 import org.queryman.builder.token.Token;
-import org.queryman.builder.token.expression.ListExpression;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -83,19 +82,20 @@ final class TreeFormatter {
             if (prepare && token instanceof PreparedExpression) {
                 PreparedExpression expression = (PreparedExpression) token;
                 list.add(expression.getPlaceholder());
+                expression.bind(parameters);
 
-                if (token instanceof ListExpression) {
-                    PreparedExpression[] prepared = ((ListExpression) token).getValue();
-                    for (PreparedExpression p : prepared) {
-                        synchronized (parameters) {
-                            parameters.put(parameters.size() + 1, p);
-                        }
-                    }
-                } else {
-                    synchronized (parameters) {
-                        parameters.put(parameters.size() + 1, expression);
-                    }
-                }
+//                if (token instanceof ListExpression) {
+//                    PreparedExpression[] prepared = ((ListExpression) token).getValue();
+//                    for (PreparedExpression p : prepared) {
+//                        synchronized (parameters) {
+//                            parameters.put(parameters.size() + 1, p);
+//                        }
+//                    }
+//                } else {
+//                    synchronized (parameters) {
+//                        parameters.put(parameters.size() + 1, expression);
+//                    }
+//                }
 
 
             } else {

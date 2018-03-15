@@ -19,7 +19,6 @@ import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
-import org.queryman.builder.token.expression.prepared.NullExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.StringExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
@@ -31,7 +30,6 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Map;
 
 /**

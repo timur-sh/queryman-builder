@@ -9,8 +9,13 @@ package org.queryman.builder.token.expression;
 import org.queryman.builder.Query;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.token.Expression;
+import org.queryman.builder.token.PreparedExpression;
+
+import java.util.Map;
 
 import static org.queryman.builder.Queryman.getTree;
+import static org.queryman.builder.ast.TreeFormatterUtil.buildPreparedParameters;
+import static org.queryman.builder.ast.TreeFormatterUtil.buildPreparedSQL;
 
 /**
  * Represent a subquery expression.
@@ -21,7 +26,8 @@ import static org.queryman.builder.Queryman.getTree;
  *
  * @author Timur Shaidullin
  */
-public class SubQueryExpression extends Expression {
+public class SubQueryExpression<T> extends PreparedExpression {
+    private Expression[] arr;
     private final Query query;
 
     public SubQueryExpression(Query query) {
@@ -42,5 +48,28 @@ public class SubQueryExpression extends Expression {
 
     public Query getQuery() {
         return query;
+    }
+
+    @Override
+    public String getPlaceholder() {
+        return buildPreparedSQL(query);
+    }
+
+    @Override
+    public Object getValue() {
+        // Method must not be called because it contains list of other
+        // expressions those must be bound using #bind(Map) method
+        throw new IllegalStateException("Method must not be called");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+
+        buildPreparedParameters(query).values().stream()
+           .filter(v -> v instanceof PreparedExpression)
+           .forEach(v -> {
+               map.put(map.size() + 1, v);
+           });
     }
 }

@@ -1,7 +1,9 @@
 package org.queryman.builder.token;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.Queryman;
+import org.queryman.builder.Query;
+import org.queryman.builder.ast.TreeFormatterTestUtil;
+import org.queryman.builder.token.expression.NullExpression;
 import org.queryman.builder.token.expression.prepared.BigDecimalExpression;
 import org.queryman.builder.token.expression.prepared.BooleanExpression;
 import org.queryman.builder.token.expression.prepared.ByteExpression;
@@ -11,7 +13,6 @@ import org.queryman.builder.token.expression.prepared.DoubleExpression;
 import org.queryman.builder.token.expression.prepared.FloatExpression;
 import org.queryman.builder.token.expression.prepared.IntegerExpression;
 import org.queryman.builder.token.expression.prepared.LongExpression;
-import org.queryman.builder.token.expression.prepared.NullExpression;
 import org.queryman.builder.token.expression.prepared.ShortExpression;
 import org.queryman.builder.token.expression.prepared.TimeExpression;
 import org.queryman.builder.token.expression.prepared.TimestampExpression;
@@ -21,7 +22,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -172,7 +175,12 @@ class ExpressionTest {
 
         assertEquals("('one', 'two')", asList(numbers).getName());
         assertEquals("(?, ?)", ((PreparedExpression) asList(numbers)).getPlaceholder());
-        assertArrayEquals(numbers, (Expression[])((PreparedExpression) asList(numbers)).getValue());
+
+        Map<Integer, PreparedExpression> map = new HashMap<>();
+        ((PreparedExpression) asList(numbers)).bind(map);
+        assertTrue(map.size() == 2);
+        assertEquals("one", map.get(1).getValue());
+        assertEquals("two", map.get(2).getValue());
 
         Expression strings = asList("one", "two", "three", "four", "five", "six");
         assertEquals("(one, two, three, four, five, six)", strings.getName());
@@ -256,7 +264,7 @@ class ExpressionTest {
         assertEquals("ARRAY[]", asArray().getName());
 
         String[] numbers2 = { "1", "2" };
-        assertEquals("ARRAY['1', '2']", asArray(numbers2).getName());
+        assertEquals("ARRAY[1, 2]", asArray(numbers2).getName());
         assertEquals("ARRAY['1', '2']", asArray(List.of(asConstant("1"), asConstant("2"))).getName());
     }
 
@@ -273,9 +281,6 @@ class ExpressionTest {
     @Test
     void functionAll() {
         assertEquals("ALL(ARRAY[])", all(asArray()).getName());
-        assertEquals("ALL(?)", ((PreparedExpression) all(asArray())).getPlaceholder());
-        assertEquals(asArray(), (Expression[])((PreparedExpression) all(asArray())).getValue());
-
         assertEquals("ALL(ARRAY[1, 2])", all(asArray(1, 2)).getName());
         assertEquals("ALL()", all(asList()).getName());
         assertEquals("ALL(1, 2)", all(asList(1, 2)).getName());
@@ -322,12 +327,16 @@ class ExpressionTest {
     }
 
     @Test
-    void existsTest() {
-        String sql =select(
-           asFunc("EXISTS", asSubQuery(select("*").from("book"))).as("exists")
-        ).sql();
+    void existsTest() throws NoSuchFieldException, IllegalAccessException {
+        Query query = select(
+           asFunc("EXISTS", asSubQuery(select("*").from("book").where("id", "=", 1))).as("exists")
+        );
 
-        assertEquals("SELECT EXISTS(SELECT * FROM book) AS exists", sql);
+        PreparedExpression prepared = (PreparedExpression) asSubQuery(select("*").from("book").where("id", "=", 1));
+
+        assertEquals("SELECT EXISTS(SELECT * FROM book WHERE id = 1) AS exists", query.sql());
+        assertEquals("SELECT * FROM book WHERE id = ?", prepared.getPlaceholder());
+        assertEquals("SELECT EXISTS(SELECT * FROM book WHERE id = ?) AS exists", TreeFormatterTestUtil.buildPreparedSQL(query));
     }
 
     @Test

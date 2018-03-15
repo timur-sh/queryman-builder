@@ -6,15 +6,12 @@
  */
 package org.queryman.builder.token.expression.prepared;
 
-import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
-import org.queryman.builder.utils.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.Map;
 
-import static org.queryman.builder.Queryman.asConstant;
-import static org.queryman.builder.utils.ArrayUtils.toExpressions;
+import static org.queryman.builder.utils.ExpressionUtil.toExpression;
 
 /**
  * This is a ARRAY expressions. If you would use a prepared expression, see
@@ -33,13 +30,13 @@ public class ArrayExpression<T> extends PreparedExpression {
     /**
      * Contains variables for ARRAY expressions.
      */
-    private Expression[] values;
+    private T[] values;
 
     @SafeVarargs
     @SuppressWarnings("unchecked")
     public ArrayExpression(T... constants) {
         super(null);
-        values = constants != null ? toExpressions(constants) : null;
+        values = constants;
     }
 
     /**
@@ -51,7 +48,7 @@ public class ArrayExpression<T> extends PreparedExpression {
             return "ARRAY[]";
 
         String[] result = Arrays.stream(values)
-           .map(Expression::getName)
+           .map(v -> toExpression(v).getName())
            .toArray(String[]::new);
 
         return "ARRAY[" + String.join(", ", result) + "]";
@@ -60,5 +57,11 @@ public class ArrayExpression<T> extends PreparedExpression {
     @Override
     public Object[] getValue() {
         return values;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+        map.put(map.size() + 1, this);
     }
 }

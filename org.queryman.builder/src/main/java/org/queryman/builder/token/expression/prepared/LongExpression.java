@@ -8,6 +8,8 @@ package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
 
+import java.util.Map;
+
 /**
  * This class is representation of long constant.
  *
@@ -26,5 +28,11 @@ public class LongExpression extends PreparedExpression<Long> {
     @Override
     public Long getValue() {
         return value;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+        map.put(map.size() + 1, this);
     }
 }

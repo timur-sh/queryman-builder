@@ -11,6 +11,7 @@ import org.queryman.builder.token.PreparedExpression;
 import org.queryman.builder.utils.StringUtils;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.queryman.builder.Queryman.asName;
@@ -20,7 +21,6 @@ import static org.queryman.builder.Queryman.asName;
  */
 public class FuncExpression extends PreparedExpression {
     private Expression expression;
-    private Expression[] values;
 
     public FuncExpression(String constant) {
         super(constant);
@@ -28,13 +28,6 @@ public class FuncExpression extends PreparedExpression {
 
     public FuncExpression(String name, Expression expression) {
         this(name);
-
-        Objects.requireNonNull(expression);
-
-        if (expression instanceof PreparedExpression) {
-            ((PreparedExpression) expression).getValue()
-        }
-
         this.expression = expression;
     }
 
@@ -71,6 +64,19 @@ public class FuncExpression extends PreparedExpression {
 
     @Override
     public Object getValue() {
-        return values;
+        // Method must not be called because it contains list of other
+        // expressions those must be bound using #bind(Map) method
+        throw new IllegalStateException("Method must not be called");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+
+//        Arrays.stream(arr)
+//           .filter(v -> v instanceof PreparedExpression)
+//           .forEach(v -> {
+//               map.put(map.size() + 1, v);
+//           });
     }
 }

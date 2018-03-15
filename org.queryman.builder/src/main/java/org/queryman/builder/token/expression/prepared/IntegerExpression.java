@@ -8,6 +8,8 @@ package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
 
+import java.util.Map;
+
 /**
  * This class is representation of integer constant.
  *
@@ -26,5 +28,11 @@ public class IntegerExpression extends PreparedExpression<Integer> {
     @Override
     public Integer getValue() {
         return value;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+        map.put(map.size() + 1, this);
     }
 }

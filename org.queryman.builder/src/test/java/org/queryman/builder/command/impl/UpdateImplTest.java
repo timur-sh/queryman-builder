@@ -8,7 +8,6 @@ import org.queryman.builder.command.update.UpdateSetStep;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.Operators.IN;
 import static org.queryman.builder.Operators.LT;
@@ -80,7 +79,7 @@ class UpdateImplTest extends BaseTest {
 
 
         assertEquals("UPDATE book AS b SET author_id = 5 WHERE b.id = 1 AND b.id = 2 AND id BETWEEN 1 AND id AND id IN (SELECT 1, 2, 3) AND EXISTS (SELECT 3)", update.sql());
-        assertEquals("UPDATE book AS b SET author_id = ? WHERE b.id = 1 AND b.id = 2 AND id BETWEEN ? AND id AND id IN (SELECT ?, ?, ?) AND EXISTS (SELECT ?)", buildPreparedSQL(update));
+        assertEquals("UPDATE book AS b SET author_id = ? WHERE b.id = 1 AND b.id = 2 AND id BETWEEN ? AND id AND id IN (SELECT 1, 1, 1) AND EXISTS (SELECT 3)", buildPreparedSQL(update));
 
 //        String sql = update.where("id", "=", "1")
 //           .and("id2", "=", "2")

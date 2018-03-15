@@ -10,6 +10,7 @@ import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
@@ -74,9 +75,20 @@ public class ListExpression<T> extends PreparedExpression {
     }
 
     @Override
-    public PreparedExpression[] getValue() {
-        return Arrays.stream(arr)
+    public Object getValue() {
+        // Method must not be called because it contains list of other
+        // expressions those must be bound using #bind(Map) method
+        throw new IllegalStateException("Method must not be called");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+
+        Arrays.stream(arr)
            .filter(v -> v instanceof PreparedExpression)
-           .toArray(PreparedExpression[]::new);
+           .forEach(v -> {
+               map.put(map.size() + 1, v);
+           });
     }
 }

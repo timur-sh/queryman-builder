@@ -4,7 +4,7 @@
  *  License: MIT License
  *  To see license follow by http://queryman.org/license.txt
  */
-package org.queryman.builder.token.expression.prepared;
+package org.queryman.builder.token.expression;
 
 import org.queryman.builder.token.Expression;
 
@@ -23,4 +23,5 @@ public class NullExpression extends Expression {
     protected String prepareName() {
         return name;
     }
+
 }

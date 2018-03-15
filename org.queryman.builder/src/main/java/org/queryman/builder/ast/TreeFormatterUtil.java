@@ -9,6 +9,8 @@ package org.queryman.builder.ast;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.queryman.builder.Query;
+import org.queryman.builder.Queryman;
 import org.queryman.builder.token.PreparedExpression;
 import org.queryman.builder.token.expression.prepared.ArrayExpression;
 
@@ -76,5 +78,22 @@ public class TreeFormatterUtil {
 
         JavaTypeToJdbc mapping = new JavaTypeToJdbc(conn, statement);
         return mapping.bind(formatter.getParameters());
+    }
+
+    public static String buildPreparedSQL(Query query) {
+        AbstractSyntaxTree tree = Queryman.getTree();
+        query.assemble(tree);
+
+        TreeFormatter formatter = new TreeFormatter();
+        return formatter.buildSQL(tree.getRootNode(), true);
+    }
+
+    public static Map<Integer, PreparedExpression> buildPreparedParameters(Query query) {
+        AbstractSyntaxTree tree = Queryman.getTree();
+        query.assemble(tree);
+
+        TreeFormatter formatter = new TreeFormatter();
+        formatter.buildSQL(tree.getRootNode(), true);
+        return formatter.getParameters();
     }
 }

@@ -8,6 +8,8 @@ package org.queryman.builder.token.expression.prepared;
 
 import org.queryman.builder.token.PreparedExpression;
 
+import java.util.Map;
+
 /**
  * This is a representation of dollar string constant. Variable is surrounded
  * by single quotes.
@@ -53,5 +55,11 @@ public class DollarStringExpression extends PreparedExpression<String> {
     @Override
     public String getValue() {
         return name;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void bind(Map map) {
+        map.put(map.size() + 1, this);
     }
 }

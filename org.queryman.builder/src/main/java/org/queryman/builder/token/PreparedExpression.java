@@ -7,6 +7,7 @@
 package org.queryman.builder.token;
 
 import java.sql.Connection;
+import java.util.Map;
 
 /**
  * Any prepared expression behaves itself as a simple string in case, when
@@ -43,4 +44,6 @@ public abstract class PreparedExpression<T> extends Expression {
      * @return value of prepared expression
      */
     public abstract T getValue();
+
+    public abstract void bind(Map<Integer, PreparedExpression> map);
 }
