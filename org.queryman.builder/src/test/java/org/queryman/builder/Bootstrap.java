@@ -6,7 +6,8 @@
  */
 package org.queryman.builder;
 
-import org.postgresql.ds.PGSimpleDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 import java.io.FileNotFoundException;
@@ -18,30 +19,26 @@ import java.util.Properties;
  * @author Timur Shaidullin
  */
 public class Bootstrap {
-    private static Properties properties = new Properties();
-    private DataSource dataSource;
+    public static final Bootstrap  BOOT       = new Bootstrap();
+    private final static HikariDataSource dataSource;
+    private static      Properties properties = new Properties();
 
-    public Bootstrap init() {
+    static {
         try {
             load();
         } catch (IOException e) {
             throw new BootstrapException(e.getMessage());
         }
 
-        //todo move it to JNDI
-        PGSimpleDataSource source = new PGSimpleDataSource();
-        source.setUser(properties.getProperty("user"));
-        source.setPassword(properties.getProperty("password"));
-        source.setPortNumber(Integer.valueOf(properties.getProperty("port")));
-        source.setDatabaseName(properties.getProperty("databaseName"));
-        source.setServerName(properties.getProperty("serverName"));
-        this.dataSource = source;
+        HikariConfig config = new HikariConfig(Bootstrap.BOOT.getProperties());
+        config.setIdleTimeout(1000);
+        config.setMaximumPoolSize(50);
 
-        return this;
+        dataSource = new HikariDataSource(config);
     }
 
-    private void load() throws IOException {
-        URL resources = this.getClass().getClassLoader().getResource("database.properties");
+    private static void load() throws IOException {
+        URL resources = Bootstrap.class.getClassLoader().getResource("database.properties");
 
         if (resources != null) {
             properties.load(resources.openStream());
@@ -51,7 +48,11 @@ public class Bootstrap {
         throw new FileNotFoundException("File database.properties not found");
     }
 
-    public DataSource getDataSource() {
+    public HikariDataSource getDataSource() {
         return dataSource;
+    }
+
+    public Properties getProperties() {
+        return properties;
     }
 }

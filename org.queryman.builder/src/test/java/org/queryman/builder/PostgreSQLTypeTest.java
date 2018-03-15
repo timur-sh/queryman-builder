@@ -6,7 +6,6 @@
  */
 package org.queryman.builder;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.command.insert.InsertFinalStep;
 import org.queryman.builder.utils.ArrayUtils;
@@ -32,13 +31,6 @@ import static org.queryman.builder.Queryman.select;
  * @author Timur Shaidullin
  */
 public class PostgreSQLTypeTest extends BaseTest {
-    private static Connection connection;
-
-    @BeforeAll
-    static void beforeAll() {
-        connection = JDBC.createConnection();
-    }
-
     @Test
     void listInsert() throws SQLException {
         short   s1 = 1;
@@ -52,26 +44,10 @@ public class PostgreSQLTypeTest extends BaseTest {
            .query(select(s1, s2))
            .returning("*");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(s1, rs.getShort("smallint"));
-                    assertEquals(s2, rs.getInt("integer"));
-                }
-            }
-
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(s1, rs.getShort("smallint"));
-                    assertEquals(s2, rs.getInt("integer"));
-                }
-            }
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals(s1, rs.getShort("smallint"));
+            assertEquals(s2, rs.getInt("integer"));
+        });
     }
 
     @Test
@@ -108,38 +84,16 @@ public class PostgreSQLTypeTest extends BaseTest {
            )
            .returning("*");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(s1, rs.getShort("smallint"));
-                    assertEquals(s2, rs.getInt("integer"));
-                    assertEquals(s3, rs.getLong("bigint"));
-                    assertEquals(s4, rs.getFloat("decimal"));
-                    assertEquals(s5, rs.getFloat("numeric"));
-                    assertEquals(s6, rs.getFloat("real"));
-                    assertEquals(s7, rs.getDouble("double_precision"));
-                    assertEquals(s8, rs.getBoolean("boolean"));
-                }
-            }
-
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(s1, rs.getShort("smallint"));
-                    assertEquals(s2, rs.getInt("integer"));
-                    assertEquals(s3, rs.getLong("bigint"));
-                    assertEquals(s4, rs.getFloat("decimal"));
-                    assertEquals(s5, rs.getFloat("numeric"));
-                    assertEquals(s6, rs.getFloat("real"));
-                    assertEquals(s7, rs.getDouble("double_precision"));
-                    assertEquals(s8, rs.getBoolean("boolean"));
-                }
-            }
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals(s1, rs.getShort("smallint"));
+            assertEquals(s2, rs.getInt("integer"));
+            assertEquals(s3, rs.getLong("bigint"));
+            assertEquals(s4, rs.getFloat("decimal"));
+            assertEquals(s5, rs.getFloat("numeric"));
+            assertEquals(s6, rs.getFloat("real"));
+            assertEquals(s7, rs.getDouble("double_precision"));
+            assertEquals(s8, rs.getBoolean("boolean"));
+        });
     }
 
     @Test
@@ -157,21 +111,11 @@ public class PostgreSQLTypeTest extends BaseTest {
            )
            .returning("*");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals("1", rs.getString("varchar"));
-                    assertEquals("2", rs.getString("char"));
-                    assertEquals("adasdas", rs.getString("text"));
-                }
-            }
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals("1", rs.getString("varchar"));
+            assertEquals("2", rs.getString("char"));
+            assertEquals("adasdas", rs.getString("text"));
+        });
     }
 
     @Test
@@ -198,31 +142,12 @@ public class PostgreSQLTypeTest extends BaseTest {
            )
            .returning("timestamp", "date", "time", asName("interval").as("i"), "integer");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(date.toString(), rs.getDate("date").toString());
-                    assertEquals(time.toString(), rs.getTime("time").toString());
-                    assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
-                    assertEquals(interval, rs.getString("i"));
-                }
-            }
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(date.toString(), rs.getDate("date").toString());
-                    assertEquals(time.toString(), rs.getTime("time").toString());
-                    assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
-                    assertEquals(interval, rs.getString("i"));
-                }
-            }
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals(date.toString(), rs.getDate("date").toString());
+            assertEquals(time.toString(), rs.getTime("time").toString());
+            assertEquals(timestamp.toString(), rs.getTimestamp("timestamp").toString());
+            assertEquals(interval, rs.getString("i"));
+        });
     }
 
     @Test
@@ -244,29 +169,11 @@ public class PostgreSQLTypeTest extends BaseTest {
            )
            .returning("*");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(cidr, rs.getString("cidr"));
-                    assertEquals(inet, rs.getString("inet"));
-                    assertEquals(macaddr, rs.getString("macaddr"));
-                }
-            }
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(cidr, rs.getString("cidr"));
-                    assertEquals(inet, rs.getString("inet"));
-                    assertEquals(macaddr, rs.getString("macaddr"));
-                }
-            }
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals(cidr, rs.getString("cidr"));
+            assertEquals(inet, rs.getString("inet"));
+            assertEquals(macaddr, rs.getString("macaddr"));
+        });
     }
 
     @Test
@@ -285,27 +192,10 @@ public class PostgreSQLTypeTest extends BaseTest {
            )
            .returning("*");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(bit, rs.getString("bit"));
-                    assertEquals(bitVarying, rs.getString("bit_varying"));
-                }
-            }
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(bit, rs.getString("bit"));
-                    assertEquals(bitVarying, rs.getString("bit_varying"));
-                }
-            }
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals(bit, rs.getString("bit"));
+            assertEquals(bitVarying, rs.getString("bit_varying"));
+        });
     }
 
     @Test
@@ -327,28 +217,10 @@ public class PostgreSQLTypeTest extends BaseTest {
            )
            .returning("*");
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(insert.sql());
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(uuid, rs.getObject("uuid"));
-                    assertEquals(xml, rs.getString("xml"));
-                    assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
-                }
-            }
-        }
-
-        try (PreparedStatement statement = insert.buildPreparedStatement(connection)) {
-            statement.execute();
-
-            try (ResultSet rs = statement.getResultSet()) {
-                while (rs.next()) {
-                    assertEquals(uuid, rs.getObject("uuid"));
-                    assertEquals(xml, rs.getString("xml"));
-                    assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
-                }
-            }
-        }
+        inBothStatement(insert, rs -> {
+            assertEquals(uuid, rs.getObject("uuid"));
+            assertEquals(xml, rs.getString("xml"));
+            assertArrayEquals(ArrayUtils.toWrapper(arr), (Integer[]) rs.getArray("arr_int").getArray());
+        });
     }
 }

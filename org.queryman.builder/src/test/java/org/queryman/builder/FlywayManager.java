@@ -20,16 +20,11 @@ public final class FlywayManager {
     public Flyway flyway = new Flyway();
 
     public void init() {
-        Bootstrap bootstrap = new Bootstrap()
-           .init();
-
-        flyway.setDataSource(bootstrap.getDataSource());
+        flyway.setDataSource(Bootstrap.BOOT.getDataSource());
     }
 
     public void migrate() {
-        System.err.close();
         flyway.migrate();
-        System.setErr(System.out);
     }
 
     public void clean() {

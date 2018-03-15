@@ -6,15 +6,16 @@
  */
 package org.queryman.builder;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import com.zaxxer.hikari.HikariDataSource;
 import org.queryman.builder.command.insert.InsertFinalStep;
-import org.queryman.builder.testing.JDBC;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.queryman.builder.Bootstrap.BOOT;
 import static org.queryman.builder.Queryman.asConstant;
 import static org.queryman.builder.Queryman.insertInto;
 
@@ -23,23 +24,12 @@ import static org.queryman.builder.Queryman.insertInto;
  */
 public class BaseTest {
     private static FlywayManager manager = new FlywayManager();
-
-    protected static final org.queryman.builder.testing.JDBC JDBC = new JDBC();
+    private final static HikariDataSource dataSource = BOOT.getDataSource();
 
     static {
         manager.init();
         manager.clean();
         manager.migrate();
-    }
-
-    @BeforeAll
-    static void beforeAll() {
-        JDBC.createConnection();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        JDBC.closeConnection();
     }
 
     protected static void insertMock(Connection connection) {
@@ -82,4 +72,32 @@ public class BaseTest {
         }
     }
 
+    protected static void inBothStatement(Query query, TestResultSet<ResultSet> test) throws SQLException {
+        inStatement(query, test);
+        inPreparedStatement(query, test);
+    }
+
+    protected static void inPreparedStatement(Query query, TestResultSet<ResultSet> test) throws SQLException {
+        try (Statement statement = dataSource.getConnection().createStatement()) {
+            statement.execute(query.sql());
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next())
+                    test.doIt(rs);
+            }
+        }
+    }
+
+    protected static void inStatement(Query query, TestResultSet<ResultSet> test) throws SQLException {
+        try (PreparedStatement statement = query.buildPreparedStatement(dataSource.getConnection())) {
+            statement.execute();
+            try (ResultSet rs = statement.getResultSet()) {
+                while (rs.next())
+                    test.doIt(rs);
+            }
+        }
+    }
+
+    public interface TestResultSet<T> {
+        void doIt(T rs) throws SQLException;
+    }
 }
