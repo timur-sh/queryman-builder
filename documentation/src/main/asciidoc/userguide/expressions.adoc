@@ -55,6 +55,8 @@ Queryman provides several helpful methods to work with different date types
 
 ===== Constants: Queryman.asConstant() and other constant-methods
 
+NOTE: All constants can be used in `PreparedStatement`.
+
 PostgreSQL constants are numeric, string, date/time, arrays and other data types.
 
 This method allows working with the following Java types:

@@ -1,10 +1,13 @@
 package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.BaseTest;
 import org.queryman.builder.Query;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.select.SelectJoinStep;
 import org.queryman.builder.token.Expression;
+
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.Operators.EQUAL;
@@ -29,7 +32,7 @@ import static org.queryman.builder.Queryman.selectDistinct;
 import static org.queryman.builder.Queryman.selectDistinctOn;
 import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
-class SelectImplTest {
+class SelectImplTest extends BaseTest {
 
     @Test
     void selectTest() throws NoSuchFieldException, IllegalAccessException {
@@ -1039,4 +1042,19 @@ class SelectImplTest {
     }
 
 
+    @Test
+    void selectWithSubselect() throws SQLException {
+        Query query = select("*")
+           .from(asSubQuery(select("id", "name", "year")
+                 .from("book")
+                 .where("year", ">", 2000)
+              ).as("b")
+           )
+           .where("b.id", "=", 1)
+           .forShare();
+
+        assertEquals("SELECT * FROM (SELECT id, name, year FROM book WHERE year > 2000) AS b WHERE b.id = 1 FOR SHARE", query.sql());
+        assertEquals("SELECT * FROM (SELECT id, name, year FROM book WHERE year > ?) AS b WHERE b.id = ? FOR SHARE", buildPreparedSQL(query));
+        inBothStatement(query, rs -> {});
+    }
 }

@@ -476,9 +476,9 @@ class ExpressionTest {
     void subQueryTest() {
         Query query = select("*").from("book").where("id", "=", 1);
 
-        PreparedExpression e = (PreparedExpression) asSubQuery(select(asFunc("EXISTS", query)).from("book").whereExists(query));
-        assertEquals("(SELECT EXISTS(SELECT * FROM book WHERE id = 1) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = 1))", e.getName());
-        assertEquals("(SELECT EXISTS(SELECT * FROM book WHERE id = ?) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = ?))", e.getPlaceholder());
+        PreparedExpression e = (PreparedExpression) asSubQuery(select(asFunc("EXISTS", query)).from("book").whereExists(query)).as("b");
+        assertEquals("(SELECT EXISTS(SELECT * FROM book WHERE id = 1) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = 1)) AS b", e.getName());
+        assertEquals("(SELECT EXISTS(SELECT * FROM book WHERE id = ?) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = ?)) AS b", e.getPlaceholder());
         testBindParameters(e, map -> {
             assertTrue(map.size() == 2);
             assertEquals(1, map.get(1).getValue());

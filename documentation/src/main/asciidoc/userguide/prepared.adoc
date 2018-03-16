@@ -1,0 +1,23 @@
+[[prepared]]
+=== PreparedStatement
+
+include::./../variable.adoc[]
+:example: ../{mainJavaDir}/Prepared.java
+
+Queryman Builder can create a `PreparedStatement` passing a prepared SQL string
+into this and binding parameters to prepared statement.
+
+NOTE: only constants can be substitute by a prepared token `?`
+
+[source,java]
+```
+include::{example}[tag=prepared1]
+```
+
+If such expressions as `Queryman.asSubQuery`, `Queryman.asList`, `Queryman.asFunc`
+contains constants, then constants will be replaced by a prepared token `?`
+
+[source,java]
+```
+include::{example}[tag=prepared2]
+```

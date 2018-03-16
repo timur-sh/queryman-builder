@@ -52,7 +52,7 @@ public class SubQueryExpression<T> extends PreparedExpression {
 
     @Override
     public String getPlaceholder() {
-        return "(" + buildPreparedSQL(query) + ")";
+        return "(" + buildPreparedSQL(query) + ")" + getCastExpression();
     }
 
     @Override
