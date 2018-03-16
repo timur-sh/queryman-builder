@@ -83,21 +83,6 @@ final class TreeFormatter {
                 PreparedExpression expression = (PreparedExpression) token;
                 list.add(expression.getPlaceholder());
                 expression.bind(parameters);
-
-//                if (token instanceof ListExpression) {
-//                    PreparedExpression[] prepared = ((ListExpression) token).getValue();
-//                    for (PreparedExpression p : prepared) {
-//                        synchronized (parameters) {
-//                            parameters.put(parameters.size() + 1, p);
-//                        }
-//                    }
-//                } else {
-//                    synchronized (parameters) {
-//                        parameters.put(parameters.size() + 1, expression);
-//                    }
-//                }
-
-
             } else {
                 list.add(token.getName());
             }

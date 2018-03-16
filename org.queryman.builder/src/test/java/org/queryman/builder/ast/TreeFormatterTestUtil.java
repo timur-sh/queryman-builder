@@ -9,6 +9,9 @@ package org.queryman.builder.ast;
 import org.queryman.builder.Query;
 import org.queryman.builder.Queryman;
 import org.queryman.builder.command.Conditions;
+import org.queryman.builder.token.PreparedExpression;
+
+import java.util.Map;
 
 /**
  * @author Timur Shaidullin
@@ -32,6 +35,18 @@ public class TreeFormatterTestUtil {
         conditions.assemble(tree);
         tree.endNode();
         return new TreeFormatter().buildSQL(tree.getRootNode(), true);
+    }
+
+    public static Map<Integer, PreparedExpression> buildPreparedParameters(Conditions conditions) {
+        AbstractSyntaxTree tree = Queryman.getTree();
+
+        tree.startNode(NodesMetadata.EMPTY);
+        conditions.assemble(tree);
+        tree.endNode();
+
+        TreeFormatter formatter = new TreeFormatter();
+        formatter.buildSQL(tree.getRootNode(), true);
+        return formatter.getParameters();
     }
 
     public static String buildSQL(Conditions conditions) {

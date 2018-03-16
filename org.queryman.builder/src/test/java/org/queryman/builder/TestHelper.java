@@ -6,6 +6,9 @@
  */
 package org.queryman.builder;
 
+import org.queryman.builder.ast.TreeFormatterTestUtil;
+import org.queryman.builder.ast.TreeFormatterUtil;
+import org.queryman.builder.command.Conditions;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.PreparedExpression;
 
@@ -24,6 +27,18 @@ public class TestHelper {
         Map<Integer, PreparedExpression> map = new HashMap<>();
         ((PreparedExpression) expression).bind(map);
 
+
+        executable.execute(map);
+    }
+
+    public static void testBindParameters(Conditions conditions, Procedure<Map<Integer, PreparedExpression>> executable) {
+        Map<Integer, PreparedExpression> map = TreeFormatterTestUtil.buildPreparedParameters(conditions);
+
+        executable.execute(map);
+    }
+
+    public static void testBindParameters(Query query, Procedure<Map<Integer, PreparedExpression>> executable) {
+        Map<Integer, PreparedExpression> map = TreeFormatterUtil.buildPreparedParameters(query);
 
         executable.execute(map);
     }
