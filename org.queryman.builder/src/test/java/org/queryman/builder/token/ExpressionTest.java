@@ -22,9 +22,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,6 +41,7 @@ import static org.queryman.builder.Queryman.asSubQuery;
 import static org.queryman.builder.Queryman.select;
 import static org.queryman.builder.Queryman.some;
 import static org.queryman.builder.Queryman.values;
+import static org.queryman.builder.TestHelper.testBindParameters;
 
 class ExpressionTest {
     @Test
@@ -175,12 +175,11 @@ class ExpressionTest {
 
         assertEquals("('one', 'two')", asList(numbers).getName());
         assertEquals("(?, ?)", ((PreparedExpression) asList(numbers)).getPlaceholder());
-
-        Map<Integer, PreparedExpression> map = new HashMap<>();
-        ((PreparedExpression) asList(numbers)).bind(map);
-        assertTrue(map.size() == 2);
-        assertEquals("one", map.get(1).getValue());
-        assertEquals("two", map.get(2).getValue());
+        testBindParameters(asList(numbers), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals("one", map.get(1).getValue());
+            assertEquals("two", map.get(2).getValue());
+        });
 
         Expression strings = asList("one", "two", "three", "four", "five", "six");
         assertEquals("(one, two, three, four, five, six)", strings.getName());
@@ -211,6 +210,15 @@ class ExpressionTest {
         assertEquals("(1.0, 2.0)", asList(List.of(1f, 2f)).getName());
 
         assertEquals("(1.0, 2.0)", asList(List.of(1d, 2d)).getName());
+    }
+
+    @Test
+    void asListForCollectionTest() {
+        Expression e = asList(List.of(1, 2, 3));
+        assertEquals("(1, 2, 3)", e.getName());
+
+        e = asList(Set.of(1, 2, 3));
+        assertEquals("(?, ?, ?)", ((PreparedExpression) e).getPlaceholder());
     }
 
     @Test
@@ -255,8 +263,9 @@ class ExpressionTest {
 
         Integer[] numbers = { 1, 2 };
         assertEquals("ARRAY[1, 2]", asArray(numbers).getName());
+        assertEquals("?",((PreparedExpression)asArray(numbers)).getPlaceholder());
         assertEquals("ARRAY[1, 2]::bigint[]", asArray(numbers).cast("bigint[]").getName());
-        assertEquals("ARRAY[1, 2]::bigint[]", asArray(numbers).cast("bigint[]").getName());
+        assertEquals("?::bigint[]", ((PreparedExpression)asArray(numbers).cast("bigint[]")).getPlaceholder());
         assertEquals("ARRAY[1, 2]", asArray(List.of(numbers)).getName());
         assertEquals("ARRAY[1, 2]", asArray(List.of(1, 2)).getName());
         assertEquals("ARRAY[]", asArray().getName());
@@ -281,45 +290,154 @@ class ExpressionTest {
     @Test
     void functionAll() {
         assertEquals("ALL(ARRAY[])", all(asArray()).getName());
+        assertEquals("ALL(?)", ((PreparedExpression) all(asArray())).getPlaceholder());
+        testBindParameters(all(asArray()), map -> {
+            assertTrue(map.size() == 1);
+        });
+
         assertEquals("ALL(ARRAY[1, 2])", all(asArray(1, 2)).getName());
+        testBindParameters(all(asArray(1, 2)), map -> {
+            assertTrue(map.size() == 1);
+        });
         assertEquals("ALL()", all(asList()).getName());
         assertEquals("ALL(1, 2)", all(asList(1, 2)).getName());
+        testBindParameters(all(asList(1, 2)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+        });
+
         assertEquals("ALL(NULL, 1)", all(null, 1).getName());
         assertEquals("ALL(1, 2)", all(1, 2).getName());
-        assertEquals("ALL(SELECT 1)", all(select(1)).getName());
+        assertEquals("ALL(?, ?)", ((PreparedExpression) all(1, 2)).getPlaceholder());
+        testBindParameters(all(asList(1, 2)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+        });
+
+        assertEquals("ALL(SELECT 1 FROM book WHERE 1 = id)", all(select(1).from("book").where(1, "=", "id")).getName());
+        assertEquals("ALL(SELECT 1 FROM book WHERE ? = id)", ((PreparedExpression) all(select(1).from("book").where(3, "=", "id"))).getPlaceholder());
+        testBindParameters(all(select(1).from("book").where(3, "=", "id")), map -> {
+            assertTrue(map.size() == 1);
+            assertEquals(3, map.get(1).getValue());
+        });
+
         assertEquals("ALL(VALUES(1), (2))", all(values(1, 2)).getName());
+        assertEquals("ALL(VALUES(?), (?))", ((PreparedExpression) all(values(1, 3))).getPlaceholder());
+        testBindParameters(all(asList(1, 3)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(3, map.get(2).getValue());
+        });
     }
 
     @Test
     void functionAny() {
         assertEquals("ANY(ARRAY[])", any(asArray()).getName());
+        assertEquals("ANY(?)", ((PreparedExpression) any(asArray())).getPlaceholder());
+        testBindParameters(any(asArray()), map -> {
+            assertTrue(map.size() == 1);
+        });
+
         assertEquals("ANY(ARRAY[1, 2])", any(asArray(1, 2)).getName());
+        testBindParameters(any(asArray(1, 2)), map -> {
+            assertTrue(map.size() == 1);
+        });
         assertEquals("ANY()", any(asList()).getName());
         assertEquals("ANY(1, 2)", any(asList(1, 2)).getName());
+        testBindParameters(any(asList(1, 2)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+        });
+
         assertEquals("ANY(NULL, 1)", any(null, 1).getName());
-        assertEquals("ANY(2)", any(2).getName());
         assertEquals("ANY(1, 2)", any(1, 2).getName());
-        assertEquals("ANY(SELECT id FROM book)", any(select("id").from("book")).getName());
+        assertEquals("ANY(?, ?)", ((PreparedExpression) any(1, 2)).getPlaceholder());
+        testBindParameters(any(asList(1, 2)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+        });
+
+        assertEquals("ANY(SELECT 1 FROM book WHERE 1 = id)", any(select(1).from("book").where(1, "=", "id")).getName());
+        assertEquals("ANY(SELECT 1 FROM book WHERE ? = id)", ((PreparedExpression) any(select(1).from("book").where(3, "=", "id"))).getPlaceholder());
+        testBindParameters(any(select(1).from("book").where(3, "=", "id")), map -> {
+            assertTrue(map.size() == 1);
+            assertEquals(3, map.get(1).getValue());
+        });
+
         assertEquals("ANY(VALUES(1), (2))", any(values(1, 2)).getName());
+        assertEquals("ANY(VALUES(?), (?))", ((PreparedExpression) any(values(1, 3))).getPlaceholder());
+        testBindParameters(any(asList(1, 3)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(3, map.get(2).getValue());
+        });
     }
 
     @Test
     void functionSome() {
         assertEquals("SOME(ARRAY[])", some(asArray()).getName());
+        assertEquals("SOME(?)", ((PreparedExpression) some(asArray())).getPlaceholder());
+        testBindParameters(some(asArray()), map -> {
+            assertTrue(map.size() == 1);
+        });
+
         assertEquals("SOME(ARRAY[1, 2])", some(asArray(1, 2)).getName());
+        testBindParameters(some(asArray(1, 2)), map -> {
+            assertTrue(map.size() == 1);
+        });
         assertEquals("SOME()", some(asList()).getName());
         assertEquals("SOME(1, 2)", some(asList(1, 2)).getName());
+        testBindParameters(some(asList(1, 2)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+        });
+
         assertEquals("SOME(NULL, 1)", some(null, 1).getName());
-        assertEquals("SOME(2)", some(2).getName());
         assertEquals("SOME(1, 2)", some(1, 2).getName());
-        assertEquals("SOME(SELECT 1)", some(select(1)).getName());
+        assertEquals("SOME(?, ?)", ((PreparedExpression) some(1, 2)).getPlaceholder());
+        testBindParameters(some(asList(1, 2)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+        });
+
+        assertEquals("SOME(SELECT 1 FROM book WHERE 1 = id)", some(select(1).from("book").where(1, "=", "id")).getName());
+        assertEquals("SOME(SELECT 1 FROM book WHERE ? = id)", ((PreparedExpression) some(select(1).from("book").where(3, "=", "id"))).getPlaceholder());
+        testBindParameters(some(select(1).from("book").where(3, "=", "id")), map -> {
+            assertTrue(map.size() == 1);
+            assertEquals(3, map.get(1).getValue());
+        });
+
         assertEquals("SOME(VALUES(1), (2))", some(values(1, 2)).getName());
+        assertEquals("SOME(VALUES(?), (?))", ((PreparedExpression) some(values(1, 3))).getPlaceholder());
+        testBindParameters(some(asList(1, 3)), map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(3, map.get(2).getValue());
+        });
     }
 
     @Test
     void valuesTest() {
-        assertEquals("VALUES(1, 2), (3, 4)", values(asList(1, 2), asList(3, 4)).getName());
-        assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", values(asList(1, 2), asList(3, 4)).as("point", "x", "y").getName());
+        Expression e1 = values(asList(1, 2), asList(3, 4));
+        assertEquals("VALUES(1, 2), (3, 4)", e1.getName());
+        assertEquals("VALUES(?, ?), (?, ?)", ((PreparedExpression) e1).getPlaceholder());
+        testBindParameters(e1, map -> {
+            assertTrue(map.size() == 4);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+            assertEquals(3, map.get(3).getValue());
+            assertEquals(4, map.get(4).getValue());
+        });
+
+        Expression e2 = values(asList(1, 2), asList(3, 4)).as("point", "x", "y");
+        assertEquals("(VALUES(1, 2), (3, 4)) AS point(x, y)", e2.getName());
+        assertEquals("(VALUES(?, ?), (?, ?)) AS point(x, y)", ((PreparedExpression) e2).getPlaceholder());
 
 
         assertEquals("VALUES(1), (2)", values(1, 2).getName());
@@ -331,8 +449,11 @@ class ExpressionTest {
         Query query = select(
            asFunc("EXISTS", asSubQuery(select("*").from("book").where("id", "=", 1))).as("exists")
         );
-
         PreparedExpression prepared = (PreparedExpression) asSubQuery(select("*").from("book").where("id", "=", 1));
+        testBindParameters(prepared, map -> {
+            assertTrue(map.size() == 1);
+            assertEquals(1, map.get(1).getValue());
+        });
 
         assertEquals("SELECT EXISTS(SELECT * FROM book WHERE id = 1) AS exists", query.sql());
         assertEquals("(SELECT * FROM book WHERE id = ?)", prepared.getPlaceholder());
@@ -341,6 +462,37 @@ class ExpressionTest {
 
     @Test
     void commonTest() {
-        assertEquals("concat('price', 2, 'USD')", asFunc("concat", asConstant("price"), 2, asConstant("USD")).getName());
+        Expression e = asFunc("concat", asConstant("price"), 2, asConstant("USD"));
+        assertEquals("concat('price', 2, 'USD')", e.getName());
+        testBindParameters(e, map -> {
+            assertTrue(map.size() == 3);
+            assertEquals("price", map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+            assertEquals("USD", map.get(3).getValue());
+        });
+    }
+
+    @Test
+    void subQueryTest() {
+        Query query = select("*").from("book").where("id", "=", 1);
+
+        PreparedExpression e = (PreparedExpression) asSubQuery(select(asFunc("EXISTS", query)).from("book").whereExists(query));
+        assertEquals("(SELECT EXISTS(SELECT * FROM book WHERE id = 1) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = 1))", e.getName());
+        assertEquals("(SELECT EXISTS(SELECT * FROM book WHERE id = ?) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = ?))", e.getPlaceholder());
+        testBindParameters(e, map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(1, map.get(2).getValue());
+        });
+
+        PreparedExpression e2 = (PreparedExpression) asSubQuery(select(asSubQuery(query)).from("book").whereExists(query));
+        assertEquals("(SELECT (SELECT * FROM book WHERE id = 1) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = 1))", e2.getName());
+        assertEquals("(SELECT (SELECT * FROM book WHERE id = ?) FROM book WHERE EXISTS (SELECT * FROM book WHERE id = ?))", e2.getPlaceholder());
+        testBindParameters(e, map -> {
+            assertTrue(map.size() == 2);
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(1, map.get(2).getValue());
+        });
+
     }
 }

@@ -58,7 +58,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -1052,7 +1052,7 @@ public class Queryman {
      * @param constants values
      * @return (...), where {@code ...} are values concatenated by comma.
      */
-    public static <T> Expression asList(List<T> constants) {
+    public static <T> Expression asList(Collection<T> constants) {
         return asList(constants.toArray());
     }
 
@@ -1083,7 +1083,7 @@ public class Queryman {
      * @param arr - values of array
      * @return ARRAY[...], where {@code ...} are values concatenated by comma.
      */
-    public static <T> Expression asArray(List<T> arr) {
+    public static <T> Expression asArray(Collection<T> arr) {
         return asArray(arr.toArray());
     }
 

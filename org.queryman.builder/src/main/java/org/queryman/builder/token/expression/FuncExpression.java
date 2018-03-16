@@ -24,15 +24,10 @@ public class FuncExpression extends PreparedExpression {
         super(constant);
     }
 
-//    public FuncExpression(String name, Expression expression) {
-//        this(name, new Expression[] {expression});
-//    }
-
     public FuncExpression(String name, Expression... expressions) {
         this(name);
 
         Objects.requireNonNull(expressions);
-//        String[] expr = Arrays.stream(expression).map(Expression::getName).toArray(String[]::new);
         this.expressions = expressions;
     }
 
@@ -42,28 +37,7 @@ public class FuncExpression extends PreparedExpression {
             return null;
         }
 
-        StringBuilder result          = new StringBuilder();
-        boolean       needParentheses = true;
-
-        for (Expression exp : expressions) {
-            if (
-               (exp instanceof SubQueryExpression || exp instanceof ListExpression)
-                  && expressions.length == 1
-               ) {
-                needParentheses = false;
-            }
-
-            result.append(exp.getName());
-        }
-
-        if (Objects.equals(name.toUpperCase(), "VALUES")) {
-            if (StringUtils.isEmpty(outputName))
-                return String.join("", name, result);
-            else
-                return "(" + name + result + ")";
-        }
-
-        return needParentheses ? name + "(" + result + ")" : name + result;
+        return buildExpression(false);
     }
 
     @Override
@@ -72,29 +46,17 @@ public class FuncExpression extends PreparedExpression {
             return null;
         }
 
-        StringBuilder result = buildExpression(true);
-
-        if (Objects.equals(name.toUpperCase(), "VALUES")) {
-            if (StringUtils.isEmpty(outputName))
-                return String.join("", name, result);
-            else
-                return "(" + name + result + ")";
-
-        }
-
-        String builtExpression = needParentheses ? name + "(" + result + ")" : name + result;
-
-        return builtExpression + getCastExpression();
+        return buildExpression(true) + getCastExpression();
     }
 
     private String buildExpression(boolean isPrepared) {
-        boolean needParentheses = Arrays.stream(expressions)
+        boolean notNeedParentheses = Arrays.stream(expressions)
            .filter(v -> v instanceof SubQueryExpression || v instanceof ListExpression)
            .count() == 1;
 
         String[] expr = Arrays.stream(expressions)
            .map(v -> {
-               if (isPrepared)
+               if (isPrepared && v instanceof PreparedExpression)
                    return ((PreparedExpression) v).getPlaceholder();
                return  v.getName();
            })
@@ -111,9 +73,7 @@ public class FuncExpression extends PreparedExpression {
 
         }
 
-        String builtExpression = needParentheses ? name + "(" + result + ")" : name + result;
-
-        return builtExpression + getCastExpression();
+        return notNeedParentheses ? name + result : name + "(" + result + ")";
     }
 
 
