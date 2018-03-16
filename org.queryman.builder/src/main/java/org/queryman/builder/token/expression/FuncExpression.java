@@ -14,29 +14,26 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.queryman.builder.Queryman.asName;
-
 /**
  * @author Timur Shaidullin
  */
 public class FuncExpression extends PreparedExpression {
-    private Expression expression;
+    private Expression[] expressions;
 
     public FuncExpression(String constant) {
         super(constant);
     }
 
-    public FuncExpression(String name, Expression expression) {
-        this(name);
-        this.expression = expression;
-    }
+//    public FuncExpression(String name, Expression expression) {
+//        this(name, new Expression[] {expression});
+//    }
 
-    public FuncExpression(String name, Expression... expression) {
+    public FuncExpression(String name, Expression... expressions) {
         this(name);
 
-        Objects.requireNonNull(expression);
-        String[] expr = Arrays.stream(expression).map(Expression::getName).toArray(String[]::new);
-        this.expression = asName(String.join(", ", expr));
+        Objects.requireNonNull(expressions);
+//        String[] expr = Arrays.stream(expression).map(Expression::getName).toArray(String[]::new);
+        this.expressions = expressions;
     }
 
     @Override
@@ -45,7 +42,37 @@ public class FuncExpression extends PreparedExpression {
             return null;
         }
 
-        String result = expression.getName();
+        StringBuilder result          = new StringBuilder();
+        boolean       needParentheses = true;
+
+        for (Expression exp : expressions) {
+            if (
+               (exp instanceof SubQueryExpression || exp instanceof ListExpression)
+                  && expressions.length == 1
+               ) {
+                needParentheses = false;
+            }
+
+            result.append(exp.getName());
+        }
+
+        if (Objects.equals(name.toUpperCase(), "VALUES")) {
+            if (StringUtils.isEmpty(outputName))
+                return String.join("", name, result);
+            else
+                return "(" + name + result + ")";
+        }
+
+        return needParentheses ? name + "(" + result + ")" : name + result;
+    }
+
+    @Override
+    public String getPlaceholder() {
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
+
+        StringBuilder result = buildExpression(true);
 
         if (Objects.equals(name.toUpperCase(), "VALUES")) {
             if (StringUtils.isEmpty(outputName))
@@ -53,14 +80,42 @@ public class FuncExpression extends PreparedExpression {
             else
                 return "(" + name + result + ")";
 
-        } else if (expression instanceof SubQueryExpression) {
-            return String.join("", name, result);
+        }
 
-        } else if (expression instanceof ListExpression)
-            return String.join("", name, result);
+        String builtExpression = needParentheses ? name + "(" + result + ")" : name + result;
 
-        return String.join("", name, "(", result, ")");
+        return builtExpression + getCastExpression();
     }
+
+    private String buildExpression(boolean isPrepared) {
+        boolean needParentheses = Arrays.stream(expressions)
+           .filter(v -> v instanceof SubQueryExpression || v instanceof ListExpression)
+           .count() == 1;
+
+        String[] expr = Arrays.stream(expressions)
+           .map(v -> {
+               if (isPrepared)
+                   return ((PreparedExpression) v).getPlaceholder();
+               return  v.getName();
+           })
+           .toArray(String[]::new);
+
+        String result = String.join(", ", expr);
+
+
+        if (Objects.equals(name.toUpperCase(), "VALUES")) {
+            if (StringUtils.isEmpty(outputName))
+                return String.join("", name, result);
+            else
+                return "(" + name + result + ")";
+
+        }
+
+        String builtExpression = needParentheses ? name + "(" + result + ")" : name + result;
+
+        return builtExpression + getCastExpression();
+    }
+
 
     @Override
     public Object getValue() {
@@ -72,11 +127,8 @@ public class FuncExpression extends PreparedExpression {
     @Override
     @SuppressWarnings("unchecked")
     public void bind(Map map) {
-
-//        Arrays.stream(arr)
-//           .filter(v -> v instanceof PreparedExpression)
-//           .forEach(v -> {
-//               map.put(map.size() + 1, v);
-//           });
+        Arrays.stream(expressions)
+           .filter(v -> v instanceof PreparedExpression)
+           .forEach(p -> ((PreparedExpression) p).bind(map));
     }
 }

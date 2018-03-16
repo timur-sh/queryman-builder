@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import static org.queryman.builder.Queryman.asFunc;
 import static org.queryman.builder.Queryman.asList;
+import static org.queryman.builder.Queryman.asName;
 import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 
@@ -76,7 +77,7 @@ public class FromImpl implements
 
             if (repeatable)
                 tree.startNode(EMPTY)
-                   .addLeaf(asFunc("REPEATABLE", asList(seed)))
+                   .addLeaf(asFunc("REPEATABLE", asName(String.valueOf(seed))))
                    .endNode();
 
             tree.endNode();

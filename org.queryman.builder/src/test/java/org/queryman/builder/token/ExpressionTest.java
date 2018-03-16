@@ -335,7 +335,7 @@ class ExpressionTest {
         PreparedExpression prepared = (PreparedExpression) asSubQuery(select("*").from("book").where("id", "=", 1));
 
         assertEquals("SELECT EXISTS(SELECT * FROM book WHERE id = 1) AS exists", query.sql());
-        assertEquals("SELECT * FROM book WHERE id = ?", prepared.getPlaceholder());
+        assertEquals("(SELECT * FROM book WHERE id = ?)", prepared.getPlaceholder());
         assertEquals("SELECT EXISTS(SELECT * FROM book WHERE id = ?) AS exists", TreeFormatterTestUtil.buildPreparedSQL(query));
     }
 
