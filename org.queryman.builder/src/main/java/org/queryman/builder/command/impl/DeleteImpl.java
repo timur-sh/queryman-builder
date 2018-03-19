@@ -30,7 +30,6 @@ import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.USING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
-import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * DELETE statement.
@@ -53,12 +52,11 @@ public class DeleteImpl extends AbstractQuery implements
     private       Conditions   conditions;
     private       String       whereCurrentOf;
 
-    public DeleteImpl(AbstractSyntaxTree tree, Expression table) {
-        this(tree, table, false);
+    public DeleteImpl(Expression table) {
+        this(table, false);
     }
 
-    public DeleteImpl(AbstractSyntaxTree tree, Expression table, boolean only) {
-        super(tree);
+    public DeleteImpl(Expression table, boolean only) {
         this.table = table;
         this.only = only;
     }

@@ -20,20 +20,10 @@ import java.sql.SQLException;
  * @author Timur Shaidullin
  */
 public abstract class AbstractQuery implements Query, AstVisitor {
-    private final AbstractSyntaxTree tree;
-
-    public AbstractQuery(AbstractSyntaxTree tree) {
-        this.tree = tree;
-    }
-
-    private void assembleTree() {
-        tree.reinitialize();
-        assemble(tree);
-    }
-
     @Override
     public String sql() {
-        assembleTree();
+        AbstractSyntaxTree tree = Queryman.getTree();
+        assemble(tree);
         return tree.toString();
     }
 
@@ -44,7 +34,8 @@ public abstract class AbstractQuery implements Query, AstVisitor {
 
     @Override
     public PreparedStatement buildPreparedStatement(Connection conn) throws SQLException {
-        assembleTree();
+        AbstractSyntaxTree tree = Queryman.getTree();
+        assemble(tree);
         return TreeFormatterUtil.buildPreparedStatement(tree, conn);
     }
 }

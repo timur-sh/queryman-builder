@@ -99,8 +99,7 @@ public class InsertImpl extends AbstractQuery implements
     private boolean conflictActionProcessing = false;
     private Expression[] returning;
 
-    public InsertImpl(AbstractSyntaxTree tree, Expression table) {
-        super(tree);
+    public InsertImpl(Expression table) {
         this.table = table;
     }
 

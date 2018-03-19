@@ -71,16 +71,15 @@ public class SequenceImpl extends AbstractQuery implements
     private Expression start;
     private boolean    startWith;
 
-    public SequenceImpl(AbstractSyntaxTree tree, Expression name) {
-        this(tree, name, false);
+    public SequenceImpl(Expression name) {
+        this(name, false);
     }
 
-    public SequenceImpl(AbstractSyntaxTree tree, Expression name, boolean temp) {
-        this(tree, name, temp, false);
+    public SequenceImpl(Expression name, boolean temp) {
+        this(name, temp, false);
     }
 
-    public SequenceImpl(AbstractSyntaxTree tree, Expression name, boolean temp, boolean notExists) {
-        super(tree);
+    public SequenceImpl(Expression name, boolean temp, boolean notExists) {
         this.name = name;
         this.temp = temp;
         this.notExists = notExists;

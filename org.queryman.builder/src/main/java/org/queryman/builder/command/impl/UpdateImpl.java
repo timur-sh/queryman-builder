@@ -62,12 +62,11 @@ public class UpdateImpl extends AbstractQuery implements
     private       Conditions   conditions;
     private       String       whereCurrentOf;
 
-    public UpdateImpl(AbstractSyntaxTree tree, Expression table) {
-        this(tree, table, false);
+    public UpdateImpl(Expression table) {
+        this(table, false);
     }
 
-    public UpdateImpl(AbstractSyntaxTree tree, Expression table, boolean only) {
-        super(tree);
+    public UpdateImpl(Expression table, boolean only) {
         this.table = table;
         this.only = only;
     }

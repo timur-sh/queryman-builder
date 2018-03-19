@@ -110,21 +110,19 @@ public class SelectImpl extends AbstractQuery implements
 
     private Deque<Locking> locks = new ArrayDeque<>();
 
-    public SelectImpl(AbstractSyntaxTree ast, String... columnsSelected) {
+    public SelectImpl(String... columnsSelected) {
         this(
-           ast,
            Arrays.stream(columnsSelected)
               .map(Queryman::asName)
               .collect(Collectors.toList())
         );
     }
 
-    public SelectImpl(AbstractSyntaxTree ast, List<Expression> names) {
-        this(ast, names.toArray(Tools.EMPTY_EXPRESSIONS));
+    public SelectImpl(List<Expression> names) {
+        this(names.toArray(Tools.EMPTY_EXPRESSIONS));
     }
 
-    public SelectImpl(AbstractSyntaxTree ast, Expression... columnsSelected) {
-        super(ast);
+    public SelectImpl(Expression... columnsSelected) {
         this.COLUMNS_SELECTED = columnsSelected;
     }
 

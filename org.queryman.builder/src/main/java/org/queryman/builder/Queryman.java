@@ -138,7 +138,7 @@ public class Queryman {
      * @return select from step
      */
     public static SelectFromStep select(Expression... columns) {
-        return new SelectImpl(getTree(), columns);
+        return new SelectImpl(columns);
     }
 
     /**
@@ -171,7 +171,7 @@ public class Queryman {
      * @return select from step
      */
     public static SelectFromStep selectAll(Expression... columns) {
-        return new SelectImpl(getTree(), columns).all();
+        return new SelectImpl(columns).all();
     }
 
     /**
@@ -204,7 +204,7 @@ public class Queryman {
      * @return select from step
      */
     public static SelectFromStep selectDistinct(Expression... columns) {
-        return new SelectImpl(getTree(), columns).distinct();
+        return new SelectImpl(columns).distinct();
     }
 
     /**
@@ -242,7 +242,7 @@ public class Queryman {
      * @return select from step
      */
     public static SelectFromStep selectDistinctOn(Expression[] distinct, Expression... columns) {
-        return new SelectImpl(getTree(), columns).distinctOn(distinct);
+        return new SelectImpl(columns).distinctOn(distinct);
     }
 
     //----
@@ -292,7 +292,7 @@ public class Queryman {
      * @return sequence AS step
      */
     public static SequenceAsStep createSequence(Expression name) {
-        return new SequenceImpl(getTree(), name);
+        return new SequenceImpl(name);
     }
 
     /**
@@ -338,7 +338,7 @@ public class Queryman {
      * @return sequence AS step
      */
     public static SequenceAsStep createTempSequence(Expression name) {
-        return new SequenceImpl(getTree(), name, true);
+        return new SequenceImpl(name, true);
     }
 
     /**
@@ -384,7 +384,7 @@ public class Queryman {
      * @return sequence AS step
      */
     public static SequenceAsStep createTempSequenceIfNotExists(Expression name) {
-        return new SequenceImpl(getTree(), name, true, true);
+        return new SequenceImpl(name, true, true);
     }
 
     /**
@@ -430,7 +430,7 @@ public class Queryman {
      * @return sequence AS step
      */
     public static SequenceAsStep createSequenceIfNotExists(Expression name) {
-        return new SequenceImpl(getTree(), name, false, true);
+        return new SequenceImpl(name, false, true);
     }
 
     //----
@@ -482,7 +482,7 @@ public class Queryman {
      * @return delete AS step
      */
     public static DeleteAsStep deleteFrom(Expression name) {
-        return new DeleteImpl(getTree(), name);
+        return new DeleteImpl(name);
     }
 
     /**
@@ -522,7 +522,7 @@ public class Queryman {
      * @return delete AS step
      */
     public static DeleteAsStep deleteFromOnly(Expression name) {
-        return new DeleteImpl(getTree(), name, true);
+        return new DeleteImpl(name, true);
     }
 
     //----
@@ -566,7 +566,7 @@ public class Queryman {
      * @return update as step
      */
     public static UpdateAsStep update(Expression name) {
-        return new UpdateImpl(getTree(), name);
+        return new UpdateImpl(name);
     }
 
     /**
@@ -606,7 +606,7 @@ public class Queryman {
      * @return update as step
      */
     public static UpdateAsStep updateOnly(Expression name) {
-        return new UpdateImpl(getTree(), name, true);
+        return new UpdateImpl(name, true);
     }
 
     //----
@@ -652,7 +652,7 @@ public class Queryman {
      * @return insert AS step
      */
     public static InsertAsStep insertInto(Expression table) {
-        return new InsertImpl(getTree(), table);
+        return new InsertImpl(table);
     }
 
     //----
