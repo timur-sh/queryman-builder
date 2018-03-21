@@ -14,6 +14,13 @@ CREATE TABLE book
   price  REAL
 );
 
+
+CREATE TABLE sales
+(
+  id     SERIAL NOT NULL,
+  book_id int
+);
+
 CREATE TABLE orders (
   id     SERIAL NOT NULL,
   book_id BIGINT,

@@ -10,6 +10,7 @@ import org.queryman.builder.token.Expression;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.queryman.builder.Operators.EQUAL;
 import static org.queryman.builder.Operators.IN;
 import static org.queryman.builder.Operators.LT;
@@ -30,7 +31,8 @@ import static org.queryman.builder.Queryman.select;
 import static org.queryman.builder.Queryman.selectAll;
 import static org.queryman.builder.Queryman.selectDistinct;
 import static org.queryman.builder.Queryman.selectDistinctOn;
-import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
+import static org.queryman.builder.TestHelper.testBindParameters;
+import static org.queryman.builder.ast.TreeFormatterUtil.buildPreparedSQL;
 
 class SelectImplTest extends BaseTest {
 
@@ -39,12 +41,15 @@ class SelectImplTest extends BaseTest {
         SelectFromStep select = select("id", 2, .4, "name");
 
         assertEquals("SELECT id, 2, 0.4, name", select.sql());
+        assertEquals("SELECT id, 2, 0.4, name", buildPreparedSQL(select));
 
         SelectFromStep select2 = select(asQuotedName("id2"), asQuotedName("name"), asFunc("min", asName("price")).as("min"));
         assertEquals("SELECT \"id2\", \"name\", min(price) AS min", select2.sql());
+        assertEquals("SELECT \"id2\", \"name\", min(price) AS min", buildPreparedSQL(select2));
 
         SelectFromStep select3 = select(asQuotedName("id2"), asSubQuery(select("max(sum)")).as("sum"));
         assertEquals("SELECT \"id2\", (SELECT max(sum)) AS sum", select3.sql());
+        assertEquals("SELECT \"id2\", (SELECT max(sum)) AS sum", buildPreparedSQL(select3));
 
         assertEquals("SELECT MAX(total) FROM order", select(max("total")).from("order").sql());
     }
@@ -53,36 +58,68 @@ class SelectImplTest extends BaseTest {
     void selectAllTest() {
         SelectFromStep select = selectAll("id", "name");
         assertEquals("SELECT ALL id, name", select.sql());
+        assertEquals("SELECT ALL id, name", buildPreparedSQL(select));
 
         SelectFromStep select2 = selectAll(asQuotedName("id2"), asQuotedName("name"), asName("min(price) as min"));
         assertEquals("SELECT ALL \"id2\", \"name\", min(price) as min", select2.sql());
+        assertEquals("SELECT ALL \"id2\", \"name\", min(price) as min", buildPreparedSQL(select2));
     }
 
     @Test
     void selectDistinctTest() {
         SelectFromStep select = selectDistinct("id", "name");
         assertEquals("SELECT DISTINCT id, name", select.sql());
+        assertEquals("SELECT DISTINCT id, name", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
 
         select = selectDistinct(asQuotedName("id2"), asQuotedName("name"), asName("min(price) as min"));
         assertEquals("SELECT DISTINCT \"id2\", \"name\", min(price) as min", select.sql());
+        assertEquals("SELECT DISTINCT \"id2\", \"name\", min(price) as min", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
     }
 
     @Test
     void selectDistinctOnTest() {
         SelectFromStep select = selectDistinctOn(new String[]{ "price", "id" }, "id", "name");
         assertEquals("SELECT DISTINCT ON (price, id) id, name", select.sql());
+        assertEquals("SELECT DISTINCT ON (price, id) id, name", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
 
         select = selectDistinctOn(new Expression[]{ asName("price"), asName("id") }, asQuotedName("id2"), asQuotedName("name"), asName("min(price) as min"));
         assertEquals("SELECT DISTINCT ON (price, id) \"id2\", \"name\", min(price) as min", select.sql());
+        assertEquals("SELECT DISTINCT ON (price, id) \"id2\", \"name\", min(price) as min", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
     }
 
     @Test
-    void selectFrom() {
+    void selectFrom() throws SQLException {
         SelectFromStep select = select("id", "name");
 
+        select.from("book");
         assertEquals("SELECT id, name FROM book", select.from("book").sql());
+        assertEquals("SELECT id, name FROM book", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        assertEquals("SELECT id, name FROM book as b(1,2)", select.from("book as b(1,2)").sql());
+        select.from("book as b(id, name)");
+        assertEquals("SELECT id, name FROM book as b(id, name)", select.sql());
+        assertEquals("SELECT id, name FROM book as b(id, name)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
         assertEquals("SELECT id, name FROM \"book\"", select.from(asQuotedName("book")).sql());
 
@@ -92,144 +129,295 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
-    void selectFromLocking() {
-        assertEquals("SELECT * FROM book FOR SHARE OF book NOWAIT", select("*").from("book").forShare().of("book").noWait().sql());
+    void selectFromLocking() throws SQLException {
+        Query select = select("*").from("book").forShare().of("book").noWait();
+        assertEquals("SELECT * FROM book FOR SHARE OF book NOWAIT", select.sql());
+        assertEquals("SELECT * FROM book FOR SHARE OF book NOWAIT", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        assertEquals("SELECT * FROM book FOR KEY SHARE OF book SKIP LOCKED", select("*").from("book").forKeyShare().of("book").skipLocked().sql());
+        select = select("*").from("book").forKeyShare().of("book").skipLocked();
+        assertEquals("SELECT * FROM book FOR KEY SHARE OF book SKIP LOCKED", select.sql());
+        assertEquals("SELECT * FROM book FOR KEY SHARE OF book SKIP LOCKED", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        assertEquals("SELECT * FROM book FOR UPDATE OF book", select("*").from("book").forUpdate().of("book").sql());
+        select = select("*").from("book").forUpdate().of("book");
+        assertEquals("SELECT * FROM book FOR UPDATE OF book", select.sql());
+        assertEquals("SELECT * FROM book FOR UPDATE OF book", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book", select("*").from("book").forNoKeyUpdate().of("book").sql());
+        select = select("*").from("book").forNoKeyUpdate().of("book");
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book", select.sql());
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book FOR KEY SHARE", select("*").from("book").forNoKeyUpdate().of("book").forKeyShare().sql());
+        select = select("*").from("book").forNoKeyUpdate().of("book").forKeyShare();
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book FOR KEY SHARE", select.sql());
+        assertEquals("SELECT * FROM book FOR NO KEY UPDATE OF book FOR KEY SHARE", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        assertEquals("SELECT * FROM book FOR NO KEY UPDATE FOR KEY SHARE OF b, v NOWAIT", select("*").from("book").forNoKeyUpdate().forKeyShare().of("b", "v").noWait().sql());
+        select = select("*").from("book", "author", "types").forNoKeyUpdate().forKeyShare().of("author", "types").noWait();
+        assertEquals("SELECT * FROM book, author, types FOR NO KEY UPDATE FOR KEY SHARE OF author, types NOWAIT", select.sql());
+        assertEquals("SELECT * FROM book, author, types FOR NO KEY UPDATE FOR KEY SHARE OF author, types NOWAIT", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromOnly() {
-        SelectFromStep select = select("id", "name");
+    void selectFromOnly() throws SQLException {
+        SelectFromStep select = select(asName("book.name"));
 
-        assertEquals("SELECT id, name FROM ONLY book", select.from(fromOnly("book")).sql());
-        assertEquals("SELECT id, name FROM ONLY book, ONLY authors", select.from(fromOnly("book"), fromOnly("authors")).sql());
-        assertEquals("SELECT id, name FROM ONLY book AS b", select.from(fromOnly("book").as("b")).sql());
-        assertEquals(
-           "SELECT id, name FROM ONLY book TABLESAMPLE BERNOULLI(30)",
-           select.from(
-              fromOnly("book")
-                 .tablesample("BERNOULLI", "30")
-           )
-              .sql()
-        );
-        assertEquals(
-           "SELECT id, name FROM ONLY book TABLESAMPLE BERNOULLI(30) REPEATABLE(15)",
-           select.from(fromOnly("book")
-              .tablesample("BERNOULLI", "30")
-              .repeatable(15))
-              .sql()
-        );
+        select.from(fromOnly("book"));
+        assertEquals("SELECT book.name FROM ONLY book", select.sql());
+        assertEquals("SELECT book.name FROM ONLY book", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select.from(fromOnly("book"), fromOnly("author"));
+        assertEquals("SELECT book.name FROM ONLY book, ONLY author", select.sql());
+        assertEquals("SELECT book.name FROM ONLY book, ONLY author", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select.from(fromOnly("book").as("b"));
+        assertEquals("SELECT book.name FROM ONLY book AS b", select.sql());
+
+        select.from(fromOnly("book").tablesample("BERNOULLI", "30"));
+        assertEquals("SELECT book.name FROM ONLY book TABLESAMPLE BERNOULLI(30)", select.sql());
+        assertEquals("SELECT book.name FROM ONLY book TABLESAMPLE BERNOULLI(30)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select.from(fromOnly("book")
+           .tablesample("BERNOULLI", "30")
+           .repeatable(15));
+        assertEquals("SELECT book.name FROM ONLY book TABLESAMPLE BERNOULLI(30) REPEATABLE(15)", select.sql());
+        assertEquals("SELECT book.name FROM ONLY book TABLESAMPLE BERNOULLI(30) REPEATABLE(15)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromTablesample() {
+    void selectFromJoin() throws SQLException {
+        SelectJoinStep select = select("*").from("book");
 
+        select.join("author").on(true);
+        assertEquals("SELECT * FROM book JOIN author ON (true)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON (?)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(1, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").using("id");
+        assertEquals("SELECT * FROM book JOIN author USING (id)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author USING (id)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").using("id", "name");
+        assertEquals("SELECT * FROM book JOIN author USING (id, name)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author USING (id, name)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on("author.id", "=", "author_id");
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on("author.id", "=", "author_id").andExists(select("1", "2"));
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id AND EXISTS (SELECT 1, 2)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id AND EXISTS (SELECT 1, 2)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on("author.id", "=", "author_id").and(asName("author.id"), IN, select(1));
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id AND author.id IN (SELECT 1)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id AND author.id IN (SELECT 1)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on("author.id", "=", "author_id").andNot(asName("author.id"), IN, select(1));
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id AND NOT author.id IN (SELECT 1)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id AND NOT author.id IN (SELECT 1)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on("author.id", "=", "author_id").or(asName("author.id"), IN, select(1));
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id OR author.id IN (SELECT 1)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id OR author.id IN (SELECT 1)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on("author.id", "=", "author_id").orNot(asName("author.id"), IN, select(1));
+        assertEquals("SELECT * FROM book JOIN author ON author.id = author_id OR NOT author.id IN (SELECT 1)", select.sql());
+
+        select = select("*").from("book").join("author").onExists(select("1", "2"));
+        assertEquals("SELECT * FROM book JOIN author ON EXISTS (SELECT 1, 2)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON EXISTS (SELECT 1, 2)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
+
+        select = select("*").from("book").join("author").on(true).innerJoin("types").onExists(select("1", "2"));
+        assertEquals("SELECT * FROM book JOIN author ON (true) INNER JOIN types ON EXISTS (SELECT 1, 2)", select.sql());
+        assertEquals("SELECT * FROM book JOIN author ON (?) INNER JOIN types ON EXISTS (SELECT 1, 2)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(1, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
+    void selectFromInnerJoin() throws SQLException {
+        SelectJoinStep select = select("*").from("book");
 
-        assertEquals("SELECT id, name FROM book JOIN author ON (true)", select.join("author").on(true).sql());
-
-        select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book JOIN author USING (id)", select.join("author").using("id").sql());
-
-        select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book JOIN author USING (id, name)", select.join("author").using("id", "name").sql());
-
-        select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book JOIN author ON id = author_id", select.join("author").on("id", "=", "author_id").sql());
-
-        select = select("id", "name").from("book").join("author").on("id", "=", "author_id").andExists(select("1", "2"));
-        assertEquals("SELECT id, name FROM book JOIN author ON id = author_id AND EXISTS (SELECT 1, 2)", select.sql());
-
-        select = select("id", "name").from("book").join("author").on("id", "=", "author_id").and(asName("id"), IN, select("1", "2"));
-        assertEquals("SELECT id, name FROM book JOIN author ON id = author_id AND id IN (SELECT 1, 2)", select.sql());
-
-        select = select("id", "name").from("book").join("author").on("id", "=", "author_id").andNot(asName("id"), IN, select("1", "2"));
-        assertEquals("SELECT id, name FROM book JOIN author ON id = author_id AND NOT id IN (SELECT 1, 2)", select.sql());
-
-        select = select("id", "name").from("book").join("author").on("id", "=", "author_id").or(asName("id"), IN, select("1", "2"));
-        assertEquals("SELECT id, name FROM book JOIN author ON id = author_id OR id IN (SELECT 1, 2)", select.sql());
-
-        select = select("id", "name").from("book").join("author").on("id", "=", "author_id").orNot(asName("id"), IN, select("1", "2"));
-        assertEquals("SELECT id, name FROM book JOIN author ON id = author_id OR NOT id IN (SELECT 1, 2)", select.sql());
-
-        select = select("*").from("book");
-        assertEquals("SELECT * FROM book JOIN author ON EXISTS (SELECT 1, 2)", select.join("author").onExists(select("1", "2")).sql());
-
-        select = select("*").from("book").join("author").on(true).innerJoin("sales").onExists(select("1", "2"));
-        assertEquals("SELECT * FROM book JOIN author ON (true) INNER JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
-    }
-
-    @Test
-    void selectFromInnerJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
-
-        assertEquals("SELECT id, name FROM book INNER JOIN author ON (true)", select.innerJoin("author").on(true).sql());
+        select.innerJoin("author").on(true);
+        assertEquals("SELECT * FROM book INNER JOIN author ON (true)", select.sql());
+        inBothStatement(select, rs -> {
+        });
 
         select = select("*").from("book").innerJoin("author").on(true).join("sales").onExists(select("1", "2"));
         assertEquals("SELECT * FROM book INNER JOIN author ON (true) JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromLeftJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book LEFT JOIN author ON (true)", select.leftJoin("author").on(true).sql());
+    void selectFromLeftJoin() throws SQLException {
+        SelectJoinStep select = select("*").from("book");
+
+        select.leftJoin("author").on(true);
+        assertEquals("SELECT * FROM book LEFT JOIN author ON (true)", select.sql());
+        inBothStatement(select, rs -> {
+        });
 
         select = select("*").from("book").leftJoin("author").on(true).innerJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM book LEFT JOIN author ON (true) INNER JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromRightJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book RIGHT JOIN author ON (true)", select.rightJoin("author").on(true).sql());
+    void selectFromRightJoin() throws SQLException {
+        SelectJoinStep select = select("*").from("book");
+
+        select.rightJoin("author").on(true);
+        assertEquals("SELECT * FROM book RIGHT JOIN author ON (true)", select.sql());
+        inBothStatement(select, rs -> {
+        });
 
         select = select("*").from("book").rightJoin("author").on(true).leftJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM book RIGHT JOIN author ON (true) LEFT JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromFullJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book FULL JOIN author ON (true)", select.fullJoin("author").on(true).sql());
+    void selectFromFullJoin() throws SQLException {
+        SelectJoinStep select = select("*").from("book");
+
+        select.fullJoin("author").on(true);
+        assertEquals("SELECT * FROM book FULL JOIN author ON (true)", select.sql());
+        inBothStatement(select, rs -> {
+        });
 
         select = select("*").from("book").fullJoin("author").on(true).rightJoin(asName("sales")).onExists(select("1", "2"));
         assertEquals("SELECT * FROM book FULL JOIN author ON (true) RIGHT JOIN sales ON EXISTS (SELECT 1, 2)", select.sql());
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromCrossJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book CROSS JOIN author", select.crossJoin("author").sql());
+    void selectFromCrossJoin() throws SQLException {
+        Query select = select("*").from("book").crossJoin("author");
 
-        select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book CROSS JOIN author FOR SHARE", select.crossJoin("author").forShare().sql());
+        assertEquals("SELECT * FROM book CROSS JOIN author", select.sql());
+        inBothStatement(select, rs -> {
+        });
 
-        SelectJoinStep select1 = select("*").from("book");
-        select1.crossJoin("author").fullJoin(asName("sales")).onExists(select("1", "2"));
-        assertEquals("SELECT * FROM book CROSS JOIN author FULL JOIN sales ON EXISTS (SELECT 1, 2)", select1.sql());
+        select = select("*").from("book").crossJoin("author").forShare();
+        assertEquals("SELECT * FROM book CROSS JOIN author FOR SHARE", select.sql());
+        inBothStatement(select, rs -> {
+        });
     }
 
     @Test
-    void selectFromNaturalJoin() {
-        SelectJoinStep select = select("id", "name").from("book");
-        assertEquals("SELECT id, name FROM book NATURAL JOIN author", select.naturalJoin("author").sql());
+    void selectFromNaturalJoin() throws SQLException {
+        Query select = select("*").from("book").naturalJoin("author");
+        assertEquals("SELECT * FROM book NATURAL JOIN author", select.sql());
+        inBothStatement(select, rs -> {
+        });
 
-        SelectJoinStep select1 = select("*").from("book");
-        select1.crossJoin("author").naturalJoin(asName("sales")).crossJoin(asName("calls"));
-        assertEquals("SELECT * FROM book CROSS JOIN author NATURAL JOIN sales CROSS JOIN calls", select1.sql());
+        select = select("*").from("book").naturalJoin(asName("sales")).crossJoin("author").crossJoin(asName("types"));
+        assertEquals("SELECT * FROM book NATURAL JOIN sales CROSS JOIN author CROSS JOIN types", select.sql());
+        assertEquals("SELECT * FROM book NATURAL JOIN sales CROSS JOIN author CROSS JOIN types", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
     }
 
     //---
@@ -515,35 +703,54 @@ class SelectImplTest extends BaseTest {
     //---
 
     @Test
-    void selectFromGroupBy() {
-        SelectFromStep select = select("id", "name");
-        String sql = select.from("book")
-           .groupBy("id", "name")
-           .sql();
-        assertEquals("SELECT id, name FROM book GROUP BY id, name", sql);
+    void selectFromGroupBy() throws SQLException {
+        Query select = select("id", "name").from("book")
+           .groupBy("id", "name");
+        assertEquals("SELECT id, name FROM book GROUP BY id, name", select.sql());
+        assertEquals("SELECT id, name FROM book GROUP BY id, name", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        select = select("id", "name");
-        sql = select.from("book")
-           .groupBy(asFunc("ROLLUP", "id", "name"), asFunc("CUBE", "id", "name"))
-           .sql();
-        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name)", sql);
+        select = select("id", "name").from("book")
+           .groupBy(asFunc("ROLLUP", "id", "name"), asFunc("CUBE", "id", "name"));
+        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name)", select.sql());
+        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name)", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {
+        });
 
-        select = select("id", "name");
-        sql = select.from("book")
+        Query select2 = select("id", "name").from("book")
            .groupBy(asFunc("ROLLUP", "id", "name"), asFunc("CUBE", "id", "name"))
-           .forShare()
-           .sql();
-        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name) FOR SHARE", sql);
+           .forKeyShare();
+        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name) FOR KEY SHARE", select2.sql());
+        assertEquals("SELECT id, name FROM book GROUP BY ROLLUP(id, name), CUBE(id, name) FOR KEY SHARE", buildPreparedSQL(select2));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+
+        assertThrows(SQLException.class, () -> inBothStatement(select2, rs -> { }));
     }
 
     @Test
-    void selectFromWhereGroupBy() {
-        SelectFromStep select = select("id", "name");
+    void selectFromWhereGroupBy() throws SQLException {
+        SelectFromStep select = select("id");
         String sql = select.from("book")
-           .where("id", "=", "1")
+           .where("id", "=", 1)
            .groupBy("id")
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 GROUP BY id", sql);
+
+        assertEquals("SELECT id FROM book WHERE id = 1 GROUP BY id", sql);
+        assertEquals("SELECT id FROM book WHERE id = ? GROUP BY id", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(1, map.size());
+            assertEquals(1, map.get(1).getValue());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     //---
@@ -689,49 +896,76 @@ class SelectImplTest extends BaseTest {
     //---
 
     @Test
-    void selectFromOrderBy() {
+    void selectFromOrderBy() throws SQLException {
         SelectFromStep select = select("id", "name");
-        String sql = select.from("book")
-           .orderBy("id")
-           .sql();
 
-        assertEquals("SELECT id, name FROM book ORDER BY id", sql);
+        select.from("book")
+           .orderBy("id");
 
-        sql = select.from("book")
-           .orderBy("name", "desc")
-           .sql();
+        assertEquals("SELECT id, name FROM book ORDER BY id", select.sql());
+        assertEquals("SELECT id, name FROM book ORDER BY id", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
 
-        assertEquals("SELECT id, name FROM book ORDER BY name desc", sql);
+        select.from("book")
+           .orderBy("name", "desc");
 
-        sql = select.from("book")
-           .orderBy("name", "desc", "last")
-           .sql();
+        assertEquals("SELECT id, name FROM book ORDER BY name desc", select.sql());
+        assertEquals("SELECT id, name FROM book ORDER BY name desc",  buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
 
-        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last", sql);
+        select.from("book")
+           .orderBy("name", "desc", "last");
 
-        sql = select.from("book")
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last", select.sql());
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last",  buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
+
+        select.from("book")
+           .orderBy(orderBy("name", "desc", "last"), orderBy("id"));
+
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id", select.sql());
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id",  buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
+
+        select.from("book")
            .orderBy(orderBy("name", "desc", "last"), orderBy("id"))
-           .sql();
+           .forShare();
 
-        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id", sql);
-
-        sql = select.from("book")
-           .orderBy(orderBy("name", "desc", "last"), orderBy("id"))
-           .forShare()
-           .sql();
-
-        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id FOR SHARE", sql);
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id FOR SHARE", select.sql());
+        assertEquals("SELECT id, name FROM book ORDER BY name desc NULLS last, id FOR SHARE",  buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromWhereGroupByOrderBy() {
-        SelectFromStep select = select("id", "name");
+    void selectFromWhereGroupByOrderBy() throws SQLException {
+        SelectFromStep select = select("id");
         String sql = select.from("book")
-           .where("id", "=", "1")
+           .where(15, "=", "id")
            .groupBy("id")
-           .orderBy("name")
+           .orderBy("id")
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 GROUP BY id ORDER BY name", sql);
+        assertEquals("SELECT id FROM book WHERE 15 = id GROUP BY id ORDER BY id", sql);
+        assertEquals("SELECT id FROM book WHERE ? = id GROUP BY id ORDER BY id",  buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(1, map.size());
+            assertEquals(15, map.get(1).getValue());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
@@ -756,17 +990,22 @@ class SelectImplTest extends BaseTest {
     //---
 
     @Test
-    void selectFromLimit() {
+    void selectFromLimit() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .limit(1)
            .sql();
 
         assertEquals("SELECT id, name FROM book LIMIT 1", sql);
+        assertEquals("SELECT id, name FROM book LIMIT 1", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromLimitLocking() {
+    void selectFromLimitLocking() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .limit(1)
@@ -774,10 +1013,15 @@ class SelectImplTest extends BaseTest {
            .sql();
 
         assertEquals("SELECT id, name FROM book LIMIT 1 FOR SHARE", sql);
+        assertEquals("SELECT id, name FROM book LIMIT 1 FOR SHARE", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromOrderByLimit() {
+    void selectFromOrderByLimit() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .orderBy("id")
@@ -785,28 +1029,45 @@ class SelectImplTest extends BaseTest {
            .sql();
 
         assertEquals("SELECT id, name FROM book ORDER BY id LIMIT 2", sql);
+        assertEquals("SELECT id, name FROM book ORDER BY id LIMIT 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromGroupByLimit() {
-        SelectFromStep select = select("id", "name");
+    void selectFromGroupByLimit() throws SQLException {
+        SelectFromStep select = select("id");
         String sql = select.from("book")
            .groupBy("id")
            .limit(2)
            .sql();
 
-        assertEquals("SELECT id, name FROM book GROUP BY id LIMIT 2", sql);
+        assertEquals("SELECT id FROM book GROUP BY id LIMIT 2", sql);
+        assertEquals("SELECT id FROM book GROUP BY id LIMIT 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromWhereLimit() {
+    void selectFromWhereLimit() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
-           .where("id", "=", "1")
-           .and("id2", "=", "2")
+           .where("id", "=", 22)
+           .and("name", "=", asConstant(435).cast("varchar"))
            .limit(3)
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 AND id2 = 2 LIMIT 3", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 22 AND name = 435::varchar LIMIT 3", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = ? AND name = ?::varchar LIMIT 3", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(2, map.size());
+            assertEquals(22, map.get(1).getValue());
+            assertEquals(435, map.get(2).getValue());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     //---
@@ -814,46 +1075,69 @@ class SelectImplTest extends BaseTest {
     //---
 
     @Test
-    void selectFromOffset() {
+    void selectFromOffset() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
-           .limit(1)
+           .offset(1)
            .sql();
 
-        assertEquals("SELECT id, name FROM book LIMIT 1", sql);
+        assertEquals("SELECT id, name FROM book OFFSET 1", sql);
+        assertEquals("SELECT id, name FROM book OFFSET 1", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromOffsetLocking() {
+    void selectFromOffsetLocking() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
-           .limit(1)
+           .offset(1)
            .forShare()
            .sql();
 
-        assertEquals("SELECT id, name FROM book LIMIT 1 FOR SHARE", sql);
+        assertEquals("SELECT id, name FROM book OFFSET 1 FOR SHARE", sql);
+        assertEquals("SELECT id, name FROM book OFFSET 1 FOR SHARE", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromGroupByOffset() {
-        SelectFromStep select = select("id", "name");
+    void selectFromGroupByOffset() throws SQLException {
+        SelectFromStep select = select("id");
         String sql = select.from("book")
            .groupBy("id")
            .limit(1)
+           .offset(1)
            .sql();
 
-        assertEquals("SELECT id, name FROM book GROUP BY id LIMIT 1", sql);
+        assertEquals("SELECT id FROM book GROUP BY id LIMIT 1 OFFSET 1", sql);
+        assertEquals("SELECT id FROM book GROUP BY id LIMIT 1 OFFSET 1", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromWhereOffset() {
+    void selectFromWhereOffset() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
-           .where("id", "=", "1")
-           .and("id2", "=", "2")
+           .where("year", "=", 2010)
+           .and("id", "=", 8)
            .offset(3)
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 AND id2 = 2 OFFSET 3", sql);
+        assertEquals("SELECT id, name FROM book WHERE year = 2010 AND id = 8 OFFSET 3", sql);
+        assertEquals("SELECT id, name FROM book WHERE year = ? AND id = ? OFFSET 3", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(2, map.size());
+            assertEquals(2010, map.get(1).getValue());
+            assertEquals(8, map.get(2).getValue());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
@@ -1055,6 +1339,7 @@ class SelectImplTest extends BaseTest {
 
         assertEquals("SELECT * FROM (SELECT id, name, year FROM book WHERE year > 2000) AS b WHERE b.id = 1 FOR SHARE", query.sql());
         assertEquals("SELECT * FROM (SELECT id, name, year FROM book WHERE year > ?) AS b WHERE b.id = ? FOR SHARE", buildPreparedSQL(query));
-        inBothStatement(query, rs -> {});
+        inBothStatement(query, rs -> {
+        });
     }
 }
