@@ -78,12 +78,14 @@ public class BaseTest {
     }
 
     protected static void inPreparedStatement(Query query, TestResultSet<ResultSet> test) throws SQLException {
-        try (Statement statement = dataSource.getConnection().createStatement()) {
-            statement.execute(query.sql());
-            try (ResultSet rs = statement.getResultSet()) {
-                if (rs != null)
-                    while (rs.next())
-                        test.doIt(rs);
+        try (Connection connection = dataSource.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(query.sql());
+                try (ResultSet rs = statement.getResultSet()) {
+                    if (rs != null)
+                        while (rs.next())
+                            test.doIt(rs);
+                }
             }
         }
     }

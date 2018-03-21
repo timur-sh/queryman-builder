@@ -1158,7 +1158,7 @@ class SelectImplTest extends BaseTest {
     //---
 
     @Test
-    void selectUnion() throws NoSuchFieldException, IllegalAccessException {
+    void selectUnion() throws SQLException {
         Query query = select("1", "2")
            .from("book")
            .where(asName("id"), operator("="), asConstant(1))
@@ -1169,16 +1169,25 @@ class SelectImplTest extends BaseTest {
         String sql = query.sql();
         assertEquals("SELECT 1, 2 FROM book WHERE id = 1 UNION SELECT 2, 2 FROM book WHERE id = 1", sql);
         assertEquals("SELECT 1, 2 FROM book WHERE id = ? UNION SELECT 2, 2 FROM book WHERE id = ?", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(2, map.size());
+        });
+        inBothStatement(query, rs -> {});
     }
 
     @Test
-    void selectFromUnion() {
+    void selectFromUnion() throws SQLException {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
            .union(select("2", "2"));
         String sql = select.sql();
         assertEquals("SELECT 1, 2 FROM book UNION SELECT 2, 2", sql);
+        assertEquals("SELECT 1, 2 FROM book UNION SELECT 2, 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
 
         select = select("1", "2");
         select
@@ -1187,6 +1196,11 @@ class SelectImplTest extends BaseTest {
            .union(select("2", "2"));
         sql = select.sql();
         assertEquals("SELECT 1, 2 FROM book CROSS JOIN author UNION SELECT 2, 2", sql);
+        assertEquals("SELECT 1, 2 FROM book CROSS JOIN author UNION SELECT 2, 2",buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(0, map.size());
+        });
+        inBothStatement(select, rs -> {});
 
         select = select("1", "2");
         select
@@ -1195,10 +1209,15 @@ class SelectImplTest extends BaseTest {
            .union(select("2", "2"));
         sql = select.sql();
         assertEquals("SELECT 1, 2 FROM book JOIN author ON (true) UNION SELECT 2, 2", sql);
+        assertEquals("SELECT 1, 2 FROM book JOIN author ON (?) UNION SELECT 2, 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(1, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromWhereUnion() {
+    void selectFromWhereUnion() throws SQLException {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
@@ -1206,6 +1225,11 @@ class SelectImplTest extends BaseTest {
            .union(select("2", "2"));
 
         assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 UNION SELECT 2, 2", select.sql());
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN ? AND ? UNION SELECT 2, 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(2, map.size());
+        });
+        inBothStatement(select, rs -> {});
 
         select = select("1", "2");
         select
@@ -1215,10 +1239,15 @@ class SelectImplTest extends BaseTest {
            .union(select("2", "2"));
 
         assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 AND name IS NOT NULL UNION SELECT 2, 2", select.sql());
+        assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN ? AND ? AND name IS NOT NULL UNION SELECT 2, 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(2, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
-    void selectFromWhereGroupByUnion() throws NoSuchFieldException, IllegalAccessException {
+    void selectFromWhereGroupByUnion() throws NoSuchFieldException, IllegalAccessException, SQLException {
         SelectFromStep select = select("1", "2");
         select
            .from("book")
@@ -1229,6 +1258,10 @@ class SelectImplTest extends BaseTest {
         String sql = select.sql();
         assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN 1 AND 2 GROUP BY \"book\".\"id\" UNION SELECT 2, 2", sql);
         assertEquals("SELECT 1, 2 FROM book WHERE id BETWEEN ? AND ? GROUP BY \"book\".\"id\" UNION SELECT 2, 2", buildPreparedSQL(select));
+        testBindParameters(select, map -> {
+            assertEquals(2, map.size());
+        });
+        inBothStatement(select, rs -> {});
     }
 
     @Test
