@@ -22,7 +22,9 @@ import static org.queryman.builder.Queryman.asName;
 import static org.queryman.builder.Queryman.asQuotedName;
 import static org.queryman.builder.Queryman.asSubQuery;
 import static org.queryman.builder.Queryman.condition;
+import static org.queryman.builder.Queryman.conditionAll;
 import static org.queryman.builder.Queryman.conditionBetween;
+import static org.queryman.builder.Queryman.conditionExists;
 import static org.queryman.builder.Queryman.fromOnly;
 import static org.queryman.builder.Queryman.max;
 import static org.queryman.builder.Queryman.operator;
@@ -498,13 +500,31 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
-    void selectFromWhereAnd() {
+    void selectFromWhereAnd() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .where("id", "=", "1")
-           .and("id2", "=", "2")
+           .and("id", "=", "2")
+           .and(1, "=", 2)
+           .and(condition("id", "=", "2"))
+           .and(condition(1, "=", 2))
+           .and(conditionBetween(1, 2, 3))
+           .and(conditionAll("id", "=", select(1)))
+           .and(conditionExists(select("*").from("book").where("id", "=", 1)))
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 AND id2 = 2", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 AND id = 2 AND 1 = 2 AND id = 2 AND 1 = 2 AND 1 BETWEEN 2 AND 3 AND id = ALL(SELECT 1) AND EXISTS (SELECT * FROM book WHERE id = 1)", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 AND id = 2 AND ? = ? AND id = 2 AND ? = ? AND 1 BETWEEN ? AND ? AND id = ALL(SELECT 1) AND EXISTS (SELECT * FROM book WHERE id = ?)", buildPreparedSQL(select));
+        inBothStatement(select, rs -> {});
+        testBindParameters(select, map -> {
+            assertEquals(7, map.size());
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+            assertEquals(1, map.get(3).getValue());
+            assertEquals(2, map.get(4).getValue());
+            assertEquals(2, map.get(5).getValue());
+            assertEquals(3, map.get(6).getValue());
+            assertEquals(1, map.get(7).getValue());
+        });
 
         sql = select.from("book")
            .where("id", "=", "1")
@@ -532,13 +552,31 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
-    void selectFromWhereAndNot() {
+    void selectFromWhereAndNot() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .where("id", "=", "1")
-           .andNot("id2", "!=", "2")
+           .andNot("id", "=", "2")
+           .andNot(1, "=", 2)
+           .andNot(condition("id", "=", "2"))
+           .andNot(condition(1, "=", 2))
+           .andNot(conditionBetween(1, 2, 3))
+           .andNot(conditionAll("id", "=", select(1)))
+           .andNot(conditionExists(select("*").from("book").where("id", "=", 2)))
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 AND NOT id2 != 2", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 AND NOT id = 2 AND NOT 1 = 2 AND NOT id = 2 AND NOT 1 = 2 AND NOT 1 BETWEEN 2 AND 3 AND NOT id = ALL(SELECT 1) AND NOT EXISTS (SELECT * FROM book WHERE id = 2)", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 AND NOT id = 2 AND NOT ? = ? AND NOT id = 2 AND NOT ? = ? AND NOT 1 BETWEEN ? AND ? AND NOT id = ALL(SELECT 1) AND NOT EXISTS (SELECT * FROM book WHERE id = ?)", buildPreparedSQL(select));
+        inBothStatement(select, rs -> {});
+        testBindParameters(select, map -> {
+            assertEquals(7, map.size());
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+            assertEquals(1, map.get(3).getValue());
+            assertEquals(2, map.get(4).getValue());
+            assertEquals(2, map.get(5).getValue());
+            assertEquals(3, map.get(6).getValue());
+            assertEquals(2, map.get(7).getValue());
+        });
 
         sql = select.from("book")
            .where("id", "=", "1")
@@ -566,13 +604,31 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
-    void selectFromWhereOr() {
+    void selectFromWhereOr() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .where("id", "=", "1")
-           .or("id2", "=", "2")
+           .or("id", "=", "2")
+           .or(11, "=", 2)
+           .or(condition("id", "=", "2"))
+           .or(condition(1, "=", 2))
+           .or(conditionBetween(1, 2, 3))
+           .or(conditionAll("id", "=", select(1)))
+           .or(conditionExists(select("*").from("book").where("id", "=", 1)))
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 OR id2 = 2", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 OR id = 2 OR 11 = 2 OR id = 2 OR 1 = 2 OR 1 BETWEEN 2 AND 3 OR id = ALL(SELECT 1) OR EXISTS (SELECT * FROM book WHERE id = 1)", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 OR id = 2 OR ? = ? OR id = 2 OR ? = ? OR 1 BETWEEN ? AND ? OR id = ALL(SELECT 1) OR EXISTS (SELECT * FROM book WHERE id = ?)", buildPreparedSQL(select));
+        inBothStatement(select, rs -> {});
+        testBindParameters(select, map -> {
+            assertEquals(7, map.size());
+            assertEquals(11, map.get(1).getValue());
+            assertEquals(2, map.get(2).getValue());
+            assertEquals(1, map.get(3).getValue());
+            assertEquals(2, map.get(4).getValue());
+            assertEquals(2, map.get(5).getValue());
+            assertEquals(3, map.get(6).getValue());
+            assertEquals(1, map.get(7).getValue());
+        });
 
         sql = select.from("book")
            .where("id", "<>", "1")
@@ -600,13 +656,31 @@ class SelectImplTest extends BaseTest {
     }
 
     @Test
-    void selectFromWhereOrNot() {
+    void selectFromWhereOrNot() throws SQLException {
         SelectFromStep select = select("id", "name");
         String sql = select.from("book")
            .where("id", "=", "1")
-           .orNot("id2", "=", "2")
+           .orNot("id", "=", "2")
+           .orNot(1, "=", 22)
+           .orNot(condition("id", "=", "2"))
+           .orNot(condition(1, "=", 2))
+           .orNot(conditionBetween(1, 2, 3))
+           .orNot(conditionAll("id", "=", select(1)))
+           .orNot(conditionExists(select("*").from("book").where("id", "=", 1)))
            .sql();
-        assertEquals("SELECT id, name FROM book WHERE id = 1 OR NOT id2 = 2", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 OR NOT id = 2 OR NOT 1 = 22 OR NOT id = 2 OR NOT 1 = 2 OR NOT 1 BETWEEN 2 AND 3 OR NOT id = ALL(SELECT 1) OR NOT EXISTS (SELECT * FROM book WHERE id = 1)", sql);
+        assertEquals("SELECT id, name FROM book WHERE id = 1 OR NOT id = 2 OR NOT ? = ? OR NOT id = 2 OR NOT ? = ? OR NOT 1 BETWEEN ? AND ? OR NOT id = ALL(SELECT 1) OR NOT EXISTS (SELECT * FROM book WHERE id = ?)", buildPreparedSQL(select));
+        inBothStatement(select, rs -> {});
+        testBindParameters(select, map -> {
+            assertEquals(7, map.size());
+            assertEquals(1, map.get(1).getValue());
+            assertEquals(22, map.get(2).getValue());
+            assertEquals(1, map.get(3).getValue());
+            assertEquals(2, map.get(4).getValue());
+            assertEquals(2, map.get(5).getValue());
+            assertEquals(3, map.get(6).getValue());
+            assertEquals(1, map.get(7).getValue());
+        });
 
         sql = select.from("book")
            .where("id", "=", "1")
