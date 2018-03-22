@@ -11,9 +11,12 @@ CREATE TABLE book
   name   VARCHAR(255),
   author_id BIGINT,
   year   SMALLINT,
-  price  REAL
+  price  REAL,
+
+  CONSTRAINT index_name PRIMARY KEY (name)
 );
 
+-- CREATE UNIQUE INDEX index_name on book (name);
 
 CREATE TABLE sales
 (
