@@ -33,6 +33,8 @@ import static org.queryman.builder.Queryman.select;
 import static org.queryman.builder.Queryman.selectAll;
 import static org.queryman.builder.Queryman.selectDistinct;
 import static org.queryman.builder.Queryman.selectDistinctOn;
+import static org.queryman.builder.Queryman.with;
+import static org.queryman.builder.Queryman.withRecursive;
 import static org.queryman.builder.TestHelper.testBindParameters;
 import static org.queryman.builder.ast.TreeFormatterUtil.buildPreparedSQL;
 
@@ -1448,5 +1450,43 @@ class SelectImplTest extends BaseTest {
         assertEquals("SELECT * FROM (SELECT id, name, year FROM book WHERE year > ?) AS b WHERE b.id = ? FOR SHARE", buildPreparedSQL(query));
         inBothStatement(query, rs -> {
         });
+    }
+
+    @Test
+    void withSelect() throws SQLException {
+        Query query = with("latest")
+           .columns("id", "name")
+           .as(
+              select("id", "name").from("book").where("name", "=", asConstant("test"))
+           )
+           .select("id", "name").from("book").where("id", "=", 10);
+
+        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test') SELECT id, name FROM book WHERE id = 10", query.sql());
+        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = ?) SELECT id, name FROM book WHERE id = ?", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(2, map.size());
+            assertEquals("test", map.get(1).getValue());
+            assertEquals(10, map.get(2).getValue());
+        });
+        inBothStatement(query, rs -> { });
+    }
+
+    @Test
+    void withRecursiveSelect()  throws SQLException {
+        Query query = withRecursive("latest")
+           .columns("id", "name")
+           .as(
+              select("id", "name").from("book").where("name", "=", asConstant("test"))
+           )
+           .select("id", "name").from("book").where("id", "=", 10);
+
+        assertEquals("WITH RECURSIVE latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test') SELECT id, name FROM book WHERE id = 10", query.sql());
+        assertEquals("WITH RECURSIVE latest (id, name) AS (SELECT id, name FROM book WHERE name = ?) SELECT id, name FROM book WHERE id = ?", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(2, map.size());
+            assertEquals("test", map.get(1).getValue());
+            assertEquals(10, map.get(2).getValue());
+        });
+        inBothStatement(query, rs -> { });
     }
 }
