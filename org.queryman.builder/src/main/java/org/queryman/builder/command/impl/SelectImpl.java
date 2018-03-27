@@ -62,7 +62,6 @@ import static org.queryman.builder.ast.NodesMetadata.ON;
 import static org.queryman.builder.ast.NodesMetadata.SELECT;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_ALL;
 import static org.queryman.builder.ast.NodesMetadata.SELECT_DISTINCT;
-import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * @author Timur Shaidullin
@@ -84,6 +83,8 @@ public class SelectImpl extends AbstractQuery implements
    SelectLockingWaitingStep,
    SelectLockingManySteps,
    SelectFinalStep {
+
+    private WithImpl with;
 
     private final List<From>    FROM     = new ArrayList<>();
     private final List<Token>   GROUP_BY = new ArrayList<>();
@@ -116,6 +117,10 @@ public class SelectImpl extends AbstractQuery implements
               .map(Queryman::asName)
               .collect(Collectors.toList())
         );
+    }
+
+    void setWith(WithImpl with) {
+        this.with = with;
     }
 
     public SelectImpl(List<Expression> names) {
@@ -160,6 +165,10 @@ public class SelectImpl extends AbstractQuery implements
 
     @Override
     public final void assemble(AbstractSyntaxTree tree) {
+        if (with != null)
+            tree.startNode(EMPTY)
+               .peek(with);
+
         if (selectAll)
             tree.startNode(SELECT_ALL, ", ");
         else if (selectDistinct) {
@@ -236,6 +245,9 @@ public class SelectImpl extends AbstractQuery implements
         }
 
         tree.endNode();
+
+        if (with != null)
+            tree.endNode();
     }
 
     private void resetToWhere() {

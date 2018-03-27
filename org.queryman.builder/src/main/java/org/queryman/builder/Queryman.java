@@ -24,9 +24,11 @@ import org.queryman.builder.command.impl.InsertImpl;
 import org.queryman.builder.command.impl.SelectImpl;
 import org.queryman.builder.command.impl.SequenceImpl;
 import org.queryman.builder.command.impl.UpdateImpl;
+import org.queryman.builder.command.impl.WithImpl;
 import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.update.UpdateAsStep;
+import org.queryman.builder.command.with.WithColumnsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -101,6 +103,30 @@ public class Queryman {
      */
     public static AbstractSyntaxTree getTree() {
         return treeFactory.getTree();
+    }
+
+    //---
+    // WITH API
+    //---
+
+    /**
+     * Starts WITH ... statement
+     *
+     * @param name name of with query
+     * @return with column step
+     */
+    public static WithColumnsStep with(String name) {
+        return new WithImpl(name);
+    }
+
+    /**
+     * Starts WITH RECURSIVE statement
+     *
+     * @param name name of with query
+     * @return with column step
+     */
+    public static WithColumnsStep withRecursive(String name) {
+        return new WithImpl(name, true);
     }
 
     //----

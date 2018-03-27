@@ -17,6 +17,9 @@ import static org.queryman.builder.Queryman.keyword;
  * @author Timur Shaidullin
  */
 public final class NodesMetadata {
+    public static final NodeMetadata WITH           = new NodeMetadata(Keywords.WITH);
+    public static final NodeMetadata WITH_RECURSIVE = new NodeMetadata(Keywords.WITH_RECURSIVE);
+
     public static final NodeMetadata SELECT          = new NodeMetadata(Keywords.SELECT);
     public static final NodeMetadata SELECT_ALL      = new NodeMetadata(Keywords.SELECT_ALL);
     public static final NodeMetadata SELECT_DISTINCT = new NodeMetadata(Keywords.SELECT_DISTINCT);
@@ -65,12 +68,12 @@ public final class NodesMetadata {
     public static final NodeMetadata OR_NOT  = new NodeMetadata(Operators.OR_NOT);
 
 
-    public static final NodeMetadata NULLS  = new NodeMetadata(keyword("NULLS"));
+    public static final NodeMetadata NULLS = new NodeMetadata(keyword("NULLS"));
 
-    public static final NodeMetadata OF  = new NodeMetadata(keyword("OF"));
+    public static final NodeMetadata OF = new NodeMetadata(keyword("OF"));
 
-    public static final NodeMetadata FOR_UPDATE  = new NodeMetadata(keyword("FOR UPDATE"));
-    public static final NodeMetadata FOR_NO_KEY_UPDATE  = new NodeMetadata(keyword("FOR NO KEY UPDATE"));
-    public static final NodeMetadata FOR_SHARE  = new NodeMetadata(keyword("FOR SHARE"));
-    public static final NodeMetadata FOR_KEY_SHARE  = new NodeMetadata(keyword("FOR KEY SHARE"));
+    public static final NodeMetadata FOR_UPDATE        = new NodeMetadata(keyword("FOR UPDATE"));
+    public static final NodeMetadata FOR_NO_KEY_UPDATE = new NodeMetadata(keyword("FOR NO KEY UPDATE"));
+    public static final NodeMetadata FOR_SHARE         = new NodeMetadata(keyword("FOR SHARE"));
+    public static final NodeMetadata FOR_KEY_SHARE     = new NodeMetadata(keyword("FOR KEY SHARE"));
 }

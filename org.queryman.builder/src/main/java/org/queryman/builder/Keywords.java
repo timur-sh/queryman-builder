@@ -24,14 +24,14 @@ public class Keywords {
     public static final Keyword FROM = new Keyword("FROM");
     public static final Keyword ONLY = new Keyword("ONLY");
 
-    public static final Keyword UNION          = new Keyword("UNION");
-    public static final Keyword UNION_ALL      = new Keyword("UNION ALL");
+    public static final Keyword UNION     = new Keyword("UNION");
+    public static final Keyword UNION_ALL = new Keyword("UNION ALL");
 
-    public static final Keyword INTERSECT          = new Keyword("INTERSECT");
-    public static final Keyword INTERSECT_ALL      = new Keyword("INTERSECT ALL");
+    public static final Keyword INTERSECT     = new Keyword("INTERSECT");
+    public static final Keyword INTERSECT_ALL = new Keyword("INTERSECT ALL");
 
-    public static final Keyword EXCEPT          = new Keyword("EXCEPT");
-    public static final Keyword EXCEPT_ALL      = new Keyword("EXCEPT ALL");
+    public static final Keyword EXCEPT     = new Keyword("EXCEPT");
+    public static final Keyword EXCEPT_ALL = new Keyword("EXCEPT ALL");
 
     public static final Keyword ON    = new Keyword("ON");
     public static final Keyword USING = new Keyword("USING");
@@ -77,7 +77,9 @@ public class Keywords {
     public static final Keyword START        = keyword("START");
     public static final Keyword START_WITH   = keyword("START WITH");
 
-    public static final Keyword WITH     = keyword("WITH");
+    public static final Keyword WITH           = keyword("WITH");
+    public static final Keyword WITH_RECURSIVE = keyword("WITH RECURSIVE");
+
     public static final Keyword CACHE    = keyword("CACHE");
     public static final Keyword CYCLE    = keyword("CYCLE");
     public static final Keyword NO_CYCLE = keyword("NO CYCLE");
@@ -113,6 +115,6 @@ public class Keywords {
     public static final Keyword WHERE_CURRENT_OF = keyword("WHERE CURRENT OF");
 
 
-    public static final Keyword NOWAIT = keyword("NOWAIT");
+    public static final Keyword NOWAIT      = keyword("NOWAIT");
     public static final Keyword SKIP_LOCKED = keyword("SKIP LOCKED");
 }
