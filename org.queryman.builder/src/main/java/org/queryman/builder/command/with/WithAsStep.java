@@ -7,6 +7,7 @@
 package org.queryman.builder.command.with;
 
 import org.queryman.builder.Query;
+import org.queryman.builder.token.Expression;
 
 /**
  * WITH .. (columns, column) AS .. step.
@@ -17,8 +18,16 @@ public interface WithAsStep {
     /**
      * Specifies sub-queries
      *
-     * @param queries list of queries
+     * @param query CTE's query
      * @return select first step
      */
-    SelectFirstStep as(Query... queries);
+    WithAsManySteps as(Query query);
+
+    /**
+     * Specifies sub-queries
+     *
+     * @param query CTE's query
+     * @return select first step
+     */
+    WithAsManySteps as(Expression query);
 }

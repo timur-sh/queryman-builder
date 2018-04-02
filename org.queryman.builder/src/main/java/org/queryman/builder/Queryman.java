@@ -28,7 +28,7 @@ import org.queryman.builder.command.impl.WithImpl;
 import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.update.UpdateAsStep;
-import org.queryman.builder.command.with.WithColumnsStep;
+import org.queryman.builder.command.with.WithAsStep;
 import org.queryman.builder.token.Expression;
 import org.queryman.builder.token.Keyword;
 import org.queryman.builder.token.Operator;
@@ -113,20 +113,22 @@ public class Queryman {
      * Starts WITH ... statement
      *
      * @param name name of with query
+     * @param columns output columns
      * @return with column step
      */
-    public static WithColumnsStep with(String name) {
-        return new WithImpl(name);
+    public static WithAsStep with(String name, String... columns) {
+        return new WithImpl(name, columns);
     }
 
     /**
      * Starts WITH RECURSIVE statement
      *
      * @param name name of with query
+     * @param columns output columns
      * @return with column step
      */
-    public static WithColumnsStep withRecursive(String name) {
-        return new WithImpl(name, true);
+    public static WithAsStep withRecursive(String name, String... columns) {
+        return new WithImpl(name, true, columns);
     }
 
     //----

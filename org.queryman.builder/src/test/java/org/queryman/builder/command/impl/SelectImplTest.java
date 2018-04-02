@@ -1454,38 +1454,49 @@ class SelectImplTest extends BaseTest {
 
     @Test
     void withSelect() throws SQLException {
-        Query query = with("latest")
-           .columns("id", "name")
+        Query query = with("latest", "id", "name")
            .as(
-              select("id", "name").from("book").where("name", "=", asConstant("test"))
+              select("id", "name")
+                 .from("book")
+                 .where("name", "=", asConstant("test"))
+                 .union(select("id", "name").from("book").where("name", "=", asConstant("test")))
+           )
+           .with("newest", "id", "name")
+           .as(select("id", "name")
+              .from("book")
+              .where("name", "=", asConstant("test"))
+              .union(select("id", "name").from("book").where("name", "=", asConstant("test")))
            )
            .select("id", "name").from("book").where("id", "=", 10);
 
-        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test') SELECT id, name FROM book WHERE id = 10", query.sql());
-        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = ?) SELECT id, name FROM book WHERE id = ?", buildPreparedSQL(query));
+        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test' UNION SELECT id, name FROM book WHERE name = 'test'), newest (id, name) AS (SELECT id, name FROM book WHERE name = 'test' UNION SELECT id, name FROM book WHERE name = 'test') SELECT id, name FROM book WHERE id = 10", query.sql());
+        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = ? UNION SELECT id, name FROM book WHERE name = ?), newest (id, name) AS (SELECT id, name FROM book WHERE name = ? UNION SELECT id, name FROM book WHERE name = ?) SELECT id, name FROM book WHERE id = ?", buildPreparedSQL(query));
         testBindParameters(query, map -> {
-            assertEquals(2, map.size());
+            assertEquals(5, map.size());
             assertEquals("test", map.get(1).getValue());
-            assertEquals(10, map.get(2).getValue());
+            assertEquals("test", map.get(2).getValue());
+            assertEquals("test", map.get(4).getValue());
+            assertEquals("test", map.get(3).getValue());
+            assertEquals(10, map.get(5).getValue());
         });
         inBothStatement(query, rs -> { });
     }
 
     @Test
     void withRecursiveSelect()  throws SQLException {
-        Query query = withRecursive("latest")
-           .columns("id", "name")
-           .as(
-              select("id", "name").from("book").where("name", "=", asConstant("test"))
-           )
+        Query query = withRecursive("latest", "id", "name")
+           .as(select("id", "name").from("book").where("name", "=", asConstant("test")))
+           .with("newest", "id", "name")
+           .as(select("id", "name").from("book").where("name", "=", asConstant("test")))
            .select("id", "name").from("book").where("id", "=", 10);
 
-        assertEquals("WITH RECURSIVE latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test') SELECT id, name FROM book WHERE id = 10", query.sql());
-        assertEquals("WITH RECURSIVE latest (id, name) AS (SELECT id, name FROM book WHERE name = ?) SELECT id, name FROM book WHERE id = ?", buildPreparedSQL(query));
+        assertEquals("WITH RECURSIVE latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test'), newest (id, name) AS (SELECT id, name FROM book WHERE name = 'test') SELECT id, name FROM book WHERE id = 10", query.sql());
+        assertEquals("WITH RECURSIVE latest (id, name) AS (SELECT id, name FROM book WHERE name = ?), newest (id, name) AS (SELECT id, name FROM book WHERE name = ?) SELECT id, name FROM book WHERE id = ?", buildPreparedSQL(query));
         testBindParameters(query, map -> {
-            assertEquals(2, map.size());
+            assertEquals(3, map.size());
             assertEquals("test", map.get(1).getValue());
-            assertEquals(10, map.get(2).getValue());
+            assertEquals("test", map.get(2).getValue());
+            assertEquals(10, map.get(3).getValue());
         });
         inBothStatement(query, rs -> { });
     }

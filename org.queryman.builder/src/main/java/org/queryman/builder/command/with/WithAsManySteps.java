@@ -7,10 +7,8 @@
 package org.queryman.builder.command.with;
 
 /**
- * WITH .. (columns, column) .. step.
- *
  * @author Timur Shaidullin
  */
-public interface WithColumnsStep {
-    WithAsStep columns(String... columns);
+public interface WithAsManySteps extends SelectFirstStep {
+    WithAsStep with(String name, String... columns);
 }

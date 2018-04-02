@@ -12,14 +12,18 @@ import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.command.select.SelectFromStep;
 import org.queryman.builder.command.with.SelectFirstStep;
+import org.queryman.builder.command.with.WithAsManySteps;
 import org.queryman.builder.command.with.WithAsStep;
-import org.queryman.builder.command.with.WithColumnsStep;
 import org.queryman.builder.token.Expression;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 
 import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.asSubQuery;
 import static org.queryman.builder.ast.NodesMetadata.AS;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.EMPTY_GROUPED;
 import static org.queryman.builder.ast.NodesMetadata.WITH;
 import static org.queryman.builder.ast.NodesMetadata.WITH_RECURSIVE;
@@ -30,55 +34,62 @@ import static org.queryman.builder.utils.ArrayUtils.toExpressions;
  */
 public class WithImpl implements
    AstVisitor,
-   WithColumnsStep,
    WithAsStep,
+   WithAsManySteps,
    SelectFirstStep {
 
-    private final String  name;
-    private       boolean recursive;
+    private final boolean recursive;
+    private final Deque<WithQuery> withQueries = new ArrayDeque<>();
 
-    private Expression[] columns;
-    private Expression[] queries;
-
-    public WithImpl(String name) {
-        this(name, false);
+    public WithImpl(String name, String... columns) {
+        this(name, false, columns);
     }
 
-    public WithImpl(String name, boolean recursive) {
-        this.name = name;
+    public WithImpl(String name, boolean recursive, String... columns) {
         this.recursive = recursive;
+        withQueries.add(new WithQuery(asName(name), toExpressions(columns)));
     }
 
     @Override
-    public final WithImpl as(Query... queries) {
-        this.queries = toExpressions(queries);
+    public final WithImpl as(Query query) {
+        return as(asSubQuery(query));
+    }
+
+    @Override
+    public final WithImpl as(Expression query) {
+        withQueries.peekLast().setQuery(query);
         return this;
     }
 
     @Override
-    public final WithImpl columns(String... columns) {
-        this.columns = toExpressions(columns);
+    public WithImpl with(String name, String... columns) {
+        withQueries.add(new WithQuery(asName(name), toExpressions(columns)));
         return this;
     }
 
     @Override
     public void assemble(AbstractSyntaxTree tree) {
         if (recursive)
-            tree.startNode(WITH_RECURSIVE);
+            tree.startNode(WITH_RECURSIVE.setJoinNodes(true), ", ");
         else
-            tree.startNode(WITH);
+            tree.startNode(WITH.setJoinNodes(true), ", ");
 
-        tree.addLeaf(asName(name));
+        for (WithQuery withQuery : withQueries) {
+            tree.startNode(EMPTY)
+               .addLeaf(withQuery.name);
 
-        if (columns != null)
-            tree.startNode(EMPTY_GROUPED, ", ")
-               .addLeaves(columns)
-               .endNode();
+            if (withQuery.columns != null)
+                tree.startNode(EMPTY_GROUPED, ", ")
+                   .addLeaves(withQuery.columns)
+                   .endNode();
 
-        if (queries != null)
-            tree.startNode(AS)
-               .addLeaves(queries)
-               .endNode();
+            if (withQuery.query != null)
+                tree.startNode(AS)
+                   .addLeaf(withQuery.query)
+                   .endNode();
+
+            tree.endNode();
+        }
 
         tree.endNode();
     }
@@ -217,5 +228,21 @@ public class WithImpl implements
      */
     public final SelectFromStep selectDistinctOn(Expression[] distinct, Expression... columns) {
         return initSelect(columns).distinctOn(distinct);
+    }
+
+    private class WithQuery {
+        private final Expression   name;
+        private final Expression[] columns;
+
+        private Expression query;
+
+        public WithQuery(Expression name, Expression[] columns) {
+            this.name = name;
+            this.columns = columns;
+        }
+
+        public void setQuery(Expression query) {
+            this.query = query;
+        }
     }
 }
