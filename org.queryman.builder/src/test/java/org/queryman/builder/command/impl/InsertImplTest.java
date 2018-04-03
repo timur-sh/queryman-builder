@@ -8,9 +8,14 @@ import org.queryman.builder.Queryman;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.queryman.builder.Queryman.asConstant;
+import static org.queryman.builder.Queryman.asName;
+import static org.queryman.builder.Queryman.insertInto;
 import static org.queryman.builder.Queryman.select;
 import static org.queryman.builder.Queryman.targetColumn;
 import static org.queryman.builder.Queryman.targetExpression;
+import static org.queryman.builder.Queryman.with;
+import static org.queryman.builder.Queryman.withRecursive;
 import static org.queryman.builder.TestHelper.testBindParameters;
 import static org.queryman.builder.ast.TreeFormatterUtil.buildPreparedSQL;
 
@@ -58,29 +63,29 @@ class InsertImplTest extends BaseTest {
             assertEquals(2, map.get(3).getValue());
             assertEquals(3, map.get(4).getValue());
         });
-        inBothStatement(query, rs -> {});
+        //todo this is an incorrect query made for testing purpose
+//        inBothStatement(query, rs -> {});
     }
 
     @Test
     void insertFull3() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Query query = Queryman.insertInto("book")
            .as("b")
-           .columns("id", "name")
            .defaultValues()
-           .onConflict("id")
+           .onConflict("name")
            .doUpdate()
            .set("id", 1)
-           .set("name", "test")
-           .where("id", "=", 1)
-           .and("id", "!=", 3)
+           .set("name", asName("EXCLUDED.name"))
+           .where("EXCLUDED.id", "=", 1)
+           .and("EXCLUDED.id", "!=", 3)
            .returning("id")
         ;
-        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (id) DO UPDATE SET id = 1, name = 'test' WHERE id = 1 AND id != 3 RETURNING id", query.sql());
-        assertEquals("INSERT INTO book AS b (id, name) DEFAULT VALUES ON CONFLICT (id) DO UPDATE SET id = ?, name = ? WHERE id = ? AND id != ? RETURNING id", buildPreparedSQL(query));
+        assertEquals("INSERT INTO book AS b DEFAULT VALUES ON CONFLICT (name) DO UPDATE SET id = 1, name = EXCLUDED.name WHERE EXCLUDED.id = 1 AND EXCLUDED.id != 3 RETURNING id", query.sql());
+        assertEquals("INSERT INTO book AS b DEFAULT VALUES ON CONFLICT (name) DO UPDATE SET id = ?, name = EXCLUDED.name WHERE EXCLUDED.id = ? AND EXCLUDED.id != ? RETURNING id", buildPreparedSQL(query));
         testBindParameters(query, map -> {
-            assertEquals(4, map.size());
+            assertEquals(3, map.size());
         });
-//        inBothStatement(query, rs -> {});
+        inBothStatement(query, rs -> {});
     }
 
     @Test
@@ -95,5 +100,43 @@ class InsertImplTest extends BaseTest {
            .sql()
         ;
         assertEquals("INSERT INTO book AS b (id, name) (SELECT id, name FROM book) ON CONFLICT DO NOTHING RETURNING id", sql);
+    }
+
+    @Test
+    void withSelect() throws SQLException {
+        Query query = with("latest", "id", "name")
+           .as(select("id", "name")
+                 .from("book")
+                 .where("name", "=", asConstant("test")))
+           .with("newest", "id", "name")
+           .as(insertInto("book").defaultValues().returning("id", "name"))
+           .insertInto("book").defaultValues();
+
+        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = 'test'), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) INSERT INTO book DEFAULT VALUES", query.sql());
+        assertEquals("WITH latest (id, name) AS (SELECT id, name FROM book WHERE name = ?), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) INSERT INTO book DEFAULT VALUES", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(1, map.size());
+            assertEquals("test", map.get(1).getValue());
+        });
+        inBothStatement(query, rs -> { });
+    }
+
+    @Test
+    void withRecursiveSelect()  throws SQLException {
+        Query query = withRecursive("latest", "id", "name")
+           .as(insertInto("book").defaultValues().returning("id", "name"))
+           .with("newest", "id", "name")
+           .as(select("id", "name")
+              .from("book")
+              .where("name", "=", asConstant("test")))
+           .insertInto("book").defaultValues();
+
+        assertEquals("WITH RECURSIVE latest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name), newest (id, name) AS (SELECT id, name FROM book WHERE name = 'test') INSERT INTO book DEFAULT VALUES", query.sql());
+        assertEquals("WITH RECURSIVE latest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name), newest (id, name) AS (SELECT id, name FROM book WHERE name = ?) INSERT INTO book DEFAULT VALUES", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(1, map.size());
+            assertEquals("test", map.get(1).getValue());
+        });
+        inBothStatement(query, rs -> { });
     }
 }

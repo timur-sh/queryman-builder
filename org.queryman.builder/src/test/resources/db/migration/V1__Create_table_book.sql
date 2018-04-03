@@ -8,7 +8,7 @@ CREATE TABLE "user" (
 CREATE TABLE book
 (
   id     SERIAL NOT NULL,
-  name   VARCHAR(255),
+  name   VARCHAR(255) DEFAULT md5(''||now()::text||random()::text),
   author_id BIGINT,
   year   SMALLINT,
   price  REAL,

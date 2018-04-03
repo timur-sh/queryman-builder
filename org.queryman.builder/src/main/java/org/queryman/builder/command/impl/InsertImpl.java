@@ -99,12 +99,22 @@ public class InsertImpl extends AbstractQuery implements
     private boolean conflictActionProcessing = false;
     private Expression[] returning;
 
+    private WithImpl with;
+
     public InsertImpl(Expression table) {
         this.table = table;
     }
 
+    void setWith(WithImpl with) {
+        this.with = with;
+    }
+
     @Override
     public void assemble(AbstractSyntaxTree tree) {
+        if (with != null)
+            tree.startNode(EMPTY)
+               .peek(with);
+
         tree.startNode(nodeMetadata(INSERT_INTO));
         tree.addLeaf(table);
 
@@ -188,6 +198,9 @@ public class InsertImpl extends AbstractQuery implements
                .endNode();
 
         tree.endNode();
+
+        if (with != null)
+            tree.endNode();
     }
 
     @Override

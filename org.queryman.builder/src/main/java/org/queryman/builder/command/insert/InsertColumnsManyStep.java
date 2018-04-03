@@ -11,6 +11,5 @@ package org.queryman.builder.command.insert;
  */
 public interface InsertColumnsManyStep extends
    InsertOverridingStep,
-   InsertDefaultValuesStep,
    InsertValuesManyStep {
 }

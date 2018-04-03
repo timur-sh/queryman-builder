@@ -13,7 +13,7 @@ import org.queryman.builder.token.Expression;
  *
  * @author Timur Shaidullin
  */
-public interface InsertColumnsStep extends InsertOverridingStep {
+public interface InsertColumnsStep extends InsertDefaultValuesStep {
     /**
      * @param columns set of columns
      * @return insert overriding value step

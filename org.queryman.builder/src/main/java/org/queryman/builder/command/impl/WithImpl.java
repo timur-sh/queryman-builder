@@ -10,7 +10,9 @@ import org.queryman.builder.Query;
 import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
+import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
+import org.queryman.builder.command.with.InsertIntoFirstStep;
 import org.queryman.builder.command.with.SelectFirstStep;
 import org.queryman.builder.command.with.WithAsManySteps;
 import org.queryman.builder.command.with.WithAsStep;
@@ -36,7 +38,8 @@ public class WithImpl implements
    AstVisitor,
    WithAsStep,
    WithAsManySteps,
-   SelectFirstStep {
+   SelectFirstStep,
+   InsertIntoFirstStep {
 
     private final boolean recursive;
     private final Deque<WithQuery> withQueries = new ArrayDeque<>();
@@ -228,6 +231,18 @@ public class WithImpl implements
      */
     public final SelectFromStep selectDistinctOn(Expression[] distinct, Expression... columns) {
         return initSelect(columns).distinctOn(distinct);
+    }
+
+    @Override
+    public InsertAsStep insertInto(String table) {
+        return insertInto(asName(table));
+    }
+
+    @Override
+    public InsertAsStep insertInto(Expression table) {
+        InsertImpl insert = new InsertImpl(table);
+        insert.setWith(this);
+        return insert;
     }
 
     private class WithQuery {
