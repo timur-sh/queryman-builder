@@ -14,7 +14,7 @@ import org.queryman.builder.token.Expression;
  *
  * @author Timur Shaidullin
  */
-public interface UpdateSetStep extends UpdateFromStep {
+public interface UpdateSetStep {
     /**
      * Set a column name and an expression that is be assigned to the column.
      *
@@ -22,7 +22,7 @@ public interface UpdateSetStep extends UpdateFromStep {
      * @param value expression value
      * @return itself
      */
-    <T> UpdateSetStep set(String column, T value);
+    <T> UpdateSetManyStep set(String column, T value);
 
     /**
      * Set a columns names and an expression list that are be assigned to the columns.
@@ -31,7 +31,7 @@ public interface UpdateSetStep extends UpdateFromStep {
      * @param listValues expressions list
      * @return itself
      */
-    UpdateSetStep set(Expression listColumns, Expression listValues);
+    UpdateSetManyStep set(Expression listColumns, Expression listValues);
 
     /**
      * Set a columns names and a sub-select that is be assigned to the columns.
@@ -40,5 +40,5 @@ public interface UpdateSetStep extends UpdateFromStep {
      * @param subSelect sub-select
      * @return itself
      */
-    UpdateSetStep set(Expression listColumns, Query subSelect);
+    UpdateSetManyStep set(Expression listColumns, Query subSelect);
 }

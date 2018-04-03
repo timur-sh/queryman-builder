@@ -13,6 +13,7 @@ import org.queryman.builder.command.Conditions;
 import org.queryman.builder.command.update.UpdateAsStep;
 import org.queryman.builder.command.update.UpdateFromStep;
 import org.queryman.builder.command.update.UpdateReturningStep;
+import org.queryman.builder.command.update.UpdateSetManyStep;
 import org.queryman.builder.command.update.UpdateSetStep;
 import org.queryman.builder.command.update.UpdateWhereFirstStep;
 import org.queryman.builder.command.update.UpdateWhereManySteps;
@@ -34,11 +35,11 @@ import static org.queryman.builder.Queryman.condition;
 import static org.queryman.builder.Queryman.conditionExists;
 import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.AS;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.FROM;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
 import static org.queryman.builder.ast.NodesMetadata.WHERE_CURRENT_OF;
-import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 
 /**
  * UPDATE statement.
@@ -48,6 +49,7 @@ import static org.queryman.builder.utils.ArrayUtils.toExpressions;
 public class UpdateImpl extends AbstractQuery implements
    UpdateAsStep,
    UpdateSetStep,
+   UpdateSetManyStep,
    UpdateFromStep,
    UpdateWhereFirstStep,
    UpdateWhereManySteps,
@@ -62,6 +64,8 @@ public class UpdateImpl extends AbstractQuery implements
     private       Conditions   conditions;
     private       String       whereCurrentOf;
 
+    private WithImpl with;
+
     public UpdateImpl(Expression table) {
         this(table, false);
     }
@@ -71,8 +75,16 @@ public class UpdateImpl extends AbstractQuery implements
         this.only = only;
     }
 
+    void setWith(WithImpl with) {
+        this.with = with;
+    }
+
     @Override
     public void assemble(AbstractSyntaxTree tree) {
+        if (with != null)
+            tree.startNode(EMPTY)
+               .peek(with);
+
         if (only)
             tree.startNode(nodeMetadata(UPDATE_ONLY));
         else
@@ -118,6 +130,9 @@ public class UpdateImpl extends AbstractQuery implements
                .endNode();
 
         tree.endNode();
+
+        if (with != null)
+            tree.endNode();
     }
 
     @Override
