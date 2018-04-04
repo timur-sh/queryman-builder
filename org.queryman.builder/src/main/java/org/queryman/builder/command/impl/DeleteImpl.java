@@ -26,6 +26,7 @@ import static org.queryman.builder.Queryman.condition;
 import static org.queryman.builder.Queryman.conditionExists;
 import static org.queryman.builder.Queryman.nodeMetadata;
 import static org.queryman.builder.ast.NodesMetadata.AS;
+import static org.queryman.builder.ast.NodesMetadata.EMPTY;
 import static org.queryman.builder.ast.NodesMetadata.RETURNING;
 import static org.queryman.builder.ast.NodesMetadata.USING;
 import static org.queryman.builder.ast.NodesMetadata.WHERE;
@@ -52,6 +53,8 @@ public class DeleteImpl extends AbstractQuery implements
     private       Conditions   conditions;
     private       String       whereCurrentOf;
 
+    private WithImpl with;
+
     public DeleteImpl(Expression table) {
         this(table, false);
     }
@@ -61,8 +64,16 @@ public class DeleteImpl extends AbstractQuery implements
         this.only = only;
     }
 
+    void setWith(WithImpl with) {
+        this.with = with;
+    }
+
     @Override
     public void assemble(AbstractSyntaxTree tree) {
+        if (with != null)
+            tree.startNode(EMPTY)
+               .peek(with);
+
         if (only)
             tree.startNode(nodeMetadata(DELETE_FROM_ONLY));
         else
@@ -95,6 +106,9 @@ public class DeleteImpl extends AbstractQuery implements
                .endNode();
 
         tree.endNode();
+
+        if (with != null)
+            tree.endNode();
     }
 
     @Override

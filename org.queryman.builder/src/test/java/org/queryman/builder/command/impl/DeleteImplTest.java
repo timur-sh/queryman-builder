@@ -1,7 +1,11 @@
 package org.queryman.builder.command.impl;
 
 import org.junit.jupiter.api.Test;
+import org.queryman.builder.BaseTest;
+import org.queryman.builder.Query;
 import org.queryman.builder.command.delete.DeleteUsingStep;
+
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.queryman.builder.Operators.EQUAL;
@@ -14,9 +18,15 @@ import static org.queryman.builder.Queryman.asQuotedName;
 import static org.queryman.builder.Queryman.condition;
 import static org.queryman.builder.Queryman.deleteFrom;
 import static org.queryman.builder.Queryman.deleteFromOnly;
+import static org.queryman.builder.Queryman.insertInto;
 import static org.queryman.builder.Queryman.select;
+import static org.queryman.builder.Queryman.updateOnly;
+import static org.queryman.builder.Queryman.with;
+import static org.queryman.builder.Queryman.withRecursive;
+import static org.queryman.builder.TestHelper.testBindParameters;
+import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
-class DeleteImplTest {
+class DeleteImplTest extends BaseTest {
     @Test
     void deleteFromTest() {
         String sql = deleteFrom("book").sql();
@@ -215,5 +225,43 @@ class DeleteImplTest {
            .returning(asName("max(price)").as("price"))
            .sql();
         assertEquals("DELETE FROM book AS b USING author, order WHERE b.id = 1 RETURNING max(price) AS price", sql);
+    }
+
+
+    @Test
+    void withUpdate() throws SQLException {
+        Query query = with("latest", "id", "name")
+           .as(updateOnly("author").set("name", "test").returning("id", "name"))
+           .with("newest", "id", "name")
+           .as(insertInto("book").defaultValues().returning("id", "name"))
+           .deleteFrom("book").returning("*");
+
+        assertEquals("WITH latest (id, name) AS (UPDATE ONLY author SET name = 'test' RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) DELETE FROM book RETURNING *", query.sql());
+        assertEquals("WITH latest (id, name) AS (UPDATE ONLY author SET name = ? RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) DELETE FROM book RETURNING *", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(1, map.size());
+            assertEquals("test", map.get(1).getValue());
+        });
+        inBothStatement(query, rs -> {
+        });
+    }
+
+    @Test
+    void withRecursiveUpdate() throws SQLException {
+        Query query = withRecursive("latest", "id", "name")
+           .as(updateOnly("author").set("name", "test").returning("id", "name"))
+           .with("newest", "id", "name")
+           .as(insertInto("book").defaultValues().returning("id", "name"))
+           .deleteFrom("book").returning("*");
+
+
+        assertEquals("WITH RECURSIVE latest (id, name) AS (UPDATE ONLY author SET name = 'test' RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) DELETE FROM book RETURNING *", query.sql());
+        assertEquals("WITH RECURSIVE latest (id, name) AS (UPDATE ONLY author SET name = ? RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) DELETE FROM book RETURNING *", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(1, map.size());
+            assertEquals("test", map.get(1).getValue());
+        });
+        inBothStatement(query, rs -> {
+        });
     }
 }
