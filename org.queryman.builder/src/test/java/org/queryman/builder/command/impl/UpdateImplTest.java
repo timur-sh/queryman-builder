@@ -3,7 +3,7 @@ package org.queryman.builder.command.impl;
 import org.junit.jupiter.api.Test;
 import org.queryman.builder.BaseTest;
 import org.queryman.builder.Query;
-import org.queryman.builder.command.update.UpdateSetStep;
+import org.queryman.builder.command.update.UpdateSetManyStep;
 
 import java.sql.SQLException;
 
@@ -19,9 +19,13 @@ import static org.queryman.builder.Queryman.asName;
 import static org.queryman.builder.Queryman.asQuotedName;
 import static org.queryman.builder.Queryman.condition;
 import static org.queryman.builder.Queryman.conditionBetween;
+import static org.queryman.builder.Queryman.insertInto;
 import static org.queryman.builder.Queryman.select;
 import static org.queryman.builder.Queryman.update;
 import static org.queryman.builder.Queryman.updateOnly;
+import static org.queryman.builder.Queryman.with;
+import static org.queryman.builder.Queryman.withRecursive;
+import static org.queryman.builder.TestHelper.testBindParameters;
 import static org.queryman.builder.ast.TreeFormatterTestUtil.buildPreparedSQL;
 
 class UpdateImplTest extends BaseTest {
@@ -40,8 +44,8 @@ class UpdateImplTest extends BaseTest {
 
     @Test
     void updateOnlyTest() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        Query query = updateOnly("book").as("b").set("name", "noname");
-        assertEquals("UPDATE ONLY book AS b SET name = 'noname'", query.sql());
+        Query query = updateOnly("book").as("b").set("name", "noname1");
+        assertEquals("UPDATE ONLY book AS b SET name = 'noname1'", query.sql());
         assertEquals("UPDATE ONLY book AS b SET name = ?", buildPreparedSQL(query));
         inBothStatement(query, rs -> {
         });
@@ -67,9 +71,7 @@ class UpdateImplTest extends BaseTest {
 
     @Test
     void updateWhereAnd() throws NoSuchFieldException, IllegalAccessException {
-        UpdateSetStep update = update("book").as("b");
-
-        update.set("author_id", 5)
+        Query update = update("book").as("b").set("author_id", 5)
            .where("b.id", "=", "1")
            .and("b.id", "=", "2")
            .and(conditionBetween("id", 1, asName("id")))
@@ -113,105 +115,105 @@ class UpdateImplTest extends BaseTest {
 
     @Test
     void updateWhereAndNot() {
-        UpdateSetStep update = update("book").as("b");
+        UpdateSetManyStep update = update("book").as("b").set("id", 1);
 
         String sql = update
            .where("id", "=", "1")
            .andNot("id2", "!=", "2")
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 AND NOT id2 != 2", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 AND NOT id2 != 2", sql);
 
         sql = update
            .where("id", "=", "1")
            .andNot(asQuotedName("id2"), EQUAL, asConstant(3))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 AND NOT \"id2\" = 3", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 AND NOT \"id2\" = 3", sql);
 
         sql = update
            .where("id", "=", "1")
            .andNot(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 AND NOT \"id2\" = 4", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 AND NOT \"id2\" = 4", sql);
 
         sql = update
            .where("id", "=", "1")
            .andNot(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 AND NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 AND NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = update
            .where("id", "=", "1")
            .andNotExists(select("1", "2"))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 AND NOT EXISTS (SELECT 1, 2)", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 AND NOT EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
     void updateWhereOr() {
-        UpdateSetStep update = update("book").as("b");
+        UpdateSetManyStep update = update("book").as("b").set("id", 1);
         String sql = update
            .where("id", "=", "1")
            .or("id2", "=", "2")
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR id2 = 2", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR id2 = 2", sql);
 
         sql = update
            .where("id", "<>", "1")
            .or(asQuotedName("id2"), NE2, asConstant(3))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id <> 1 OR \"id2\" <> 3", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id <> 1 OR \"id2\" <> 3", sql);
 
         sql = update
            .where("id", "=", "1")
            .or(condition(asQuotedName("id2"), LT, asConstant(4)))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR \"id2\" < 4", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR \"id2\" < 4", sql);
 
         sql = update
            .where("id", "=", "1")
            .or(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR \"id2\" NOT IN (SELECT 1, 2)", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = update
            .where("id", "=", "1")
            .orExists(select("1", "2"))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR EXISTS (SELECT 1, 2)", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR EXISTS (SELECT 1, 2)", sql);
     }
 
     @Test
     void updateWhereOrNot() {
-        UpdateSetStep update = update("book").as("b");
+        UpdateSetManyStep update = update("book").as("b").set("id", 1);
         String sql = update
            .where("id", "=", "1")
            .orNot("id2", "=", "2")
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR NOT id2 = 2", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR NOT id2 = 2", sql);
 
         sql = update
            .where("id", "=", "1")
            .orNot(asQuotedName("id2"), EQUAL, asConstant(3))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR NOT \"id2\" = 3", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR NOT \"id2\" = 3", sql);
 
         sql = update
            .where("id", "=", "1")
            .orNot(condition(asQuotedName("id2"), EQUAL, asConstant(4)))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR NOT \"id2\" = 4", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR NOT \"id2\" = 4", sql);
 
         sql = update
            .where("id", "=", "1")
            .orNot(asQuotedName("id2"), NOT_IN, select("1", "2"))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR NOT \"id2\" NOT IN (SELECT 1, 2)", sql);
 
         sql = update
            .where("id", "=", "1")
            .orNotExists(select("1", "2"))
            .sql();
-        assertEquals("UPDATE book AS b WHERE id = 1 OR NOT EXISTS (SELECT 1, 2)", sql);
+        assertEquals("UPDATE book AS b SET id = 1 WHERE id = 1 OR NOT EXISTS (SELECT 1, 2)", sql);
     }
 
 
@@ -233,5 +235,48 @@ class UpdateImplTest extends BaseTest {
         assertEquals("UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price", query.sql());
 
         assertEquals("UPDATE book AS b SET author = ? WHERE b.id = ? RETURNING max(price) AS price", buildPreparedSQL(query));
+    }
+
+
+    @Test
+    void withUpdate() throws SQLException {
+        Query query = with("latest", "id", "name")
+           .as(updateOnly("author").set("name", "test").returning("id", "name"))
+           .with("newest", "id", "name")
+           .as(insertInto("book").defaultValues().returning("id", "name"))
+           .update("book")
+           .set("author_id", asConstant(1)).where("id", "=", 1).returning("*");
+
+        assertEquals("WITH latest (id, name) AS (UPDATE ONLY author SET name = 'test' RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) UPDATE book SET author_id = 1 WHERE id = 1 RETURNING *", query.sql());
+        assertEquals("WITH latest (id, name) AS (UPDATE ONLY author SET name = ? RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) UPDATE book SET author_id = ? WHERE id = ? RETURNING *", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(3, map.size());
+            assertEquals("test", map.get(1).getValue());
+            assertEquals(1, map.get(2).getValue());
+            assertEquals(1, map.get(3).getValue());
+        });
+        inBothStatement(query, rs -> {
+        });
+    }
+
+    @Test
+    void withRecursiveUpdate() throws SQLException {
+        Query query = withRecursive("latest", "id", "name")
+           .as(updateOnly("author").set("name", "test").returning("id", "name"))
+           .with("newest", "id", "name")
+           .as(insertInto("book").defaultValues().returning("id", "name"))
+           .update("book")
+           .set("author_id", asConstant(1)).where("id", "=", 1).returning("*");
+
+        assertEquals("WITH RECURSIVE latest (id, name) AS (UPDATE ONLY author SET name = 'test' RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) UPDATE book SET author_id = 1 WHERE id = 1 RETURNING *", query.sql());
+        assertEquals("WITH RECURSIVE latest (id, name) AS (UPDATE ONLY author SET name = ? RETURNING id, name), newest (id, name) AS (INSERT INTO book DEFAULT VALUES RETURNING id, name) UPDATE book SET author_id = ? WHERE id = ? RETURNING *", buildPreparedSQL(query));
+        testBindParameters(query, map -> {
+            assertEquals(3, map.size());
+            assertEquals("test", map.get(1).getValue());
+            assertEquals(1, map.get(2).getValue());
+            assertEquals(1, map.get(3).getValue());
+        });
+        inBothStatement(query, rs -> {
+        });
     }
 }

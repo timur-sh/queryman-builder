@@ -11,6 +11,8 @@ package org.queryman.builder.command.with;
  */
 public interface WithAsManySteps extends
    SelectFirstStep,
-   InsertIntoFirstStep {
+   InsertIntoFirstStep,
+   UpdateFirstStep,
+   DeleteFirstStep {
     WithAsStep with(String name, String... columns);
 }

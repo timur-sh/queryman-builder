@@ -10,10 +10,14 @@ import org.queryman.builder.Query;
 import org.queryman.builder.Queryman;
 import org.queryman.builder.ast.AbstractSyntaxTree;
 import org.queryman.builder.ast.AstVisitor;
+import org.queryman.builder.command.delete.DeleteAsStep;
 import org.queryman.builder.command.insert.InsertAsStep;
 import org.queryman.builder.command.select.SelectFromStep;
+import org.queryman.builder.command.update.UpdateAsStep;
+import org.queryman.builder.command.with.DeleteFirstStep;
 import org.queryman.builder.command.with.InsertIntoFirstStep;
 import org.queryman.builder.command.with.SelectFirstStep;
+import org.queryman.builder.command.with.UpdateFirstStep;
 import org.queryman.builder.command.with.WithAsManySteps;
 import org.queryman.builder.command.with.WithAsStep;
 import org.queryman.builder.token.Expression;
@@ -39,7 +43,9 @@ public class WithImpl implements
    WithAsStep,
    WithAsManySteps,
    SelectFirstStep,
-   InsertIntoFirstStep {
+   InsertIntoFirstStep,
+   UpdateFirstStep,
+   DeleteFirstStep {
 
     private final boolean recursive;
     private final Deque<WithQuery> withQueries = new ArrayDeque<>();
@@ -65,7 +71,7 @@ public class WithImpl implements
     }
 
     @Override
-    public WithImpl with(String name, String... columns) {
+    public final WithImpl with(String name, String... columns) {
         withQueries.add(new WithQuery(asName(name), toExpressions(columns)));
         return this;
     }
@@ -234,18 +240,70 @@ public class WithImpl implements
     }
 
     @Override
-    public InsertAsStep insertInto(String table) {
+    public final InsertAsStep insertInto(String table) {
         return insertInto(asName(table));
     }
 
     @Override
-    public InsertAsStep insertInto(Expression table) {
+    public final InsertAsStep insertInto(Expression table) {
         InsertImpl insert = new InsertImpl(table);
         insert.setWith(this);
         return insert;
     }
 
-    private class WithQuery {
+    private UpdateImpl createUpdateStatement(Expression name, boolean only) {
+        UpdateImpl update = new UpdateImpl(name, only);
+        update.setWith(this);
+        return update;
+    }
+
+    @Override
+    public final UpdateAsStep update(String name) {
+        return update(asName(name));
+    }
+
+    @Override
+    public final UpdateAsStep update(Expression name) {
+        return createUpdateStatement(name, false);
+    }
+
+    @Override
+    public final UpdateAsStep updateOnly(String name) {
+        return updateOnly(asName(name));
+    }
+
+    @Override
+    public final UpdateAsStep updateOnly(Expression name) {
+        return createUpdateStatement(name, true);
+    }
+
+    private DeleteImpl createDeleteStatement(Expression name, boolean only) {
+        DeleteImpl delete = new DeleteImpl(name, only);
+        delete.setWith(this);
+        return delete;
+    }
+
+    @Override
+    public final DeleteAsStep deleteFrom(String name) {
+        return deleteFrom(asName(name));
+    }
+
+    @Override
+    public final DeleteAsStep deleteFrom(Expression name) {
+        return createDeleteStatement(name, false);
+    }
+
+    @Override
+    public final DeleteAsStep deleteFromOnly(String name) {
+        return deleteFromOnly(asName(name));
+    }
+
+    @Override
+    public final DeleteAsStep deleteFromOnly(Expression name) {
+        return createDeleteStatement(name, true);
+    }
+
+    private final class WithQuery {
         private final Expression   name;
         private final Expression[] columns;
 
