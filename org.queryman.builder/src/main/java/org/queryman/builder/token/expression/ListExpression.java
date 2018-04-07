@@ -30,6 +30,7 @@ public class ListExpression<T> extends PreparedExpression {
      */
     private Expression[] arr;
 
+    @SuppressWarnings("unchecked")
     private ListExpression(String constant) {
         super(constant);
     }

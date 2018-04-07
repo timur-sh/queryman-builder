@@ -22,6 +22,7 @@ public interface DeleteReturningStep extends DeleteFinalStep {
      *
      * @see #returning(Expression...)
      */
+    @SuppressWarnings("unchecked")
     <T> DeleteFinalStep returning(T... output);
 
     /**

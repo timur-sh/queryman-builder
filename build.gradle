@@ -1,6 +1,6 @@
 apply from: './libraries.gradle'
 
-group 'net.shaidullin'
+group 'org.queryman'
 version '1.0.0.beta'
 
 description "Queryman PostgreSQL tools"
@@ -19,13 +19,14 @@ allprojects {
         mavenLocal()
         jcenter()
     }
-
-    buildDir = "target"
-
     //common dependencies
     dependencies {
-        testCompile(libraries['junit'])
-        testCompile(libraries['apuGuardian'])
+        testImplementation libraries.junitApi
+        testRuntimeOnly libraries.junitEngine
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 

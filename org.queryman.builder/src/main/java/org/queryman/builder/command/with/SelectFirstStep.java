@@ -24,6 +24,7 @@ public interface SelectFirstStep {
      *
      * @return select from step
      */
+    @SuppressWarnings("unchecked")
     <T> SelectFromStep select(T... columns);
 
     /**
@@ -50,6 +51,7 @@ public interface SelectFirstStep {
      *
      * @return select from step
      */
+    @SuppressWarnings("unchecked")
     <T> SelectFromStep selectAll(T... columns);
 
     /**
@@ -76,6 +78,7 @@ public interface SelectFirstStep {
      *
      * @return select from step
      */
+    @SuppressWarnings("unchecked")
     <T> SelectFromStep selectDistinct(T... columns);
 
     /**
@@ -103,6 +106,7 @@ public interface SelectFirstStep {
      *
      * @return select from step
      */
+    @SuppressWarnings("unchecked")
     <T> SelectFromStep selectDistinctOn(String[] distinct, T... columns);
 
     /**

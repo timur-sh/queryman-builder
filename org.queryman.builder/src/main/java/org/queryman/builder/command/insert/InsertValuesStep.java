@@ -14,6 +14,8 @@ import org.queryman.builder.token.Expression;
  * @author Timur Shaidullin
  */
 public interface InsertValuesStep extends InsertOnConflictStep {
+    @SuppressWarnings("unchecked")
     <T> InsertValuesStep values(T... values);
+
     InsertValuesStep values(Expression... values);
 }

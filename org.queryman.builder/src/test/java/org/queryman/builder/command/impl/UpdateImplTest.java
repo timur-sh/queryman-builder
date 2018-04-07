@@ -44,7 +44,7 @@ class UpdateImplTest extends BaseTest {
 
     @Test
     void updateOnlyTest() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        Query query = updateOnly("book").as("b").set("name", "noname1");
+        Query query = updateOnly("book").as("b").set("name", "noname1").where("id", "=", 10);
         assertEquals("UPDATE ONLY book AS b SET name = 'noname1'", query.sql());
         assertEquals("UPDATE ONLY book AS b SET name = ?", buildPreparedSQL(query));
         inBothStatement(query, rs -> {

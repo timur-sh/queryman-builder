@@ -30,6 +30,7 @@ public class SubQueryExpression<T> extends PreparedExpression {
     private Expression[] arr;
     private final Query query;
 
+    @SuppressWarnings("unchecked")
     public SubQueryExpression(Query query) {
         super("");
         this.query = query;

@@ -75,6 +75,7 @@ final class TreeFormatter {
            .process(list);
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> leavesToStrings(Node node, boolean prepare) {
         List<String> list = new ArrayList<>();
 

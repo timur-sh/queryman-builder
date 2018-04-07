@@ -6,7 +6,6 @@
  */
 package org.queryman.builder.command.insert;
 
-import org.queryman.builder.command.delete.DeleteFinalStep;
 import org.queryman.builder.token.Expression;
 
 /**
@@ -23,6 +22,7 @@ public interface InsertReturningStep extends InsertFinalStep {
      *
      * @see #returning(Expression...)
      */
+    @SuppressWarnings("unchecked")
     <T> InsertFinalStep returning(T... output);
 
     /**

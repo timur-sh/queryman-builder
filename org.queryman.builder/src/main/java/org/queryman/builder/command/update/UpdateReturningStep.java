@@ -22,6 +22,7 @@ public interface UpdateReturningStep extends UpdateFinalStep {
      *
      * @see #returning(Expression...)
      */
+    @SuppressWarnings("unchecked")
     <T> UpdateFinalStep returning(T... output);
 
     /**

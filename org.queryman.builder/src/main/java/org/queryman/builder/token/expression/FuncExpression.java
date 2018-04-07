@@ -20,6 +20,7 @@ import java.util.Objects;
 public class FuncExpression extends PreparedExpression {
     private Expression[] expressions;
 
+    @SuppressWarnings("unchecked")
     public FuncExpression(String constant) {
         super(constant);
     }
