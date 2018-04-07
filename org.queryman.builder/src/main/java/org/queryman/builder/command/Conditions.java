@@ -52,7 +52,7 @@ import org.queryman.builder.token.Operator;
  *
  *
  * See conditions' methods in {@link Queryman}:
- * @see Queryman#condition(Expression, Operator, Expression)
+ * @see Queryman#condition(Object, Object, Object)
  *
  * @author Timur Shaidullin
  */
@@ -60,7 +60,7 @@ public interface Conditions extends AstVisitor {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND "id" = 1
+     * // SELECT * FROM book WHERE year &gt; 2010 AND "id" = 1
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -79,7 +79,7 @@ public interface Conditions extends AstVisitor {
      * Example:
      * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 AND EXISTS (SELECT * FROM author)
+     * // SELECT * FROM book WHERE year &gt; 2010 AND EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -111,7 +111,7 @@ public interface Conditions extends AstVisitor {
      *
      * The first example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND id BETWEEN 1 AND 10
+     * // SELECT * FROM book WHERE year &gt; 2010 AND id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -121,7 +121,7 @@ public interface Conditions extends AstVisitor {
      *
      * The second example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * // SELECT * FROM book WHERE year &gt; 2010 AND (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -144,7 +144,7 @@ public interface Conditions extends AstVisitor {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND NOT "id" = 1
+     * // SELECT * FROM book WHERE year &gt; 2010 AND NOT "id" = 1
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -163,7 +163,7 @@ public interface Conditions extends AstVisitor {
      * Example:
      * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 AND NOT EXISTS (SELECT * FROM author)
+     * // SELECT * FROM book WHERE year &gt; 2010 AND NOT EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -195,7 +195,7 @@ public interface Conditions extends AstVisitor {
      *
      * The first example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND NOT id BETWEEN 1 AND 10
+     * // SELECT * FROM book WHERE year &gt; 2010 AND NOT id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -205,7 +205,7 @@ public interface Conditions extends AstVisitor {
      *
      * The second example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 AND NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * // SELECT * FROM book WHERE year &gt; 2010 AND NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -228,7 +228,7 @@ public interface Conditions extends AstVisitor {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR id = 1
+     * // SELECT * FROM book WHERE year &gt; 2010 OR id = 1
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -247,7 +247,7 @@ public interface Conditions extends AstVisitor {
      * Example:
      * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 OR EXISTS (SELECT * FROM author)
+     * // SELECT * FROM book WHERE year &gt; 2010 OR EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -279,7 +279,7 @@ public interface Conditions extends AstVisitor {
      *
      * The first example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR id BETWEEN 1 AND 10
+     * // SELECT * FROM book WHERE year &gt; 2010 OR id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -289,7 +289,7 @@ public interface Conditions extends AstVisitor {
      *
      * The second example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * // SELECT * FROM book WHERE year &gt; 2010 OR (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -312,7 +312,7 @@ public interface Conditions extends AstVisitor {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR NOT "id" = 1
+     * // SELECT * FROM book WHERE year &gt; 2010 OR NOT "id" = 1
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -331,7 +331,7 @@ public interface Conditions extends AstVisitor {
      * Example:
      * <code>
      *
-     * // SELECT * FROM book WHERE year > 2010 OR NOT EXISTS (SELECT * FROM author)
+     * // SELECT * FROM book WHERE year &gt; 2010 OR NOT EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -363,7 +363,7 @@ public interface Conditions extends AstVisitor {
      *
      * The first example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR NOT id BETWEEN 1 AND 10
+     * // SELECT * FROM book WHERE year &gt; 2010 OR NOT id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")
@@ -373,7 +373,7 @@ public interface Conditions extends AstVisitor {
      *
      * The second example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010 OR NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
+     * // SELECT * FROM book WHERE year &gt; 2010 OR NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")

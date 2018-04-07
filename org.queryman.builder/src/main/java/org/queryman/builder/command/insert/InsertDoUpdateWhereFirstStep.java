@@ -20,7 +20,7 @@ public interface InsertDoUpdateWhereFirstStep extends InsertReturningStep {
     /**
      * Example:
      * <code>
-     * // SELECT * FROM book WHERE year > 2010
+     * // SELECT * FROM book WHERE year &gt; 2010
      * select("*")
      *  .from("book")
      *  .where("year", "&gt;", "2010")

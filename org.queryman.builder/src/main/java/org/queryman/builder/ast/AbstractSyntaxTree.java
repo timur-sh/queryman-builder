@@ -49,8 +49,8 @@ public interface AbstractSyntaxTree {
      * Each node must have a {@code metadata}. And override a default delimiter
      * by provides a new one.
      *
-     * @see #setDelimiter(String).
-     * @see #startNode(NodeMetadata).
+     * @see #setDelimiter(String)
+     * @see #startNode(NodeMetadata)
      */
     AbstractSyntaxTree startNode(NodeMetadata metadata, String delimiter);
 

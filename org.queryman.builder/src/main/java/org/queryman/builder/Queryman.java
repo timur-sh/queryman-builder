@@ -889,7 +889,7 @@ public class Queryman {
      * @return a constant of appropriate type.
      * @throws IllegalArgumentException if constant is not supported
      *
-     * @see <a href=" https://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS">PostgreSQL constants</a>
+     * @see <a href="https://www.postgresql.org/docs/9.2/static/sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS">PostgreSQL constants</a>
      */
     public static <T> Expression asConstant(T constant) {
         if (constant == null)
@@ -1312,7 +1312,7 @@ public class Queryman {
     /**
      * Creates an operator which ordinarily is used by condition.
      *
-     * @param operator LIKE, ILIKE, =, !=, @> etc.
+     * @param operator LIKE, ILIKE, =, !=, @&gt; etc.
      * @return instance of {@link Operator}.
      * <p>
      * Most useful operators are collected there:

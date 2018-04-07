@@ -20,7 +20,7 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
     /**
      * Example:
      * <code>
-     * // SELECT year FROM book HAVING year > 2010
+     * // SELECT year FROM book HAVING year &gt; 2010
      * select("year", "id")
      *  .from("book")
      *  .having("year", "&gt;", "2010")
