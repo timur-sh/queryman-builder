@@ -3,6 +3,7 @@ package org.queryman.builder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.queryman.builder.Operators.ILIKE;
 import static org.queryman.builder.Operators.LIKE;
 import static org.queryman.builder.Operators.NOT_ILIKE;
@@ -14,6 +15,7 @@ import static org.queryman.builder.Queryman.operator;
 class OperatorsTest {
     @Test
     void like() {
+        assertTrue(false);
         assertEquals(NOT_LIKE.getName(), "NOT LIKE");
         assertEquals(LIKE.getName(), "LIKE");
         assertEquals("LIKE", operator("LIKE").getName());

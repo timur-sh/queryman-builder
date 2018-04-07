@@ -34,7 +34,7 @@ import org.queryman.builder.token.Operator;
  * <p><code>
  * Queryman.conditions("id", "=", "1")
  *    .and("name", "=", "Alan")
- *    .and(condition("age", ">", "29")
+ *    .and(condition("age", "&gt;", "29")
  *       .and("gender", "!=", "male")
  *       .or("code", "=", "3")
  *    );
@@ -63,7 +63,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND "id" = 1
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .and(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
@@ -82,7 +82,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .andExists(select("*").from("authors"))
      *  .sql()
      * </code>
@@ -97,8 +97,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -114,7 +114,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .and(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
@@ -124,7 +124,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .and(
      *      conditionBetween("id", "1", "10")
      *      .and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -147,7 +147,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND NOT "id" = 1
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .andNot(asQuotedName("id"), operator("="), asNumber(1))
      *  .sql()
      * </code>
@@ -166,7 +166,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND NOT EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .andNotExists(select("*").from("authors"))
      *  .sql()
      * </code>
@@ -181,8 +181,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -198,7 +198,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND NOT id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .andNot(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
@@ -208,7 +208,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 AND NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .andNot(
      *      conditionBetween("id", "1", "10")
      *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -231,7 +231,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR id = 1
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .or("id", "=", "1")
      *  .sql()
      * </code>
@@ -250,7 +250,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .orExists(select("*").from("authors"))
      *  .sql()
      * </code>
@@ -265,8 +265,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -282,7 +282,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .or(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
@@ -292,7 +292,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .ir(
      *      conditionBetween("id", "1", "10")
      *      ..and(asName("name"), operator("="), asString("Advanced SQL"))
@@ -315,7 +315,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR NOT "id" = 1
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .orNot(asQuotedName("id"), "=", 1)
      *  .sql()
      * </code>
@@ -334,7 +334,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR NOT EXISTS (SELECT * FROM author)
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .orNotExists(select("*").from("authors"))
      *  .sql()
      * </code>
@@ -349,8 +349,8 @@ public interface Conditions extends AstVisitor {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
@@ -366,7 +366,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR NOT id BETWEEN 1 AND 10
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .orNot(conditionBetween("id", "1", "10"))
      *  .sql()
      * </code>
@@ -376,7 +376,7 @@ public interface Conditions extends AstVisitor {
      * // SELECT * FROM book WHERE year > 2010 OR NOT (id BETWEEN 1 AND 10 AND name = 'Advanced SQL')
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .orNot(
      *      conditionBetween("id", "1", "10")
      *      ..and(asName("name"), operator("="), asString("Advanced SQL"))

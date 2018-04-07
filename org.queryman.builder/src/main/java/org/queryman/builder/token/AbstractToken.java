@@ -20,6 +20,7 @@ public abstract class AbstractToken implements Token {
 
     @Override
     public String getName() {
+        System.out.println(1);
         return name;
     }
 

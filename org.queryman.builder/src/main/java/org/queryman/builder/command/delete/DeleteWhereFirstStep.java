@@ -9,8 +9,6 @@ package org.queryman.builder.command.delete;
 import org.queryman.builder.Query;
 import org.queryman.builder.Queryman;
 import org.queryman.builder.command.Conditions;
-import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 
 /**
  * DELETE FROM .. WHERE | DELETE FROM .. WHERE CURRENT OF .. clause.
@@ -25,7 +23,7 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * // SELECT * FROM book WHERE year > 2010
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .sql()
      * </code>
      *
@@ -41,8 +39,8 @@ public interface DeleteWhereFirstStep extends DeleteReturningStep {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>

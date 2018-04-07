@@ -9,8 +9,6 @@ package org.queryman.builder.command.select;
 import org.queryman.builder.Query;
 import org.queryman.builder.Queryman;
 import org.queryman.builder.command.Conditions;
-import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 
 /**
  * @author Timur Shaidullin
@@ -22,7 +20,7 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      * // SELECT * FROM book WHERE year > 2010
      * select("*")
      *  .from("book")
-     *  .where("year", ">", "2010")
+     *  .where("year", "&gt;", "2010")
      *  .sql()
      * </code>
      *
@@ -38,8 +36,8 @@ public interface SelectWhereFirstStep extends SelectGroupByStep {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>

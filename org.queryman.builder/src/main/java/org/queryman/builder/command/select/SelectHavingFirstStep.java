@@ -9,8 +9,6 @@ package org.queryman.builder.command.select;
 import org.queryman.builder.Query;
 import org.queryman.builder.Queryman;
 import org.queryman.builder.command.Conditions;
-import org.queryman.builder.token.Expression;
-import org.queryman.builder.token.Operator;
 
 /**
  * The first step of having condition.
@@ -25,7 +23,7 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      * // SELECT year FROM book HAVING year > 2010
      * select("year", "id")
      *  .from("book")
-     *  .having("year", ">", "2010")
+     *  .having("year", "&gt;", "2010")
      *  .sql()
      * </code>
      *
@@ -42,8 +40,8 @@ public interface SelectHavingFirstStep extends SelectCombiningQueryStep {
      * <ul>
      *     <li>
      *         When the {@code conditions} is a special case of condition,
-     *         like {@link Queryman#conditionBetween(String, String, String)}, or
-     *         {@link Queryman#conditionSome(Expression, Operator, Query)} etc.
+     *         like {@link Queryman#conditionBetween(Object, Object, Object)}, or
+     *         {@link Queryman#conditionSome(Object, Object, Query)} etc.
      *         See the first example.
      *     </li>
      *     <li>
