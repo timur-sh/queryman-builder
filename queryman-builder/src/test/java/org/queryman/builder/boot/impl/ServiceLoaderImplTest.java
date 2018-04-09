@@ -1,7 +1,6 @@
 package org.queryman.builder.boot.impl;
 
 import org.junit.jupiter.api.Test;
-import org.queryman.builder.boot.Metadata;
 import org.queryman.builder.boot.JaxbLoader;
 import org.queryman.builder.boot.ServiceLoader;
 import org.queryman.builder.boot.ServiceLoaderImpl;

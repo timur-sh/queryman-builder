@@ -1,9 +1,9 @@
 apply from: './libraries.gradle'
 
 group 'org.queryman'
-version '1.0.0.beta'
+version '1.0.0'
 
-description "Queryman PostgreSQL tools"
+description "Queryman Builder. Builder SQL for PostgreSQL"
 
 ext {
     majorVersion = version.split('-')[0]
@@ -12,6 +12,8 @@ ext {
 
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
     apply plugin: 'maven-publish'
 
     repositories {
@@ -36,6 +38,8 @@ subprojects { subProject ->
     if (moduleName.equals('documentation')) {
         return
     }
+    archivesBaseName = moduleName
+
 
     publishing {
         publications {
@@ -47,13 +51,31 @@ subprojects { subProject ->
                     root.appendNode('url', rootProject.domain)
                 }
 
-                groupId 'org.queryman'
-                artifactId moduleName.split('\\.')[moduleName.split('\\.').length - 1]
+                groupId rootProject.group
+                artifactId moduleName
                 version rootProject.version
 
                 from components.java
             }
         }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    signing {
+        sign configurations.archives
     }
 
     jar {
@@ -63,6 +85,58 @@ subprojects { subProject ->
                     'Automatic-module-name': moduleName,
             )
 
+        }
+    }
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name 'Queryman Builder'
+                    description rootProject.description
+                    packaging 'jar'
+                    url rootProject.domain
+
+                    version rootProject.version
+                    groupId rootProject.group
+
+
+                    issueManagement {
+                        system 'github'
+                        url 'https://github.com/Query-man/queryman-builder/issues'
+                    }
+
+                    scm {
+                        url 'https://github.com/Query-man/queryman-builder'
+                        connection 'scm:git:https://github.com/Query-man/queryman-builder.git'
+                        developerConnection 'scm:git:git@github.com:Query-man/queryman-builder.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'https://github.com/Query-man/queryman-builder/blob/master/license.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'timur_dbk'
+                            name 'Timur Shaidullin'
+                            email 'timur@shaidullin.net'
+                        }
+                    }
+                }
+            }
         }
     }
 }

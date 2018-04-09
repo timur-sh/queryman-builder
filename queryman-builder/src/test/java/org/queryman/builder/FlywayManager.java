@@ -8,11 +8,6 @@ package org.queryman.builder;
 
 import org.flywaydb.core.Flyway;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.util.Properties;
-
 /**
  * @author Timur Shaidullin
  */

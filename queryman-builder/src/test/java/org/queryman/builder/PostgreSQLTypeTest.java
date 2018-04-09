@@ -10,12 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.queryman.builder.command.insert.InsertFinalStep;
 import org.queryman.builder.utils.ArrayUtils;
 
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.UUID;

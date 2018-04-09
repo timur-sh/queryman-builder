@@ -560,7 +560,7 @@ public class Queryman {
     /**
      * UPDATE statement.
      *
-     * <code>
+     * <pre><code>
      *     // UPDATE book AS b SET author = 'Andrew' WHERE b.id = 1 RETURNING max(price) AS price
      *     update("book")
      *      .as("b")
@@ -568,7 +568,7 @@ public class Queryman {
      *      .where("b.id", "=", 1)
      *      .returning(asName("max(price)").as("price"))
      *      .sql();
-     * </code>
+     * </code></pre>
      *
      * @param name name of the table ot update
      * @return update as step

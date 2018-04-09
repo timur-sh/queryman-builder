@@ -9,7 +9,6 @@ package org.queryman.builder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;

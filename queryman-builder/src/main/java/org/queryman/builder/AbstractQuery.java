@@ -6,8 +6,8 @@
  */
 package org.queryman.builder;
 
-import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.AbstractSyntaxTree;
+import org.queryman.builder.ast.AstVisitor;
 import org.queryman.builder.ast.TreeFormatterUtil;
 
 import java.sql.Connection;

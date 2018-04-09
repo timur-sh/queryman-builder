@@ -1,4 +1,4 @@
 rootProject.name = 'queryman-builder'
 
 include 'documentation'
-include 'org.queryman.builder'
+include 'queryman-builder'
