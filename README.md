@@ -18,14 +18,14 @@ to to add it to dependency and you can immediately start to use it:
 
 Gradle:
 ```
-compile group: 'org.queryman', name: 'builder', version: '1.0.0'
+compile group: 'org.queryman', name: 'queryman-builder', version: '1.0.0'
 ```
 
 Maven:
 ```
 <dependency>
     <groupId>org.queryman</groupId>
-    <artifactId>builder</artifactId>
+    <artifactId>queryman-builder</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
